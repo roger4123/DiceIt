@@ -13,13 +13,15 @@ public class CharacterData : ScriptableObject
     public int maxHealth = 50;
     public int maxCombatPoints = 15;
     public int startingCombatPoints = 2;
+    public int startingCards = 4;
 
     [Header("Abilities")]
     public List<AbilityData> offensiveAbilities;
     public List<AbilityData> defensiveAbilities;
-    public AbilityData passiveAbility;
+    public AbilityData ultimateAbility;
+    public PassiveData passive;
 
     [Header("Resources")]
     public DiceKeyData diceKey; 
-    // public List<StatusEffectData> possibleStatusEffects;
+    public List<StatusEffectData> characterSpecificStatuses;
 }
