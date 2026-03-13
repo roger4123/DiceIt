@@ -16,12 +16,12 @@ public class CharacterData : ScriptableObject
     public int startingCards = 4;
 
     [Header("Abilities")]
-    public List<AbilityData> offensiveAbilities;
-    public List<AbilityData> defensiveAbilities;
-    public AbilityData ultimateAbility;
-    public PassiveData passive;
+    public List<OffensiveAbilityData> offensiveAbilities;
+    public List<DefensiveAbilityData> defensiveAbilities;
+    public BaseAbilityData ultimateAbility;
+    public PassiveAbilityData passive;
 
     [Header("Resources")]
     public DiceKeyData diceKey; 
-    public List<StatusEffectData> characterSpecificStatuses;
+    public List<StatusEffectsData> characterSpecificStatuses;
 }

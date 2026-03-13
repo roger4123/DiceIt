@@ -13,11 +13,13 @@ public enum StatusTrigger   // When to execute the SE logic.
     OnAttackReceived,
     OnManualSpend,
     OnInflicted,
-    OnRemoved
+    OnRemoved,
+    ReachingStackLimit,
 }
 
 public enum OutcomeType     // What does the SE do when activated
 {
+    None,
     Damage,
     Healing,
     GainCP,
@@ -49,7 +51,7 @@ public class StatusOutcome
 }
 
 [CreateAssetMenu(fileName = "NewStatusEffect", menuName = "DiceIt/Status Effect")]
-public class StatusEffectData : ScriptableObject
+public class StatusEffectsData : ScriptableObject
 {
     [Header("Information")]
     public string effectName;

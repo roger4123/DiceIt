@@ -6,11 +6,13 @@ public enum AttackType { Normal, Undefendable, Pure, Collateral, Ultimate, None 
 public enum RequirementType { SpecificSymbols, SmallStraight, LargeStraight }
 public enum ConditionType { Always, SpecificSymbols, SumValue, Parity }
 public enum CompareMode { None, LessOrEqual, GreaterOrEqual, Exactly }
+public enum PassiveTrigger { OnTurnStart, OnTurnEnd, OnDamageTaken, OnAttackDealt }
 
 [System.Serializable]
 public class StatusApplication
 {
-    public StatusEffectData status;
+    public string label;
+    public StatusEffectsData status;
     public int amount = 1;
 }
 
@@ -48,32 +50,9 @@ public class SecondaryRoll
     public List<AbilityOutcome> outcomes;
 }
 
-[System.Serializable]
-public class AbilityActivation
-{
-    public string label;
-    public RequirementType type;
-    public List<SymbolRequirement> symbolsNeeded;
-    
-    [Header("Primary Outcomes (Guaranteed)")]
-    public List<AbilityOutcome> primaryOutcomes;
-
-    [Header("Secondary Rolls (Optional)")]
-    public List<SecondaryRoll> secondaryRolls;
-
-    [Header("Defense Settings")]
-    public int diceToRoll = 5; 
-    [Range(0, 1)] public float damageMitigation; // 0.5 or 1 for preventing dmg
-}
-
-[CreateAssetMenu(fileName = "NewAbility", menuName = "DiceIt/Ability")]
-public class AbilityData : ScriptableObject
+public abstract class BaseAbilityData : ScriptableObject
 {
     [Header("General Info")]
     public string abilityName;
     [TextArea] public string description;
-    public AttackType attackType;
-
-    [Header("Activations (Options)")]
-    public List<AbilityActivation> activations;
 }
