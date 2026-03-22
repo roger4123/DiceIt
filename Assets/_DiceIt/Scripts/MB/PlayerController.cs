@@ -1,11 +1,15 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 
 // instanta activa a unui player in timpul jocului
 // gestionare HP, CP si Status Effects
 public class PlayerController : MonoBehaviour   
 {
+    [Header("UI Reference")]
+    public TextMeshProUGUI healthBarText;
+
     [Header("Data Reference")]
     public CharacterData characterData;
     public bool isAI = false;
@@ -44,6 +48,8 @@ public class PlayerController : MonoBehaviour
         InitializeDeck();
         
         Debug.Log($"{characterData.heroName} initialized with {currentHealth} HP and {drawDeck.Count} cards.");
+
+        UpdateHPUI();
     }
     
     private void Start()
@@ -135,6 +141,8 @@ public class PlayerController : MonoBehaviour
             Debug.Log($"{characterData.heroName} was defeated!");
             // de pus triggerul pentru evenimentul Defeat/Loss in TurnController
         }
+
+        UpdateHPUI();
     }
 
     public void ChangeCP(int amount)
@@ -222,4 +230,16 @@ public class PlayerController : MonoBehaviour
     }
 
     #endregion
+    
+    #region UI Logic
+
+    public void UpdateHPUI()
+{
+    if (healthBarText != null)
+    {
+        healthBarText.text = $"{characterData.heroName}: {currentHealth}/{characterData.maxHealth} HP";
+    }
+
+    #endregion
+}
 }

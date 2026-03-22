@@ -64,7 +64,7 @@ public class BattleManager : MonoBehaviour
             case TurnPhase.MainPhase1:
                 // UI Input
                 break;
-            case TurnPhase.OffensiveRoll:
+            case TurnPhase.OffensiveRollPhase:
                 // DiceManager
                 // ProcessDice();
                 break;
@@ -98,7 +98,7 @@ public class BattleManager : MonoBehaviour
     public void EndMainPhase1()
     {
         if (currentPhase == TurnPhase.MainPhase1)
-            SetPhase(TurnPhase.OffensiveRoll);
+            SetPhase(TurnPhase.OffensiveRollPhase);
     }
 
     private void ProcessResolution()
