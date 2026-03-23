@@ -8,7 +8,8 @@ using TMPro;
 public class PlayerController : MonoBehaviour   
 {
     [Header("UI Reference")]
-    public TextMeshProUGUI healthBarText;
+    public TextMeshProUGUI healthBarandCPText;
+    public List<UI_AbilitySlots> abilitySlots = new List<UI_AbilitySlots>();
 
     [Header("Data Reference")]
     public CharacterData characterData;
@@ -49,7 +50,8 @@ public class PlayerController : MonoBehaviour
         
         Debug.Log($"{characterData.heroName} initialized with {currentHealth} HP and {drawDeck.Count} cards.");
 
-        UpdateHPUI();
+        UpdateHpCpUI();
+        PopulateAbilityBoard();
     }
     
     private void Start()
@@ -142,12 +144,13 @@ public class PlayerController : MonoBehaviour
             // de pus triggerul pentru evenimentul Defeat/Loss in TurnController
         }
 
-        UpdateHPUI();
+        UpdateHpCpUI();
     }
 
     public void ChangeCP(int amount)
     {
         currentCombatPoints = Mathf.Clamp(currentCombatPoints + amount, 0, characterData.maxCombatPoints);
+        UpdateHpCpUI();
     }
 
     #endregion
@@ -233,13 +236,89 @@ public class PlayerController : MonoBehaviour
     
     #region UI Logic
 
-    public void UpdateHPUI()
-{
-    if (healthBarText != null)
+    public void UpdateHpCpUI()
     {
-        healthBarText.text = $"{characterData.heroName}: {currentHealth}/{characterData.maxHealth} HP";
+        if (healthBarandCPText != null)
+        {
+            healthBarandCPText.text = $"{characterData.heroName}: {currentHealth}/{characterData.maxHealth} HP | {currentCombatPoints}/{characterData.maxCombatPoints} CP";
+        } 
     }
 
+    public void PopulateAbilityBoard()
+    {
+        if (characterData == null || abilitySlots.Count == 0) return;
+
+        bool hasPassive = characterData.passive != null && !string.IsNullOrEmpty(characterData.passive.abilityName);
+
+        foreach (var slot in abilitySlots)
+        {
+            BaseAbilityData dataToAssign = null;
+            int idx = slot.slotIndex;
+
+            switch(idx)
+            {
+                case int i when i >= 0 && i <= 3:
+                    if (i < characterData.offensiveAbilities.Count)
+                    {
+                        dataToAssign = characterData.offensiveAbilities[i];
+                    }
+                    break;
+
+                case 4:
+                    int offIndexForA6 = hasPassive ? 4 : 5;
+                    if (characterData.offensiveAbilities.Count > offIndexForA6)
+                        dataToAssign = characterData.offensiveAbilities[offIndexForA6];
+                    break;
+
+                case 10:
+                    // Passive Ability has priority
+                    if (hasPassive)
+                    {
+                        dataToAssign = characterData.passive;
+                    }
+                    else if (characterData.offensiveAbilities.Count > 4)
+                    {
+                        dataToAssign = characterData.offensiveAbilities[4];
+                    }
+                    break;
+
+                case 20:
+                    if (characterData.defensiveAbilities.Count > 0)
+                    {
+                        dataToAssign = characterData.defensiveAbilities[0];
+                    }
+                    break;
+
+                case 21:
+                    if (characterData.defensiveAbilities.Count > 1)
+                    {
+                        dataToAssign = characterData.defensiveAbilities[1];
+                    }
+                    else
+                    {
+                        int offIndexforA7 = hasPassive ? 5 : 6;
+                        if (characterData.offensiveAbilities.Count > offIndexforA7)
+                        {
+                            dataToAssign = characterData.offensiveAbilities[offIndexforA7];
+                        }
+                    }
+                    break;
+
+                case 50:
+                    dataToAssign = characterData.ultimateAbility;
+                    break;
+            }
+
+            if (dataToAssign != null)
+            {
+                slot.gameObject.SetActive(true);
+                slot.Setup(dataToAssign);
+            }
+            else
+            {
+                slot.gameObject.SetActive(false);
+            }            
+        }
+    }
     #endregion
-}
 }

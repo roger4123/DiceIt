@@ -22,8 +22,9 @@ public class DiceManager : MonoBehaviour
         }
     }
 
-    [Header("UI Reference")]
-    public TextMeshProUGUI diceDisplayText;
+    [Header("UI References")]
+    public TextMeshProUGUI p1DiceDisplayText;
+    public TextMeshProUGUI p2DiceDisplayText;
 
     [Header("Dice State")]
     public List<DieState> dice = new List<DieState>(5);
@@ -91,7 +92,7 @@ public class DiceManager : MonoBehaviour
 
     public void UpdateDiceUI()
     {
-        if (diceDisplayText == null) return;
+        if (p1DiceDisplayText == null || p2DiceDisplayText == null) return;
 
         string result = "";
         for (int i = 0; i < dice.Count; i++)
@@ -100,7 +101,16 @@ public class DiceManager : MonoBehaviour
             if (i < dice.Count - 1) result += " | ";
         }
         
-        diceDisplayText.text = result;
+        if (BattleManager.Instance.activePlayer == BattleManager.Instance.player1)
+        {
+            p1DiceDisplayText.text = result;
+            // p2DiceDisplay.text = "";
+        }
+        else
+        {
+            p2DiceDisplayText.text = result;
+            // p1DiceDisplay.text = "";
+        }
     }
 }
 
