@@ -312,7 +312,7 @@ public class PlayerController : MonoBehaviour
             if (dataToAssign != null)
             {
                 slot.gameObject.SetActive(true);
-                slot.Setup(dataToAssign);
+                slot.Setup(dataToAssign, this);
             }
             else
             {

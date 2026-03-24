@@ -23,12 +23,15 @@ public class DiceManager : MonoBehaviour
     }
 
     [Header("UI References")]
-    public TextMeshProUGUI p1DiceDisplayText;
-    public TextMeshProUGUI p2DiceDisplayText;
+    // public TextMeshProUGUI p1DiceDisplayText;
+    // public TextMeshProUGUI p2DiceDisplayText;
+    public List<UI_DiceDisplay> p1DiceIcons = new List<UI_DiceDisplay>(5);
+    public List<UI_DiceDisplay> p2DiceIcons = new List<UI_DiceDisplay>(5);
 
     [Header("Dice State")]
     public List<DieState> dice = new List<DieState>(5);
     public int rollsLeft = 3;
+    public bool hasRolledThisPhase = false;
 
     private void Awake()
     {
@@ -38,6 +41,10 @@ public class DiceManager : MonoBehaviour
         for (int i = 0; i < 5; i++)
         {
             dice.Add(new DieState());
+
+            // UI index
+            if(i < p1DiceIcons.Count) p1DiceIcons[i].SetIndex(i);
+            if(i < p2DiceIcons.Count) p2DiceIcons[i].SetIndex(i);
         }
     }
 
@@ -49,6 +56,8 @@ public class DiceManager : MonoBehaviour
             return;
         }
 
+        hasRolledThisPhase = true;
+
         foreach (var die in dice)
         {
             die.Roll();
@@ -57,22 +66,25 @@ public class DiceManager : MonoBehaviour
         rollsLeft--;
         Debug.Log($"==> Rolled successfully! Remaining Roll Attemtps: {rollsLeft}");
         
-        // + transmitere semnal catre UI pentru update
         UpdateDiceUI();
     }
 
 
     public void ToggleLock(int index)
     {
+        if (!hasRolledThisPhase) return;
+
         if (index >= 0 && index < dice.Count)
         {
             dice[index].isLocked = !dice[index].isLocked;
+            UpdateDiceUI();
         }
     }
 
     public void ResetDice()
     {
         rollsLeft = 3;
+        hasRolledThisPhase = false;
         foreach (var die in dice)
         {
             die.isLocked = false;
@@ -92,24 +104,23 @@ public class DiceManager : MonoBehaviour
 
     public void UpdateDiceUI()
     {
-        if (p1DiceDisplayText == null || p2DiceDisplayText == null) return;
+        PlayerController activePlayer = BattleManager.Instance.activePlayer;
+        if (activePlayer == null || activePlayer.characterData == null) return;
 
-        string result = "";
+        DiceKeyData currentKey = activePlayer.characterData.diceKey;
+
+        List<UI_DiceDisplay> activeUIList = (activePlayer == BattleManager.Instance.player1) ? p1DiceIcons : p2DiceIcons;
+
         for (int i = 0; i < dice.Count; i++)
         {
-            result += dice[i].currentValue.ToString();
-            if (i < dice.Count - 1) result += " | ";
-        }
-        
-        if (BattleManager.Instance.activePlayer == BattleManager.Instance.player1)
-        {
-            p1DiceDisplayText.text = result;
-            // p2DiceDisplay.text = "";
-        }
-        else
-        {
-            p2DiceDisplayText.text = result;
-            // p1DiceDisplay.text = "";
+            int val = dice[i].currentValue;
+            DiceSymbol symbolData = currentKey.GetSymbolForValue(val);
+            
+            // send the data to the prefab's script
+            activeUIList[i].SetupPlayDie(val, symbolData, currentKey.dieColor, currentKey.numberColor);
+            
+            // locked dice
+            activeUIList[i].SetLockVisual(dice[i].isLocked);
         }
     }
 }

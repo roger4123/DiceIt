@@ -5,7 +5,7 @@ public class DiceKeyData : ScriptableObject
 {
     [Header("Visuals")]
     public Color dieColor = Color.white;
-    public Color symbolColor = Color.black;
+    public Color numberColor = Color.white;
 
     [Header("Faces (1 to 6)")]
     public DiceSymbol[] faces = new DiceSymbol[6];

@@ -55,4 +55,11 @@ public abstract class BaseAbilityData : ScriptableObject
     [Header("General Info")]
     public string abilityName;
     [TextArea] public string description;
+
+    public virtual List<SymbolRequirement> GetActivationSymbols() 
+    {
+        return null;
+    }
+
+    public virtual RequirementType GetRequirementType() => RequirementType.SpecificSymbols;
 }

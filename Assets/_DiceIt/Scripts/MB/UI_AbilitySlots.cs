@@ -5,12 +5,12 @@ using TMPro;
 public class UI_AbilitySlots : MonoBehaviour
 {
     [Header("Data")]
+    public PlayerController owner;
     public BaseAbilityData assignedAbility;
     public int slotIndex;
 
     [Header("UI Components")]
     public TextMeshProUGUI nameText;
-
     private Button button;
 
     private void Awake()
@@ -19,9 +19,10 @@ public class UI_AbilitySlots : MonoBehaviour
         button.onClick.AddListener(OnSlotClicked);
     }
 
-    public void Setup(BaseAbilityData ability)
+    public void Setup(BaseAbilityData ability, PlayerController slotOwner)
     {
         assignedAbility = ability;
+        owner = slotOwner;
         if (nameText != null && ability != null)
         {
             nameText.text = ability.abilityName;
@@ -35,5 +36,6 @@ public class UI_AbilitySlots : MonoBehaviour
         Debug.Log($"==> Ability pressed: {assignedAbility.abilityName}");
         
         // + modal
+        UI_AbilityModal.Instance.Show(assignedAbility, owner);
     }
 }

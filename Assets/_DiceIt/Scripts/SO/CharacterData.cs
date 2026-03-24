@@ -8,7 +8,7 @@ public class CharacterData : ScriptableObject
     public string heroName;
     public Sprite avatar;
     [Range(1, 6)] public int complexityRating = 1;
-    public DeckData deckRecipe;
+    
 
     [Header("Stats")]
     public int maxHealth = 50;
@@ -25,4 +25,5 @@ public class CharacterData : ScriptableObject
     [Header("Resources")]
     public DiceKeyData diceKey; 
     public List<StatusEffectsData> characterSpecificStatuses;
+    public DeckData deckRecipe;
 }
