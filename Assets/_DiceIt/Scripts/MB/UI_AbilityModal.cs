@@ -12,6 +12,7 @@ public class UI_AbilityModal : MonoBehaviour
     public TextMeshProUGUI descriptionText;
     public GameObject modalPanel;
     public Transform requirementsContainer;
+    public GameObject activationBlockPrefab;
     public GameObject dicePrefab;
 
     [Header("Buttons")]
@@ -36,30 +37,87 @@ public class UI_AbilityModal : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        List<SymbolRequirement> reqs = data.GetActivationSymbols();
-        if (reqs != null)
-        {
-            Color characterDieColor = slotOwner.characterData.diceKey.dieColor;
+        Color characterDieColor = slotOwner.characterData.diceKey.dieColor;
 
-            foreach (var req in reqs)
+        if (data is OffensiveAbilityData oad && oad.activations != null && oad.activations.Count > 0)
+        {
+            if (oad.activations.Count > 1)
             {
-                for (int i = 0; i < req.count; i++) 
+                descriptionText.gameObject.SetActive(false);
+            }
+            else
+            {
+                descriptionText.gameObject.SetActive(true);
+            }
+
+            foreach (var activation in oad.activations)
+            {
+                GameObject blockObj = Instantiate(activationBlockPrefab, requirementsContainer);
+
+                Transform blockDiceContainer = blockObj.transform.Find("DiceContainer");
+                TextMeshProUGUI blockText = blockObj.transform.Find("DescriptionText").GetComponent<TextMeshProUGUI>();
+
+                if (blockText != null) 
                 {
-                    GameObject dieObj = Instantiate(dicePrefab, requirementsContainer);
-                    UI_DiceDisplay dieScript = dieObj.GetComponent<UI_DiceDisplay>();
-                    
-                    dieScript.SetupRequirementDie(req.symbol, characterDieColor);
+                    if (oad.activations.Count == 1)
+                    {
+                        blockText.gameObject.SetActive(false);
+                    }
+                    else
+                    {
+                        blockText.gameObject.SetActive(true);
+                        blockText.text = activation.label;
+                    }
+                }
+
+                if (blockDiceContainer != null)
+                {
+                    foreach (var req in activation.symbolsNeeded)
+                    {
+                        for (int i = 0; i < req.count; i++)
+                        {
+                            GameObject dieObj = Instantiate(dicePrefab, blockDiceContainer);
+                            dieObj.GetComponent<UI_DiceDisplay>().SetupRequirementDie(req.symbol, characterDieColor);
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            descriptionText.gameObject.SetActive(true);
+
+            List<SymbolRequirement> reqs = data.GetActivationSymbols();
+            
+            if (reqs != null && reqs.Count > 0)
+            {
+                GameObject blockObj = Instantiate(activationBlockPrefab, requirementsContainer);
+                Transform blockDiceContainer = blockObj.transform.Find("DiceContainer");
+                Transform textTransform = blockObj.transform.Find("DescriptionText");
+                textTransform?.gameObject.SetActive(false);
+
+                if (blockDiceContainer != null)
+                {
+                    foreach (var req in reqs)
+                    {
+                        for (int i = 0; i < req.count; i++)
+                        {
+                            GameObject dieObj = Instantiate(dicePrefab, blockDiceContainer);
+                            dieObj.GetComponent<UI_DiceDisplay>().SetupRequirementDie(req.symbol, characterDieColor);
+                        }
+                    }
                 }
             }
         }
 
+        Debug.Log($"Active Player: {BattleManager.Instance.activePlayer.name} | Slot Owner: {slotOwner.name}");
         bool isMyTurn = (BattleManager.Instance.activePlayer == slotOwner);
         activateButton.SetActive(isMyTurn);
 
         if (isMyTurn)
         {
             // + dice requirements check
-            activateButtonComponent.interactable = true; 
+            activateButtonComponent.interactable = false;  // de schimbat in true
         }
 
         modalPanel.SetActive(true);
