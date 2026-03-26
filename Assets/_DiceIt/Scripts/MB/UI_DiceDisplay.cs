@@ -56,6 +56,15 @@ public class UI_DiceDisplay : MonoBehaviour
         rt.offsetMax = Vector2.zero;
     }
 
+    public void SetupBlankDie(Color bgColor)
+    {
+        bgColor.a = 1f;
+        backgroundImage.color = bgColor; 
+        
+        valueText.gameObject.SetActive(false);
+        symbolImage.gameObject.SetActive(false);
+    }
+
     public void SetLockVisual(bool isLocked)
     {
         if (lockDieOverlay != null)

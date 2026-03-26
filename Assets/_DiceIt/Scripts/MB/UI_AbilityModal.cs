@@ -72,43 +72,93 @@ public class UI_AbilityModal : MonoBehaviour
 
                 if (blockDiceContainer != null)
                 {
-                    foreach (var req in activation.symbolsNeeded)
+                    if (activation.type == RequirementType.SmallStraight)
                     {
-                        for (int i = 0; i < req.count; i++)
+                        for (int i = 0; i < 4; i++)
                         {
                             GameObject dieObj = Instantiate(dicePrefab, blockDiceContainer);
-                            dieObj.GetComponent<UI_DiceDisplay>().SetupRequirementDie(req.symbol, characterDieColor);
+                            dieObj.GetComponent<UI_DiceDisplay>().SetupBlankDie(Color.gray);
+
+                            float defaultSize = dieObj.GetComponent<RectTransform>().sizeDelta.x;
+                            float scaleMultiplier = 1.0f - (3 - i) * 0.1f; 
+                            float scaledSize = defaultSize * scaleMultiplier;
+
+                            LayoutElement layoutElement = dieObj.GetComponent<LayoutElement>();
+                            if (layoutElement != null)
+                            {
+                                layoutElement.preferredWidth = scaledSize;
+                                layoutElement.preferredHeight = scaledSize;
+                                layoutElement.minWidth = scaledSize;
+                                layoutElement.minHeight = scaledSize;
+                            }
+                            else
+                            {
+                                dieObj.GetComponent<RectTransform>().sizeDelta = new Vector2(scaledSize, scaledSize);     
+                            }
+                         }
+                    }
+                    else if (activation.type == RequirementType.LargeStraight)
+                    {
+                        for (int i = 0; i < 5; i++)
+                        {
+                            GameObject dieObj = Instantiate(dicePrefab, blockDiceContainer);
+                            dieObj.GetComponent<UI_DiceDisplay>().SetupBlankDie(Color.gray);
+
+                            float defaultSize = dieObj.GetComponent<RectTransform>().sizeDelta.x;
+                            float scaleMultiplier = 1.0f - (4 - i) * 0.1f; 
+                            float scaledSize = defaultSize * scaleMultiplier;
+
+                            LayoutElement layoutElement = dieObj.GetComponent<LayoutElement>();
+                            if (layoutElement != null)
+                            {
+                                layoutElement.preferredWidth = scaledSize;
+                                layoutElement.preferredHeight = scaledSize;
+                                layoutElement.minWidth = scaledSize;
+                                layoutElement.minHeight = scaledSize;
+                            }
+                            else
+                            {
+                                dieObj.GetComponent<RectTransform>().sizeDelta = new Vector2(scaledSize, scaledSize);     
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var req in activation.symbolsNeeded)
+                        {
+                            for (int i = 0; i < req.count; i++)
+                            {
+                                GameObject dieObj = Instantiate(dicePrefab, blockDiceContainer);
+                                dieObj.GetComponent<UI_DiceDisplay>().SetupRequirementDie(req.symbol, characterDieColor);
+                            }
                         }
                     }
                 }
             }
         }
-        else
+        else if (data is DefensiveAbilityData dad)
         {
             descriptionText.gameObject.SetActive(true);
+            GameObject blockObj = Instantiate(activationBlockPrefab, requirementsContainer);
+            Transform blockDiceContainer = blockObj.transform.Find("DiceContainer");
+            Transform textTransform = blockObj.transform.Find("DescriptionText");
 
-            List<SymbolRequirement> reqs = data.GetActivationSymbols();
-            
-            if (reqs != null && reqs.Count > 0)
+            if (textTransform != null)
             {
-                GameObject blockObj = Instantiate(activationBlockPrefab, requirementsContainer);
-                Transform blockDiceContainer = blockObj.transform.Find("DiceContainer");
-                Transform textTransform = blockObj.transform.Find("DescriptionText");
-                textTransform?.gameObject.SetActive(false);
+                textTransform.gameObject.SetActive(false);
+                textTransform.GetComponent<TextMeshProUGUI>().text = $"Roll {dad.diceToRoll}";
+            } 
 
-                if (blockDiceContainer != null)
+            if (blockDiceContainer != null)
+            {
+                for (int i = 0; i < dad.diceToRoll; i++)
                 {
-                    foreach (var req in reqs)
-                    {
-                        for (int i = 0; i < req.count; i++)
-                        {
-                            GameObject dieObj = Instantiate(dicePrefab, blockDiceContainer);
-                            dieObj.GetComponent<UI_DiceDisplay>().SetupRequirementDie(req.symbol, characterDieColor);
-                        }
-                    }
+                    GameObject dieObj = Instantiate(dicePrefab, blockDiceContainer);
+                    dieObj.GetComponent<UI_DiceDisplay>().SetupBlankDie(Color.green); 
                 }
             }
         }
+        else descriptionText.gameObject.SetActive(true);
 
         Debug.Log($"Active Player: {BattleManager.Instance.activePlayer.name} | Slot Owner: {slotOwner.name}");
         bool isMyTurn = (BattleManager.Instance.activePlayer == slotOwner);
