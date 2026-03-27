@@ -15,7 +15,7 @@ public class DeckData : ScriptableObject
         return cards.Count == 32;
     }
 
-    /// Helper pentru a vedea distribuția cărților în Inspector.
+    /// helper for Inspector
     public void GetDeckStats(out int main, out int roll, out int instant)
     {
         main = 0; roll = 0; instant = 0;
@@ -26,5 +26,12 @@ public class DeckData : ScriptableObject
             else if (card.playPhase == CardPlayPhase.RollPhase) roll++;
             else if (card.playPhase == CardPlayPhase.Instant) instant++;
         }
+    }
+
+    [ContextMenu("Print Deck Stats in Console")]
+    public void PrintStatsToConsole()
+    {
+        GetDeckStats(out int main, out int roll, out int instant);
+        Debug.Log($"Deck: {deckName} | Main: {main} | Roll: {roll} | Instant: {instant}");
     }
 }

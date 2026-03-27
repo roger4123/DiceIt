@@ -560,17 +560,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e5942dd1a5c0414eb3aa9e2fcd82060, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  healthBarandCPText: {fileID: 736570686}
-  abilitySlots:
-  - {fileID: 167372244}
-  - {fileID: 551314268}
-  - {fileID: 1903933298}
-  - {fileID: 1321006609}
-  - {fileID: 1624222997}
-  - {fileID: 2146959384}
-  - {fileID: 136696168}
-  - {fileID: 264300139}
-  - {fileID: 1140562532}
   characterData: {fileID: 11400000, guid: d834d9472b08c72459158b0815fa7ffe, type: 2}
   isAI: 0
   currentHealth: 0
@@ -4429,17 +4418,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e5942dd1a5c0414eb3aa9e2fcd82060, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  healthBarandCPText: {fileID: 1715496946}
-  abilitySlots:
-  - {fileID: 551724575}
-  - {fileID: 742408228}
-  - {fileID: 1952023647}
-  - {fileID: 21085698}
-  - {fileID: 1387763838}
-  - {fileID: 697015517}
-  - {fileID: 229693880}
-  - {fileID: 898476720}
-  - {fileID: 1953621720}
   characterData: {fileID: 11400000, guid: 2f1ae33207abb564d973d3b3fcd6c42e, type: 2}
   isAI: 0
   currentHealth: 0
@@ -4611,6 +4589,7 @@ GameObject:
   - component: {fileID: 736570685}
   - component: {fileID: 736570687}
   - component: {fileID: 736570686}
+  - component: {fileID: 736570688}
   m_Layer: 5
   m_Name: P2_HP_Display
   m_TagString: Untagged
@@ -4737,6 +4716,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 736570684}
   m_CullTransparentMesh: 1
+--- !u!114 &736570688
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 736570684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 923d8b750073f6040b0911351eac06c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI_PlayerHUD
+  targetPlayer: {fileID: 78929012}
+  healthBarandCPText: {fileID: 736570686}
 --- !u!1 &742408224
 GameObject:
   m_ObjectHideFlags: 0
@@ -5650,6 +5643,7 @@ GameObject:
   - component: {fileID: 1080720918}
   - component: {fileID: 1080720917}
   - component: {fileID: 1080720916}
+  - component: {fileID: 1080720919}
   m_Layer: 5
   m_Name: Board_P2
   m_TagString: Untagged
@@ -5742,6 +5736,29 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &1080720919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1080720914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ac786b3abc653d4396c5a0d7635f5db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI_AbilityBoard
+  targetPlayer: {fileID: 78929012}
+  abilitySlots:
+  - {fileID: 167372244}
+  - {fileID: 551314268}
+  - {fileID: 1903933298}
+  - {fileID: 1321006609}
+  - {fileID: 1624222997}
+  - {fileID: 2146959384}
+  - {fileID: 136696168}
+  - {fileID: 264300139}
+  - {fileID: 1140562532}
 --- !u!1 &1128043444
 GameObject:
   m_ObjectHideFlags: 0
@@ -7950,6 +7967,7 @@ GameObject:
   - component: {fileID: 1571791711}
   - component: {fileID: 1571791710}
   - component: {fileID: 1571791709}
+  - component: {fileID: 1571791712}
   m_Layer: 5
   m_Name: Board_P1
   m_TagString: Untagged
@@ -8042,6 +8060,29 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &1571791712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1571791707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ac786b3abc653d4396c5a0d7635f5db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI_AbilityBoard
+  targetPlayer: {fileID: 707558015}
+  abilitySlots:
+  - {fileID: 551724575}
+  - {fileID: 742408228}
+  - {fileID: 1952023647}
+  - {fileID: 21085698}
+  - {fileID: 1387763838}
+  - {fileID: 697015517}
+  - {fileID: 229693880}
+  - {fileID: 898476720}
+  - {fileID: 1953621720}
 --- !u!1 &1624222993
 GameObject:
   m_ObjectHideFlags: 0
@@ -8429,6 +8470,7 @@ GameObject:
   - component: {fileID: 1715496945}
   - component: {fileID: 1715496947}
   - component: {fileID: 1715496946}
+  - component: {fileID: 1715496948}
   m_Layer: 5
   m_Name: P1_HP_Display
   m_TagString: Untagged
@@ -8555,6 +8597,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1715496944}
   m_CullTransparentMesh: 1
+--- !u!114 &1715496948
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1715496944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 923d8b750073f6040b0911351eac06c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI_PlayerHUD
+  targetPlayer: {fileID: 707558015}
+  healthBarandCPText: {fileID: 1715496946}
 --- !u!1 &1755590616
 GameObject:
   m_ObjectHideFlags: 0

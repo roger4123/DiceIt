@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 
 // "None" is for abilities that don't deal dmg but are used for resource gathering or healing etc.
-public enum AttackType { Normal, Undefendable, Pure, Collateral, Ultimate, None }
+public enum DamageType { Normal, Undefendable, Pure, Ultimate, None }
 public enum RequirementType { SpecificSymbols, SmallStraight, LargeStraight }
 public enum ConditionType { Always, SpecificSymbols, SumValue, Parity }
 public enum CompareMode { None, LessOrEqual, GreaterOrEqual, Exactly }
@@ -32,13 +32,13 @@ public class AbilityOutcome
     public float value;
     public List<StatusApplication> statuses;
 
-    [Header("Conditionality")]
+    [Header("Conditionality for Secondary Rolls")]
     public ConditionType condition = ConditionType.Always;
     public List<SymbolRequirement> symbolRequirements; // for "On Symbol" or "X Symbol"
     public bool isScaling; // TRUE: value * symbolCount. FALSE: fixed value (On Symbol)
     
     [Space]
-    public CompareMode compareMode = CompareMode.None; // abilities like Spider-Reflexes
+    public CompareMode compareMode = CompareMode.None; // <=, >=, =
     public int threshold;
 }
 
@@ -55,11 +55,4 @@ public abstract class BaseAbilityData : ScriptableObject
     [Header("General Info")]
     public string abilityName;
     [TextArea] public string description;
-
-    public virtual List<SymbolRequirement> GetActivationSymbols() 
-    {
-        return null;
-    }
-
-    public virtual RequirementType GetRequirementType() => RequirementType.SpecificSymbols;
 }

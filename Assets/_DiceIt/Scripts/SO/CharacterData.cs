@@ -6,9 +6,7 @@ public class CharacterData : ScriptableObject
 {
     [Header("Identity")]
     public string heroName;
-    public Sprite avatar;
-    [Range(1, 6)] public int complexityRating = 1;
-    
+    public Sprite avatar;    
 
     [Header("Stats")]
     public int maxHealth = 50;

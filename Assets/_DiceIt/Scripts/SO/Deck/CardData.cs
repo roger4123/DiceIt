@@ -83,7 +83,7 @@ public class CardData : ScriptableObject
     [Header("Effects")]
     public List<CardOutcome> cardEffects;
 
-    [Header("Dice Interaction")]
+    [Header("Secondary Rolls")]
     // pentru carti care necesita rolling a die
     public List<SecondaryRoll> cardRolls;
 
