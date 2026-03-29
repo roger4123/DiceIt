@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class UI_AbilitySlots : MonoBehaviour
+public class UI_AbilitySlot : MonoBehaviour
 {
     [Header("Data")]
     public PlayerController owner;

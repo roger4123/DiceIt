@@ -7,7 +7,7 @@ public class UI_AbilityBoard : MonoBehaviour
     public PlayerController targetPlayer;
 
     [Header("UI Elements")]
-    public List<UI_AbilitySlots> abilitySlots = new List<UI_AbilitySlots>();
+    public List<UI_AbilitySlot> abilitySlots = new List<UI_AbilitySlot>();
 
     private void OnEnable()
     {

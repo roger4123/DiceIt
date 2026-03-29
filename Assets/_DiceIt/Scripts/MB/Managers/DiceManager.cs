@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections.Generic;
 using TMPro;
 
@@ -6,6 +7,7 @@ public class DiceManager : MonoBehaviour
 {
     // Singleton pattern for accessing the manager from anywhere
     public static DiceManager Instance;
+
 
     [System.Serializable]
     public class DieState
@@ -17,16 +19,12 @@ public class DiceManager : MonoBehaviour
         {
             if (!isLocked)
             {
-                currentValue = Random.Range(1, 7);
+                currentValue = UnityEngine.Random.Range(1, 7);
             }
         }
     }
 
-    [Header("UI References")]
-    // public TextMeshProUGUI p1DiceDisplayText;
-    // public TextMeshProUGUI p2DiceDisplayText;
-    public List<UI_DiceDisplay> p1DiceIcons = new List<UI_DiceDisplay>(5);
-    public List<UI_DiceDisplay> p2DiceIcons = new List<UI_DiceDisplay>(5);
+    public event Action<List<DieState>, int> OnDiceStateChanged;
 
     [Header("Dice State")]
     public List<DieState> dice = new List<DieState>(5);
@@ -41,10 +39,6 @@ public class DiceManager : MonoBehaviour
         for (int i = 0; i < 5; i++)
         {
             dice.Add(new DieState());
-
-            // UI index
-            if(i < p1DiceIcons.Count) p1DiceIcons[i].SetIndex(i);
-            if(i < p2DiceIcons.Count) p2DiceIcons[i].SetIndex(i);
         }
     }
 
@@ -66,7 +60,7 @@ public class DiceManager : MonoBehaviour
         rollsLeft--;
         Debug.Log($"==> Rolled successfully! Remaining Roll Attemtps: {rollsLeft}");
         
-        UpdateDiceUI();
+        BroadcastState();
     }
 
 
@@ -77,7 +71,7 @@ public class DiceManager : MonoBehaviour
         if (index >= 0 && index < dice.Count)
         {
             dice[index].isLocked = !dice[index].isLocked;
-            UpdateDiceUI();
+            BroadcastState();
         }
     }
 
@@ -90,6 +84,8 @@ public class DiceManager : MonoBehaviour
             die.isLocked = false;
             die.currentValue = 1;
         }
+        
+        BroadcastState();
     }
 
     public List<int> GetCurrentDiceValues()
@@ -102,26 +98,9 @@ public class DiceManager : MonoBehaviour
         return values;  // list pentru comparare cu Ability Requirements
     }
 
-    public void UpdateDiceUI()
+    private void BroadcastState()
     {
-        PlayerController activePlayer = BattleManager.Instance.activePlayer;
-        if (activePlayer == null || activePlayer.characterData == null) return;
-
-        DiceKeyData currentKey = activePlayer.characterData.diceKey;
-
-        List<UI_DiceDisplay> activeUIList = (activePlayer == BattleManager.Instance.player1) ? p1DiceIcons : p2DiceIcons;
-
-        for (int i = 0; i < dice.Count; i++)
-        {
-            int val = dice[i].currentValue;
-            DiceSymbol symbolData = currentKey.GetSymbolForValue(val);
-            
-            // send the data to the prefab's script
-            activeUIList[i].SetupPlayDie(val, symbolData, currentKey.dieColor, currentKey.numberColor);
-            
-            // locked dice
-            activeUIList[i].SetLockVisual(dice[i].isLocked);
-        }
+        OnDiceStateChanged?.Invoke(dice, rollsLeft);
     }
 }
 

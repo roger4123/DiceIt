@@ -2232,6 +2232,62 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 321571288}
   m_CullTransparentMesh: 1
+--- !u!1 &357822029
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 357822031}
+  - component: {fileID: 357822030}
+  m_Layer: 0
+  m_Name: --- UI MANAGERS ---
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &357822030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 357822029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbf02d5c3cd5d2f4998c9832d16aff59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI_DicePanels
+  p1DiceIcons:
+  - {fileID: 536204732}
+  - {fileID: 278217847}
+  - {fileID: 1885596649}
+  - {fileID: 1485731673}
+  - {fileID: 2134441979}
+  p2DiceIcons:
+  - {fileID: 289779338}
+  - {fileID: 389758220}
+  - {fileID: 1324299711}
+  - {fileID: 1774783622}
+  - {fileID: 1819375141}
+--- !u!4 &357822031
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 357822029}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 468.31317, y: 252.11028, z: 21.84436}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!224 &389758219 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2327071161042112420, guid: 26d44c0d390e6d44984cf30923c4d7fe, type: 3}
@@ -4898,18 +4954,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aabb4564bf89e364cbac126b977cb17b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DiceManager
-  p1DiceIcons:
-  - {fileID: 536204732}
-  - {fileID: 278217847}
-  - {fileID: 1885596649}
-  - {fileID: 1485731673}
-  - {fileID: 2134441979}
-  p2DiceIcons:
-  - {fileID: 289779338}
-  - {fileID: 389758220}
-  - {fileID: 1324299711}
-  - {fileID: 1774783622}
-  - {fileID: 1819375141}
   dice: []
   rollsLeft: 3
   hasRolledThisPhase: 0
@@ -6907,7 +6951,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: -200, y: 0}
-  m_SizeDelta: {x: 320, y: 80}
+  m_SizeDelta: {x: 320, y: 120}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &1348336137
 MonoBehaviour:
@@ -6922,7 +6966,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 0
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
@@ -6931,9 +6975,9 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 0, g: 1, b: 0, a: 1}
-    m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_HighlightedColor: {r: 0, g: 0.3921569, b: 0, a: 1}
+    m_PressedColor: {r: 0, g: 0.3921569, b: 0, a: 1}
+    m_SelectedColor: {r: 1, g: 1, b: 1, a: 1}
     m_DisabledColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -10204,6 +10248,7 @@ MonoBehaviour:
   dicePrefab: {fileID: 8687209447569180775, guid: 26d44c0d390e6d44984cf30923c4d7fe, type: 3}
   activateButton: {fileID: 1348336135}
   activateButtonComponent: {fileID: 1348336137}
+  activateButtonText: {fileID: 321571290}
 --- !u!1 &1952023643
 GameObject:
   m_ObjectHideFlags: 0
@@ -11126,6 +11171,7 @@ SceneRoots:
   - {fileID: 70149857}
   - {fileID: 576708900}
   - {fileID: 748478782}
+  - {fileID: 357822031}
   - {fileID: 707558016}
   - {fileID: 78929013}
   - {fileID: 1414217925}

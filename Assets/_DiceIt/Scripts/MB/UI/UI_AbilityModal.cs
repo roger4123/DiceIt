@@ -18,10 +18,21 @@ public class UI_AbilityModal : MonoBehaviour
     [Header("Buttons")]
     public GameObject activateButton;
     public Button activateButtonComponent;
+    public TextMeshProUGUI activateButtonText;
+
+    private bool isConfirming = false;
+    private BaseAbilityData currentAbility;
+    private PlayerController currentOwner;
 
     private void Awake()
     {
         Instance = this;
+
+        if (activateButtonComponent != null)
+        {
+            activateButtonComponent.onClick.AddListener(OnActivateClicked);
+        }
+
         Hide();
     }
 
@@ -29,8 +40,17 @@ public class UI_AbilityModal : MonoBehaviour
     {
         if (data == null) return;
 
+        currentOwner = slotOwner;
+        currentAbility = data;
         titleText.text = data.abilityName;
         descriptionText.text = data.description;
+
+        isConfirming = false;
+        if (activateButtonText != null)
+        {
+            activateButtonText.text = "ACTIVATE";
+        }
+
 
         foreach (Transform child in requirementsContainer)
         {
@@ -38,9 +58,15 @@ public class UI_AbilityModal : MonoBehaviour
         }
 
         Color characterDieColor = slotOwner.characterData.diceKey.dieColor;
+        bool canActivate = false;
 
         if (data is OffensiveAbilityData oad && oad.activations != null && oad.activations.Count > 0)
         {
+            List<int> currentDice = DiceManager.Instance.GetCurrentDiceValues();
+            List<int> validTiers = AbilityMatcher.GetValidActivations(oad, currentDice, slotOwner.characterData.diceKey);
+
+            canActivate = validTiers.Count > 0;
+
             if (oad.activations.Count > 1)
             {
                 descriptionText.gameObject.SetActive(false);
@@ -161,16 +187,42 @@ public class UI_AbilityModal : MonoBehaviour
         else descriptionText.gameObject.SetActive(true);
 
         Debug.Log($"Active Player: {BattleManager.Instance.activePlayer.name} | Slot Owner: {slotOwner.name}");
-        bool isMyTurn = (BattleManager.Instance.activePlayer == slotOwner);
+        bool isMyTurn = (BattleManager.Instance.activePlayer == currentOwner);
         activateButton.SetActive(isMyTurn);
 
         if (isMyTurn)
         {
-            // + dice requirements check
-            activateButtonComponent.interactable = false;  // de schimbat in true
+            activateButtonComponent.interactable = canActivate;
         }
 
         modalPanel.SetActive(true);
+    }
+
+    private void OnActivateClicked()
+    {
+        if (!isConfirming)
+        {
+            isConfirming = true;
+            if (activateButtonText != null)
+            {
+                activateButtonText.text = "ARE YOU SURE?";
+            }
+
+            ColorBlock cb = activateButtonComponent.colors;
+            cb.normalColor = new Color(1f, 0.98f, 0.0f, 1f);
+            cb.highlightedColor = new Color(0.78f, 0.72f, 0f, 1f);
+            activateButtonComponent.colors = cb;
+
+            Debug.Log("Waiting for confirmation...");
+        }
+        else
+        {
+            Debug.Log($"==> Executing ability: {currentAbility.abilityName}!");
+
+            // logica de executie
+
+            Hide();
+        }
     }
 
     public void Hide()
