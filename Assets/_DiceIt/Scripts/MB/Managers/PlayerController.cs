@@ -108,7 +108,7 @@ public class PlayerController : MonoBehaviour
         {
             foreach (var card in characterData.deckRecipe.cards)
             {
-                drawDeck.Add(card);
+                if (card != null) drawDeck.Add(card);
             }
             ShuffleDeck();
         }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -16,6 +17,7 @@ public enum TurnPhase
 
 public class BattleManager : MonoBehaviour
 {
+    // Singleton pattern for accessing the manager from anywhere
     public static BattleManager Instance;
 
     [Header("Players")]
@@ -27,9 +29,10 @@ public class BattleManager : MonoBehaviour
     public PlayerController opponentPlayer;
     public TurnPhase currentPhase;
 
+    public event Action<TurnPhase> OnPhaseChanged;
+
     private void Awake()
     {
-        // Singleton pattern for accessing the manager from anywhere
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
     }
@@ -51,26 +54,41 @@ public class BattleManager : MonoBehaviour
     public void SetPhase(TurnPhase newPhase)
     {
         currentPhase = newPhase;
-        Debug.Log($"==> Current Phase: {currentPhase}");
+        Debug.Log($"Starting Phase: {currentPhase} for {activePlayer.characterData.heroName}");        
+
+        OnPhaseChanged?.Invoke(currentPhase);
 
         switch (currentPhase)
         {
             case TurnPhase.Upkeep:
                 ProcessUpkeep();
                 break;
+
             case TurnPhase.Income:
                 ProcessIncome();
                 break;
+
             case TurnPhase.MainPhase1:
                 // UI Input
                 break;
+
             case TurnPhase.OffensiveRollPhase:
-                // DiceManager
-                // ProcessDice();
+                if (DiceManager.Instance != null)
+                {
+                    DiceManager.Instance.ResetDice();
+                }
                 break;
+
+            case TurnPhase.DefensiveRollPhase:
+                break;
+            
             case TurnPhase.Resolution:
                 ProcessResolution();
                 break;
+
+            case TurnPhase.MainPhase2:
+                break;
+
             case TurnPhase.Cleanup:
                 ProcessCleanup();
                 break;
@@ -78,6 +96,32 @@ public class BattleManager : MonoBehaviour
     }
 
     #region Phase Logic
+
+    public void AdvancePhase()
+    {
+        switch (currentPhase)
+        {
+            case TurnPhase.MainPhase1:
+                SetPhase(TurnPhase.OffensiveRollPhase);
+                break;
+
+            case TurnPhase.OffensiveRollPhase:
+                SetPhase(TurnPhase.DefensiveRollPhase);
+                break;
+
+            case TurnPhase.DefensiveRollPhase:
+                SetPhase(TurnPhase.Resolution);
+                break;
+
+            case TurnPhase.MainPhase2:
+                SetPhase(TurnPhase.Cleanup);
+                break;
+
+            default:
+                Debug.Log("AdvancePhase was called in an automatic phase. Ignoring the action.");
+                break;
+        }
+    }
 
     private void ProcessUpkeep()
     {
@@ -95,22 +139,10 @@ public class BattleManager : MonoBehaviour
         SetPhase(TurnPhase.MainPhase1);
     }
 
-    public void EndMainPhase1()
-    {
-        if (currentPhase == TurnPhase.MainPhase1)
-            SetPhase(TurnPhase.OffensiveRollPhase);
-    }
-
     private void ProcessResolution()
     {
         // finalizare calcule dmg
         SetPhase(TurnPhase.MainPhase2);
-    }
-
-    public void EndMainPhase2()
-    {
-        if (currentPhase == TurnPhase.MainPhase2)
-            SetPhase(TurnPhase.Cleanup);
     }
 
     private void ProcessCleanup()
