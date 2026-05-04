@@ -6,7 +6,8 @@ public class CharacterData : ScriptableObject
 {
     [Header("Identity")]
     public string heroName;
-    public Sprite avatar;    
+    public Sprite avatar;   
+    public Color hudBackgroundColor  = new Color(0, 0, 0, 0.8f);
 
     [Header("Stats")]
     public int maxHealth = 50;

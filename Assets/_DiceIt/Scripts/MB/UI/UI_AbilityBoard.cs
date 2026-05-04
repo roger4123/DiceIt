@@ -14,6 +14,7 @@ public class UI_AbilityBoard : MonoBehaviour
         if (targetPlayer != null)
         {
             targetPlayer.OnCharacterInitialization += PopulateBoard;
+            targetPlayer.OnAbilitiesChanged += RefreshBoard;
         }
     }
 
@@ -22,14 +23,20 @@ public class UI_AbilityBoard : MonoBehaviour
         if (targetPlayer != null)
         {
             targetPlayer.OnCharacterInitialization -= PopulateBoard;
+            targetPlayer.OnAbilitiesChanged -= RefreshBoard;
         }
+    }
+
+    private void RefreshBoard()
+    {
+        PopulateBoard(targetPlayer.characterData, targetPlayer);
     }
 
     private void PopulateBoard(CharacterData characterData, PlayerController owner)
     {
-        if (characterData == null || abilitySlots.Count == 0) return;
+        if (characterData == null || abilitySlots.Count == 0 || owner == null) return;
 
-        bool hasPassive = characterData.passive != null && !string.IsNullOrEmpty(characterData.passive.abilityName);
+        bool hasPassive = owner.activePassive != null && !string.IsNullOrEmpty(owner.activePassive.abilityName);
 
         foreach (var slot in abilitySlots)
         {
@@ -39,54 +46,54 @@ public class UI_AbilityBoard : MonoBehaviour
             switch(idx)
             {
                 case int i when i >= 0 && i <= 3:
-                    if (i < characterData.offensiveAbilities.Count)
+                    if (i < owner.activeOffensiveAbilities.Count)
                     {
-                        dataToAssign = characterData.offensiveAbilities[i];
+                        dataToAssign = owner.activeOffensiveAbilities[i];
                     }
                     break;
 
                 case 4:
                     int offIndexForA6 = hasPassive ? 4 : 5;
-                    if (characterData.offensiveAbilities.Count > offIndexForA6)
-                        dataToAssign = characterData.offensiveAbilities[offIndexForA6];
+                    if (owner.activeOffensiveAbilities.Count > offIndexForA6)
+                        dataToAssign = owner.activeOffensiveAbilities[offIndexForA6];
                     break;
 
                 case 10:
                     // Passive Ability has priority
                     if (hasPassive)
                     {
-                        dataToAssign = characterData.passive;
+                        dataToAssign = owner.activePassive;
                     }
-                    else if (characterData.offensiveAbilities.Count > 4)
+                    else if (owner.activeOffensiveAbilities.Count > 4)
                     {
-                        dataToAssign = characterData.offensiveAbilities[4];
+                        dataToAssign = owner.activeOffensiveAbilities[4];
                     }
                     break;
 
                 case 20:
-                    if (characterData.defensiveAbilities.Count > 0)
+                    if (owner.activeDefensiveAbilities.Count > 0)
                     {
-                        dataToAssign = characterData.defensiveAbilities[0];
+                        dataToAssign = owner.activeDefensiveAbilities[0];
                     }
                     break;
 
                 case 21:
-                    if (characterData.defensiveAbilities.Count > 1)
+                    if (owner.activeDefensiveAbilities.Count > 1)
                     {
-                        dataToAssign = characterData.defensiveAbilities[1];
+                        dataToAssign = owner.activeDefensiveAbilities[1];
                     }
                     else
                     {
                         int offIndexforA7 = hasPassive ? 5 : 6;
-                        if (characterData.offensiveAbilities.Count > offIndexforA7)
+                        if (owner.activeOffensiveAbilities.Count > offIndexforA7)
                         {
-                            dataToAssign = characterData.offensiveAbilities[offIndexforA7];
+                            dataToAssign = owner.activeOffensiveAbilities[offIndexforA7];
                         }
                     }
                     break;
 
                 case 50:
-                    dataToAssign = characterData.ultimateAbility;
+                    dataToAssign = owner.activeUltimate;
                     break;
             }
 

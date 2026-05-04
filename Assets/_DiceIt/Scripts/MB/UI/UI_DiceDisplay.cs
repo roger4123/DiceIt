@@ -8,16 +8,23 @@ public class UI_DiceDisplay : MonoBehaviour
     public Image symbolImage;
     public TextMeshProUGUI valueText;
     public GameObject lockDieOverlay;
+    
     private int diceIndex;
+    private PlayerController owner;
 
     public void SetIndex(int index)
     {
         diceIndex = index;
     }
 
+    public void SetupOwner(PlayerController player)
+    {
+        owner = player;
+    }
+
     public void OnDieClick()
     {
-        DiceManager.Instance.ToggleLock(diceIndex);
+        DiceManager.Instance.OnDieClicked(diceIndex, owner);
     }
 
     public void SetupPlayDie(int value, DiceSymbol data, Color diceColor, Color numberColor)
@@ -29,6 +36,7 @@ public class UI_DiceDisplay : MonoBehaviour
         valueText.text = value.ToString();
         valueText.color = numberColor;
         
+        symbolImage.gameObject.SetActive(true);
         symbolImage.sprite = data.symbolIcon;
         symbolImage.color = data.symbolColor;
         

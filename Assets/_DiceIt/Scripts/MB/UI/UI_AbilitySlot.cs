@@ -33,9 +33,8 @@ public class UI_AbilitySlot : MonoBehaviour
     {
         if (assignedAbility == null) return;
 
-        Debug.Log($"==> Ability pressed: {assignedAbility.abilityName}");
+        //Debug.Log($"==> Ability pressed: {assignedAbility.abilityName}");
         
-        // + modal
         UI_AbilityModal.Instance.Show(assignedAbility, owner);
     }
 }

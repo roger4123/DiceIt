@@ -23,6 +23,7 @@ public class UI_AbilityModal : MonoBehaviour
     private bool isConfirming = false;
     private BaseAbilityData currentAbility;
     private PlayerController currentOwner;
+    private ColorBlock defaultButtonColors;
 
     private void Awake()
     {
@@ -30,6 +31,7 @@ public class UI_AbilityModal : MonoBehaviour
 
         if (activateButtonComponent != null)
         {
+            defaultButtonColors = activateButtonComponent.colors;
             activateButtonComponent.onClick.AddListener(OnActivateClicked);
         }
 
@@ -49,6 +51,7 @@ public class UI_AbilityModal : MonoBehaviour
         if (activateButtonText != null)
         {
             activateButtonText.text = "ACTIVATE";
+            activateButtonComponent.colors = defaultButtonColors; // Reseteaza la verdele initial
         }
 
 
@@ -183,16 +186,46 @@ public class UI_AbilityModal : MonoBehaviour
                     dieObj.GetComponent<UI_DiceDisplay>().SetupBlankDie(Color.green); 
                 }
             }
+
+            canActivate = DiceManager.Instance.hasRolledThisPhase;
         }
         else descriptionText.gameObject.SetActive(true);
 
-        Debug.Log($"Active Player: {BattleManager.Instance.activePlayer.name} | Slot Owner: {slotOwner.name}");
-        bool isMyTurn = (BattleManager.Instance.activePlayer == currentOwner);
-        activateButton.SetActive(isMyTurn);
-
-        if (isMyTurn)
+        bool isOffensivePhase = BattleManager.Instance.currentPhase == TurnPhase.OffensiveRollPhase;
+        bool isDefensivePhase = BattleManager.Instance.currentPhase == TurnPhase.DefensiveRollPhase;
+        
+        bool canUseOffensive = isOffensivePhase && (BattleManager.Instance.activePlayer == currentOwner) && (data is OffensiveAbilityData);
+        bool canUseDefensive = isDefensivePhase && (BattleManager.Instance.opponentPlayer == currentOwner) && (data is DefensiveAbilityData);
+        
+        // Regula 1: If you successfully activate an ability, you can't activate another one in the same turn
+        if (BattleManager.Instance.hasActivatedAbilityThisPhase)
         {
-            activateButtonComponent.interactable = canActivate;
+            canUseOffensive = false;
+            canUseDefensive = false;
+        }
+
+        // Regula 2: Only the selected Defensive Ability is available for activation
+        if (isDefensivePhase && !BattleManager.Instance.needsDefenseSelection && BattleManager.Instance.pendingDefenseSelection != null)
+        {
+            if (data != BattleManager.Instance.pendingDefenseSelection) canUseDefensive = false;
+        }
+
+        bool isSelectingDefense = canUseDefensive && BattleManager.Instance.needsDefenseSelection;
+
+        if (isSelectingDefense)
+        {
+            activateButton.SetActive(true);
+            activateButtonComponent.interactable = true;
+            if (activateButtonText != null) activateButtonText.text = "SELECT DEFENSE";
+        }
+        else
+        {
+            activateButton.SetActive(canUseOffensive || canUseDefensive);
+            if (canUseOffensive || canUseDefensive)
+            {
+                activateButtonComponent.interactable = canActivate; //  hasRolledThisPhase == true
+                if (activateButtonText != null) activateButtonText.text = "ACTIVATE";
+            }
         }
 
         modalPanel.SetActive(true);
@@ -200,6 +233,14 @@ public class UI_AbilityModal : MonoBehaviour
 
     private void OnActivateClicked()
     {
+        // "selection" phase for Defensive Ability 
+        if (BattleManager.Instance.currentPhase == TurnPhase.DefensiveRollPhase && BattleManager.Instance.needsDefenseSelection)
+        {
+            BattleManager.Instance.SelectDefense((DefensiveAbilityData)currentAbility);
+            Hide();
+            return; // don't put the action on stack yet
+        }
+
         if (!isConfirming)
         {
             isConfirming = true;
@@ -217,11 +258,27 @@ public class UI_AbilityModal : MonoBehaviour
         }
         else
         {
-            Debug.Log($"==> Executing ability: {currentAbility.abilityName}!");
+            Debug.Log($"==> Sending abilitiy to Stack: {currentAbility.abilityName}!");
 
-            // logica de executie
+            // the player can insert the ability in the stack only if it has prio in that given moment
+            if (ActionStackManager.Instance == null)
+            {
+                Debug.LogError("[UI_AbilityModal] ActionStackManager is missing from the scene! Please add it to a GameObject.");
+            }
+            else if (ActionStackManager.Instance.playerWithPriority == currentOwner)
+            {
+                ActivateAbilityAction action = new ActivateAbilityAction(currentOwner, currentAbility);
+                ActionStackManager.Instance.AddActionToStack(action);
+                BattleManager.Instance.MarkAbilityActivated();
+            }
+            else
+            {
+                Debug.LogWarning($"Can't activate the ability! {currentOwner.characterData.heroName} doesn't have priority.");
+            }
 
             Hide();
+            
+            UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
         }
     }
 

@@ -1,22 +1,40 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Acest script va fi pus pe Canvas, pe parintele care contine zarurile vizuale
 public class UI_DicePanels : MonoBehaviour
 {
     [Header("UI References")]
     public List<UI_DiceDisplay> p1DiceIcons = new List<UI_DiceDisplay>(5);
     public List<UI_DiceDisplay> p2DiceIcons = new List<UI_DiceDisplay>(5);
+    
+    [Header("Player References")]
+    public PlayerController player1;
+    public PlayerController player2;
 
     private void Start()
     {
-        for (int i = 0; i < p1DiceIcons.Count; i++) p1DiceIcons[i].SetIndex(i);
-        for (int i = 0; i < p2DiceIcons.Count; i++) p2DiceIcons[i].SetIndex(i);
+        for (int i = 0; i < p1DiceIcons.Count; i++)
+        {
+            p1DiceIcons[i].SetIndex(i);
+            p1DiceIcons[i].SetupOwner(player1);
+        }
+        for (int i = 0; i < p2DiceIcons.Count; i++)
+        {
+            p2DiceIcons[i].SetIndex(i);
+            p2DiceIcons[i].SetupOwner(player2);
+        }
 
         if (DiceManager.Instance != null)
         {
             DiceManager.Instance.OnDiceStateChanged += UpdateDiceVisuals;
         }
+        if (BattleManager.Instance != null)
+        {
+            BattleManager.Instance.OnPhaseChanged += HandlePhaseChange;
+        }
+
+        // Ensure dice are blank at the very start of the game.
+        ResetAllDiceVisuals();
     }
 
     private void OnDestroy()
@@ -25,25 +43,72 @@ public class UI_DicePanels : MonoBehaviour
         {
             DiceManager.Instance.OnDiceStateChanged -= UpdateDiceVisuals;
         }
+        if (BattleManager.Instance != null)
+        {
+            BattleManager.Instance.OnPhaseChanged -= HandlePhaseChange;
+        }
     }
 
     private void UpdateDiceVisuals(List<DiceManager.DieState> currentDice, int rollsLeft)
     {
-        PlayerController activePlayer = BattleManager.Instance.activePlayer;
-        if (activePlayer == null || activePlayer.characterData == null) return;
+        // Determinăm cine este jucătorul care ar trebui să ruleze zarurile în faza curentă
+        PlayerController rollingPlayer = (BattleManager.Instance.currentPhase == TurnPhase.DefensiveRollPhase) 
+                                         ? BattleManager.Instance.opponentPlayer 
+                                         : BattleManager.Instance.activePlayer;
 
-        DiceKeyData currentKey = activePlayer.characterData.diceKey;
+        if (rollingPlayer == null || rollingPlayer.characterData == null) return;
 
-        List<UI_DiceDisplay> activeUIList = (activePlayer == BattleManager.Instance.player1) ? p1DiceIcons : p2DiceIcons;
+        DiceKeyData currentKey = rollingPlayer.characterData.diceKey;
+
+        List<UI_DiceDisplay> activeUIList = (rollingPlayer == BattleManager.Instance.player1) ? p1DiceIcons : p2DiceIcons;
 
         for (int i = 0; i < currentDice.Count; i++)
         {
+            if (!currentDice[i].isActive)
+            {
+                activeUIList[i].gameObject.SetActive(false);
+                continue;
+            }
+            
+            activeUIList[i].gameObject.SetActive(true);
             int val = currentDice[i].currentValue;
-            DiceSymbol symbolData = currentKey.GetSymbolForValue(val);
-            activeUIList[i].SetupPlayDie(val, symbolData, currentKey.dieColor, currentKey.numberColor);
+            if (val == 0)
+            {
+                activeUIList[i].SetupBlankDie(Color.gray);
+            }
+            else
+            {
+                DiceSymbol symbolData = currentKey.GetSymbolForValue(val);
+                activeUIList[i].SetupPlayDie(val, symbolData, currentKey.dieColor, currentKey.numberColor);
+            }
+
             activeUIList[i].SetLockVisual(currentDice[i].isLocked);
         }
 
         // un eventual buton de RollsLeft? pe ecran?
+    }
+
+    private void HandlePhaseChange(TurnPhase newPhase)
+    {
+        // If we enter any phase that is NOT a roll phase, blank out all dice visuals.
+        if (newPhase != TurnPhase.OffensiveRollPhase && newPhase != TurnPhase.DefensiveRollPhase)
+        {
+            ResetAllDiceVisuals();
+        }
+    }
+
+    private void ResetAllDiceVisuals()
+    {
+        foreach (var dieIcon in p1DiceIcons)
+        {
+            dieIcon.gameObject.SetActive(true);
+            dieIcon.SetupBlankDie(Color.gray);
+        }
+        
+        foreach (var dieIcon in p2DiceIcons)
+        {
+            dieIcon.gameObject.SetActive(true);
+            dieIcon.SetupBlankDie(Color.gray);
+        }
     }
 }

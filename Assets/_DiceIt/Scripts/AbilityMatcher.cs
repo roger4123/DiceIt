@@ -9,7 +9,7 @@ public static class AbilityMatcher
     private static bool HasStraightOfLength(List<int> values, int targetLength)
     {
         // removing duplicates and sorting
-        var distinctVals = values.Distinct().OrderBy(v => v).ToList();
+        var distinctVals = values.Where(v => v != 0).Distinct().OrderBy(v => v).ToList();
         if (distinctVals.Count < targetLength) return false;
 
         int consecutiveCount = 1;
@@ -55,6 +55,8 @@ public static class AbilityMatcher
         
         foreach (int val in rolledValues)
         {
+            if (val == 0) continue;
+            
             DiceSymbol symbol = diceKey.GetSymbolForValue(val);
             if (symbol != null)
             {

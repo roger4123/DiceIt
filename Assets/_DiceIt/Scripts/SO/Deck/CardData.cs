@@ -8,15 +8,15 @@ public enum CardTargetMode
     None,
     Self,               
     Opponent,           
-    ChosenPlayer,       // alege manual pe cineva (Self sau Opponent)
+    ChosenPlayer,
     Everyone,
-    SourceToDestination // de la X la Y
+    SourceToDestination
 }
 
 public enum CardActionType 
 {
     // resources
-    Damage, Heal, GainCP, DrawCard,
+    Damage, Heal, GainCP, DrawCard, GainStatus,
     
     // statuses
     RemoveStatus, TransferStatus, DiscardToGain,     
@@ -31,7 +31,10 @@ public enum CardActionType
     IncrementOrDecrement,
     
     // attack/defence
-    PreventDamage, AttackModifier      
+    PreventDamage, AttackModifier,
+
+    // special
+    SwapRequiredSymbols
 }
 
 public enum CardConditionType
@@ -58,7 +61,7 @@ public class CardOutcome
     public int extraCPCost;  
 
     [Header("Special Targeting")]
-    // used for targetMode este SourceToDestination
+    // used for targetMode == SourceToDestination
     public CardTargetMode secondaryTargetMode; 
 
     [Header("Conditionality")]
@@ -73,7 +76,7 @@ public class CardData : ScriptableObject
     [Header("Visuals & Identity")]
     public string cardName;
     [TextArea] public string description;
-    public Sprite cardIcon;
+    public Sprite cardArtwork;
 
     [Header("Logic")]
     public CardType cardType;
@@ -84,9 +87,9 @@ public class CardData : ScriptableObject
     public List<CardOutcome> cardEffects;
 
     [Header("Secondary Rolls")]
-    // pentru carti care necesita rolling a die
     public List<SecondaryRoll> cardRolls;
 
     [Header("Upgrade Logic (Optional)")]
     public BaseAbilityData abilityToUpgrade;
+    public BaseAbilityData upgradedAbilityVersion;
 }

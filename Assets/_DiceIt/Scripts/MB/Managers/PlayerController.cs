@@ -15,6 +15,12 @@ public class PlayerController : MonoBehaviour
     public int currentHealth;
     public int currentCombatPoints;
 
+    [Header("Runtime Abilities")]
+    public List<OffensiveAbilityData> activeOffensiveAbilities = new List<OffensiveAbilityData>();
+    public List<DefensiveAbilityData> activeDefensiveAbilities = new List<DefensiveAbilityData>();
+    public BaseAbilityData activeUltimate;
+    public PassiveAbilityData activePassive;
+
     [Header("Card Management")]
     public List<CardData> drawDeck = new List<CardData>();
     public List<CardData> hand = new List<CardData>();
@@ -23,6 +29,10 @@ public class PlayerController : MonoBehaviour
     // Events
     public event Action<int, int, int, int> OnStatsChanged;
     public event Action<CharacterData, PlayerController> OnCharacterInitialization;
+    public event Action OnHandChanged;
+    public event Action OnDeckChanged;
+    public event Action OnDiscardChanged;
+    public event Action OnAbilitiesChanged;
 
     [System.Serializable]
     public class ActiveStatus
@@ -45,6 +55,7 @@ public class PlayerController : MonoBehaviour
         currentHealth = characterData.maxHealth;
         currentCombatPoints = characterData.startingCombatPoints;
         activeStatuses.Clear();
+        InitializeAbilities();
 
         InitializeDeck();
         
@@ -84,6 +95,7 @@ public class PlayerController : MonoBehaviour
                     discardPile.Clear();
                     ShuffleDeck();
                     Debug.Log("Discard pile reshuffled into draw deck.");
+                    OnDiscardChanged?.Invoke();
                 }
                 else
                 {
@@ -96,6 +108,9 @@ public class PlayerController : MonoBehaviour
             drawDeck.RemoveAt(0);
             hand.Add(card);
         }
+        
+        OnHandChanged?.Invoke();
+        OnDeckChanged?.Invoke();
     }
 
     private void InitializeDeck()
@@ -114,6 +129,9 @@ public class PlayerController : MonoBehaviour
         }
 
         DrawCards(characterData.startingCards);
+        
+        OnDeckChanged?.Invoke();
+        OnDiscardChanged?.Invoke();
     }
 
     public void DiscardCard(CardData card)
@@ -122,12 +140,66 @@ public class PlayerController : MonoBehaviour
         {
             hand.Remove(card);
             discardPile.Add(card);
+            OnHandChanged?.Invoke();
+            OnDiscardChanged?.Invoke();
         }
     }
 
     public bool CanAffordToPlayCard(CardData card)
     {
         return currentCombatPoints >= card.cpCost;
+    }
+
+    #endregion
+
+    #region Abilities & Upgrades
+
+    private void InitializeAbilities()
+    {
+        activeOffensiveAbilities.Clear();
+        if (characterData.offensiveAbilities != null)
+            activeOffensiveAbilities.AddRange(characterData.offensiveAbilities);
+
+        activeDefensiveAbilities.Clear();
+        if (characterData.defensiveAbilities != null)
+            activeDefensiveAbilities.AddRange(characterData.defensiveAbilities);
+
+        activeUltimate = characterData.ultimateAbility;
+        activePassive = characterData.passive;
+    }
+
+    public void ApplyUpgrade(BaseAbilityData oldAbility, BaseAbilityData newAbility)
+    {
+        if (oldAbility == null || newAbility == null) return;
+        
+        bool wasUpgraded = false;
+
+        if (oldAbility is OffensiveAbilityData oldOffensive && newAbility is OffensiveAbilityData newOffensive)
+        {
+            int index = activeOffensiveAbilities.IndexOf(oldOffensive);
+            if (index != -1) { activeOffensiveAbilities[index] = newOffensive; wasUpgraded = true; }
+        }
+        else if (oldAbility is DefensiveAbilityData oldDefensive && newAbility is DefensiveAbilityData newDefensive)
+        {
+            int index = activeDefensiveAbilities.IndexOf(oldDefensive);
+            if (index != -1) { activeDefensiveAbilities[index] = newDefensive; wasUpgraded = true; }
+        }
+        else if (activeUltimate == oldAbility)
+        {
+            activeUltimate = newAbility;
+            wasUpgraded = true;
+        }
+        else if (activePassive == oldAbility && newAbility is PassiveAbilityData newPassive)
+        {
+            activePassive = newPassive;
+            wasUpgraded = true;
+        }
+
+        if (wasUpgraded)
+        {
+            Debug.Log($"{characterData.heroName} upgraded {oldAbility.abilityName} to {newAbility.abilityName}!");
+            OnAbilitiesChanged?.Invoke();
+        }
     }
 
     #endregion
@@ -183,15 +255,28 @@ public class PlayerController : MonoBehaviour
         var existing = activeStatuses.FirstOrDefault(s => s.data == status);
         if (existing != null)
         {
-            existing.currentStacks -= amount;
-            if (existing.currentStacks <= 0)
+            if (amount == 0) // Valoarea 0 o tratam mereu ca si "Clear complet la acest token"
             {
                 activeStatuses.Remove(existing);
+            }
+            else
+            {
+                existing.currentStacks -= amount;
+                if (existing.currentStacks <= 0)
+                {
+                    activeStatuses.Remove(existing);
+                }
             }
         }
     }
 
-    // + TransferStatus
+    public void ClearAllStatuses()
+    {
+        activeStatuses.Clear();
+        Debug.Log($"{characterData.heroName} was cleansed of ALL status effects!");
+    }
+
+    // TODO: TransferStatus
 
     #endregion
 

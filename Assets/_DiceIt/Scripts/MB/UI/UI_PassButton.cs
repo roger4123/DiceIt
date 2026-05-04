@@ -20,6 +20,10 @@ public class UI_PassButton : MonoBehaviour
             BattleManager.Instance.OnPhaseChanged += UpdateButtonState;
             UpdateButtonState(BattleManager.Instance.currentPhase);
         }
+        if (ActionStackManager.Instance != null)
+        {
+            ActionStackManager.Instance.OnPriorityChanged += UpdatePriorityColor;
+        }
     }
 
     private void OnDestroy()
@@ -28,6 +32,24 @@ public class UI_PassButton : MonoBehaviour
         {
             BattleManager.Instance.OnPhaseChanged -= UpdateButtonState;
         }
+        if (ActionStackManager.Instance != null)
+        {
+            ActionStackManager.Instance.OnPriorityChanged -= UpdatePriorityColor;
+        }
+    }
+
+    private void UpdatePriorityColor(PlayerController playerWithPrio)
+    {
+        if (playerWithPrio == null || passButtonComponent == null) return;
+
+        Color playerColor = playerWithPrio.characterData.diceKey.dieColor;
+        
+        ColorBlock cb = passButtonComponent.colors;
+        cb.normalColor = playerColor;
+        cb.highlightedColor = new Color(Mathf.Clamp01(playerColor.r * 1.2f), Mathf.Clamp01(playerColor.g * 1.2f), Mathf.Clamp01(playerColor.b * 1.2f), 1f); // putin mai deschis
+        cb.pressedColor = new Color(playerColor.r * 0.8f, playerColor.g * 0.8f, playerColor.b * 0.8f, 1f); // putin mai inchis
+        cb.disabledColor = Color.gray;
+        passButtonComponent.colors = cb;
     }
 
     private void UpdateButtonState(TurnPhase currentPhase)
@@ -66,6 +88,15 @@ public class UI_PassButton : MonoBehaviour
 
     private void OnPassButtonClicked()
     {
-        BattleManager.Instance.AdvancePhase();
+        if (ActionStackManager.Instance != null)
+        {
+            ActionStackManager.Instance.PassPriority(true);
+        }
+        else
+        {
+            BattleManager.Instance.AdvancePhase();
+        }
+        
+        UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
     }
 }
