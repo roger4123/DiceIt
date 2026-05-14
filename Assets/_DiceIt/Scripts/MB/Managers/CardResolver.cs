@@ -176,12 +176,27 @@ public class CardResolver : MonoBehaviour
                 else 
                 {
                     Debug.Log("[CardResolver] Choose which Status Effect to be removed...");
-                    // TODO: verif lista de statusuri de pe target pentru alegere
+                    bool selectionDone = false;
+                    StatusEffectsData chosenToken = null;
+                    
+                    UI_TokensPoolModal.Instance.RequestTokenSelection(target, (token) => {
+                        chosenToken = token;
+                        selectionDone = true;
+                    });
+                    
+                    yield return new WaitUntil(() => selectionDone);
+
+                    if (chosenToken != null)
+                    {
+                        target.RemoveStatus(chosenToken, Mathf.Max(1, Mathf.CeilToInt(finalValue)));
+                        Debug.Log($"[CardResolver] Removed one {chosenToken.effectName} from {target.characterData.heroName}.");
+                    }
                 }
                 break;
                 
             // === ROLL PHASE & DICE ACTIONS ===
             case CardActionType.ChangeDiceValueToSix:
+            {
                 Debug.Log("[CardResolver] BREAK: Select one of your dice to make 6.");
                 bool selectionDone = false;
                 int chosenDie = -1;
@@ -189,8 +204,10 @@ public class CardResolver : MonoBehaviour
                 yield return new WaitUntil(() => selectionDone);
                 DiceManager.Instance.SetDieValue(chosenDie, 6);
                 break;
+            }
 
             case CardActionType.ChangeDiceValueIdenticalToAnother:
+            {
                 Debug.Log("[CardResolver] BREAK: Select the source die and the destination die for chaning.");
                 bool sourceSelected = false;
                 int sourceDie = -1;
@@ -206,8 +223,10 @@ public class CardResolver : MonoBehaviour
                 int copiedValue = DiceManager.Instance.dice[sourceDie].currentValue;
                 DiceManager.Instance.SetDieValue(destDie, copiedValue);
                 break;
+            }
 
             case CardActionType.ChangeDiceValue:
+            {
                 int timesToChange = Mathf.Max(1, Mathf.CeilToInt(finalValue));
                 for (int i = 0; i < timesToChange; i++)
                 {
@@ -221,8 +240,10 @@ public class CardResolver : MonoBehaviour
                     DiceManager.Instance.SetDieValue(pickedDie, 5);
                 }
                 break;
+            }
 
             case CardActionType.RerollDice:
+            {
                 int timesToReroll = Mathf.Max(1, Mathf.CeilToInt(finalValue));
                 for (int i = 0; i < timesToReroll; i++)
                 {
@@ -236,8 +257,10 @@ public class CardResolver : MonoBehaviour
                     yield return new WaitForSeconds(0.5f);
                 }
                 break;
+            }
 
             case CardActionType.ForceOpponentReroll:
+            {
                 Debug.Log("[CardResolver] BREAK: Select an opponent's die to force reroll.");
                 bool oppSelected = false;
                 int oppPickedDie = -1;
@@ -247,6 +270,7 @@ public class CardResolver : MonoBehaviour
                 DiceManager.Instance.ForceRerollDie(oppPickedDie);
                 yield return new WaitForSeconds(0.5f);
                 break;
+            }
 
             case CardActionType.AddRollAttempt:
                 Debug.Log("[CardResolver] ROLL PHASE RESET!");

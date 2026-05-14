@@ -33,6 +33,7 @@ public class PlayerController : MonoBehaviour
     public event Action OnDeckChanged;
     public event Action OnDiscardChanged;
     public event Action OnAbilitiesChanged;
+    public event Action OnStatusChanged;
 
     [System.Serializable]
     public class ActiveStatus
@@ -247,6 +248,7 @@ public class PlayerController : MonoBehaviour
             activeStatuses.Add(new ActiveStatus(status, amount));
         }
         
+        OnStatusChanged?.Invoke();
         Debug.Log($"{characterData.heroName} gained Status Effect: {status.effectName} (+{amount})");
     }
 
@@ -267,12 +269,15 @@ public class PlayerController : MonoBehaviour
                     activeStatuses.Remove(existing);
                 }
             }
+            
+            OnStatusChanged?.Invoke();
         }
     }
 
     public void ClearAllStatuses()
     {
         activeStatuses.Clear();
+        OnStatusChanged?.Invoke();
         Debug.Log($"{characterData.heroName} was cleansed of ALL status effects!");
     }
 

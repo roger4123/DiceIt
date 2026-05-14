@@ -67,6 +67,7 @@ public class StatusEffectsData : ScriptableObject
 
     [Header("Lifecycle & Rules")]
     public int stackLimit = 1;
+    public int maxGlobalTokens;
     public bool isPersistent; // persists in between turns if not spent
     public bool isSpendable; // Dacă necesită acțiune manuală pentru consum
 
