@@ -8,7 +8,7 @@ public class UI_PhaseTracker : MonoBehaviour
     public List<TextMeshProUGUI> phaseLetters;
     
     public Color normalColor = Color.gray;
-    public Color activeColor = Color.yellow;
+    public Color activeColor = Color.green;
 
     [Header("Notification Pop-up")]
     public GameObject notificationPanel;

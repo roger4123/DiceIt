@@ -18,6 +18,7 @@ public class UI_PassButton : MonoBehaviour
         if (BattleManager.Instance != null)
         {
             BattleManager.Instance.OnPhaseChanged += UpdateButtonState;
+            BattleManager.Instance.OnCombatSkipped += DisableButtonTemporarily;
             UpdateButtonState(BattleManager.Instance.currentPhase);
         }
         if (ActionStackManager.Instance != null)
@@ -31,6 +32,7 @@ public class UI_PassButton : MonoBehaviour
         if (BattleManager.Instance != null)
         {
             BattleManager.Instance.OnPhaseChanged -= UpdateButtonState;
+            BattleManager.Instance.OnCombatSkipped -= DisableButtonTemporarily;
         }
         if (ActionStackManager.Instance != null)
         {
@@ -50,6 +52,11 @@ public class UI_PassButton : MonoBehaviour
         cb.pressedColor = new Color(playerColor.r * 0.8f, playerColor.g * 0.8f, playerColor.b * 0.8f, 1f); // putin mai inchis
         cb.disabledColor = Color.gray;
         passButtonComponent.colors = cb;
+    }
+    
+    private void DisableButtonTemporarily()
+    {
+        if (passButtonComponent != null) passButtonComponent.gameObject.SetActive(false);
     }
 
     private void UpdateButtonState(TurnPhase currentPhase)

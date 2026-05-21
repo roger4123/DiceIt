@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 public class UI_TokenPrefab : MonoBehaviour, IPointerClickHandler
 {
     public Image iconImage;
+    public Image backgroundImage;
     public TextMeshProUGUI stackText;
 
     private StatusEffectsData data;
@@ -21,9 +22,14 @@ public class UI_TokenPrefab : MonoBehaviour, IPointerClickHandler
 
         if (iconImage != null)
         {
-            Color iconColor = iconImage.color;
-            iconColor.a = (stacks <= 0) ? 0.8f : 1f;
-            iconImage.color = iconColor;
+            Color c = data.iconColor;
+            c.a = (stacks <= 0) ? 0.8f : 1f;
+            iconImage.color = c;
+        }
+        
+        if (backgroundImage != null)
+        {
+            backgroundImage.color = data.backgroundColor;
         }
     }
 
@@ -57,11 +63,25 @@ public class UI_TokenPrefab : MonoBehaviour, IPointerClickHandler
             {
                 if (data.isSpendable)
                 {
+                    PlayerController owner = UI_TokensPoolModal.Instance.CurrentOwner;
+
+                    // ca
+                    if (ActionStackManager.Instance != null && owner != ActionStackManager.Instance.playerWithPriority)
+                    {
+                        Debug.LogWarning($"[TokensPool] Cant't spend a token right now! Either you don't have priority or the selected token is the oponent's one.");
+                        return;
+                    }
+
+                    // Regula 2: Verificăm dacă regulile specifice tokenului sunt îndeplinite (ex: Combo / Invisibility)
+                    if (!owner.CanSpendStatus(data))
+                    {
+                        Debug.LogWarning($"[TokensPool] The conditions for spending {data.effectName} are not fulfilled!");
+                        return;
+                    }
+
                     if (currentStacks > 0)
                     {
-                        PlayerController owner = UI_TokensPoolModal.Instance.CurrentOwner;
-                        Debug.Log($"Token {data.effectName} was spent!");
-                        // TODO: logica reala de spend (scadem stackul si declansam efectul)
+                        owner.SpendStatus(data);
                     }
                     else Debug.Log($"Token {data.effectName} cannot be spent (0 stacks).");
                 }

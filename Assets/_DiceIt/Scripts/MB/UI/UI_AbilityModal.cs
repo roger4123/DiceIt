@@ -23,6 +23,7 @@ public class UI_AbilityModal : MonoBehaviour
     private bool isConfirming = false;
     private BaseAbilityData currentAbility;
     private PlayerController currentOwner;
+    private int currentTierIndex = -1;
     private ColorBlock defaultButtonColors;
 
     private void Awake()
@@ -46,6 +47,7 @@ public class UI_AbilityModal : MonoBehaviour
         currentAbility = data;
         titleText.text = data.abilityName;
         descriptionText.text = data.description;
+        currentTierIndex = -1;
 
         isConfirming = false;
         if (activateButtonText != null)
@@ -69,6 +71,7 @@ public class UI_AbilityModal : MonoBehaviour
             List<int> validTiers = AbilityMatcher.GetValidActivations(oad, currentDice, slotOwner.characterData.diceKey);
 
             canActivate = validTiers.Count > 0;
+            if (canActivate) currentTierIndex = validTiers[validTiers.Count - 1]; // Salvam cel mai puternic tier valid!
 
             if (oad.activations.Count > 1)
             {
@@ -195,7 +198,7 @@ public class UI_AbilityModal : MonoBehaviour
         bool isDefensivePhase = BattleManager.Instance.currentPhase == TurnPhase.DefensiveRollPhase;
         
         bool canUseOffensive = isOffensivePhase && (BattleManager.Instance.activePlayer == currentOwner) && (data is OffensiveAbilityData);
-        bool canUseDefensive = isDefensivePhase && (BattleManager.Instance.opponentPlayer == currentOwner) && (data is DefensiveAbilityData);
+        bool canUseDefensive = isDefensivePhase && (BattleManager.Instance.opponentPlayer == currentOwner) && (data is DefensiveAbilityData) && BattleManager.Instance.canActivateDefensiveAbility;
         
         // Regula 1: If you successfully activate an ability, you can't activate another one in the same turn
         if (BattleManager.Instance.hasActivatedAbilityThisPhase)
@@ -267,8 +270,14 @@ public class UI_AbilityModal : MonoBehaviour
             }
             else if (ActionStackManager.Instance.playerWithPriority == currentOwner)
             {
-                ActivateAbilityAction action = new ActivateAbilityAction(currentOwner, currentAbility);
-                ActionStackManager.Instance.AddActionToStack(action);
+                if (currentAbility is OffensiveAbilityData offAb)
+                {
+                    BattleManager.Instance.SetPendingOffensiveAbility(offAb, currentTierIndex);
+                }
+                else if (currentAbility is DefensiveAbilityData defAb)
+                {
+                    BattleManager.Instance.SetPendingDefensiveAbility(defAb);
+                }
                 BattleManager.Instance.MarkAbilityActivated();
             }
             else

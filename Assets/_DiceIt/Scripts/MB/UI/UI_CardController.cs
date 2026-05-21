@@ -103,7 +103,17 @@ public class UI_CardController : MonoBehaviour, IPointerEnterHandler, IPointerEx
             if (iconBackground != null) iconBackground.enabled = cardIcon.enabled;
         }
 
-        // change border color based on card type
+        UpdateBorderColor();
+    }
+
+    public void SetCardOrder(int order)
+    {
+        baseSortingOrder = order;
+        if (cardCanvas != null) cardCanvas.sortingOrder = baseSortingOrder;
+    }
+    
+    private void UpdateBorderColor()
+    {
         if (cardBorder != null)
         {
             switch (cardData.playPhase)
@@ -115,17 +125,18 @@ public class UI_CardController : MonoBehaviour, IPointerEnterHandler, IPointerEx
         }
     }
 
-    public void SetCardOrder(int order)
-    {
-        baseSortingOrder = order;
-        if (cardCanvas != null) cardCanvas.sortingOrder = baseSortingOrder;
-    }
-
     public void OnPointerEnter(PointerEventData eventData)
     {
         // bring to front and scale up
         if (cardCanvas != null) cardCanvas.sortingOrder = 100;
         transform.localScale = initialScale * zoomScale;
+
+        // highlight white for discard if in cleanup phase
+        if (BattleManager.Instance != null && BattleManager.Instance.currentPhase == TurnPhase.Cleanup && 
+            owner == BattleManager.Instance.activePlayer && owner.hand.Count > 6)
+        {
+            if (cardBorder != null) cardBorder.color = Color.white;
+        }
     }
 
     public void OnPointerExit(PointerEventData eventData)
@@ -133,11 +144,20 @@ public class UI_CardController : MonoBehaviour, IPointerEnterHandler, IPointerEx
         // return to original state
         transform.localScale = initialScale;
         if (cardCanvas != null) cardCanvas.sortingOrder = baseSortingOrder; 
+        
+        UpdateBorderColor();
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (owner != null && UI_CardModal.Instance != null)
+        if (BattleManager.Instance != null && 
+            BattleManager.Instance.currentPhase == TurnPhase.Cleanup && 
+            owner == BattleManager.Instance.activePlayer && 
+            owner.hand.Count > 6)
+        {
+            owner.DiscardCard(cardData);
+        }
+        else if (owner != null && UI_CardModal.Instance != null)
         {
             UI_CardModal.Instance.Show(cardData, owner);
             OnPointerExit(eventData);

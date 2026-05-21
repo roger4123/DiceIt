@@ -103,12 +103,14 @@ public class UI_DicePanels : MonoBehaviour
         {
             dieIcon.gameObject.SetActive(true);
             dieIcon.SetupBlankDie(Color.gray);
+            dieIcon.SetLockVisual(false);
         }
         
         foreach (var dieIcon in p2DiceIcons)
         {
             dieIcon.gameObject.SetActive(true);
             dieIcon.SetupBlankDie(Color.gray);
+            dieIcon.SetLockVisual(false);
         }
     }
 }

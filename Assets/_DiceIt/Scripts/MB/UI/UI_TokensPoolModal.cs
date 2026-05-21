@@ -21,6 +21,9 @@ public class UI_TokensPoolModal : MonoBehaviour
     private Action<StatusEffectsData> pendingTokenSelectionCallback;
 
     private List<GameObject> spawnedTokens = new List<GameObject>();
+    
+    public bool IsSelectingPlayer { get; private set; }
+    private Action<PlayerController> pendingPlayerSelectionCallback;
 
     private void Awake()
     {
@@ -82,6 +85,23 @@ public class UI_TokensPoolModal : MonoBehaviour
         }
     }
 
+    public void RequestPlayerSelection(Action<PlayerController> callback)
+    {
+        IsSelectingPlayer = true;
+        pendingPlayerSelectionCallback = callback;
+    }
+
+    public void SelectPlayer(PlayerController player)
+    {
+        if (IsSelectingPlayer)
+        {
+            IsSelectingPlayer = false;
+            var callback = pendingPlayerSelectionCallback;
+            pendingPlayerSelectionCallback = null;
+            callback?.Invoke(player);
+        }
+    }
+
     private void RefreshPool()
     {
         if (currentOwner == null) return;
@@ -89,10 +109,28 @@ public class UI_TokensPoolModal : MonoBehaviour
         foreach (var token in spawnedTokens) Destroy(token);
         spawnedTokens.Clear();
 
-        foreach (var specificStatus in currentOwner.characterData.characterSpecificStatuses)
+        // list of all tokens to display
+        var statusesToDisplay = new HashSet<StatusEffectsData>();
+
+        // personal status effects
+        if (currentOwner.characterData.characterSpecificStatuses != null)
         {
-            int stacks = currentOwner.activeStatuses.FirstOrDefault(s => s.data == specificStatus)?.currentStacks ?? 0;
-            SpawnToken(specificStatus, stacks);
+            foreach (var specificStatus in currentOwner.characterData.characterSpecificStatuses)
+            {
+                statusesToDisplay.Add(specificStatus);
+            }
+        }
+
+        // add all active statuses
+        foreach (var activeStatus in currentOwner.activeStatuses)
+        {
+            statusesToDisplay.Add(activeStatus.data);
+        }
+
+        foreach (var statusData in statusesToDisplay)
+        {
+            int stacks = currentOwner.activeStatuses.FirstOrDefault(s => s.data == statusData)?.currentStacks ?? 0;
+            SpawnToken(statusData, stacks);
         }
     }
 

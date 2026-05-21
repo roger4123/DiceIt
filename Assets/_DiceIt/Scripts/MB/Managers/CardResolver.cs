@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public class CardResolver : MonoBehaviour
 {
@@ -16,6 +17,12 @@ public class CardResolver : MonoBehaviour
     {
         owner.ChangeCP(-card.cpCost);
         owner.DiscardCard(card);
+        UI_CombatLog.Instance?.LogMessage($"{owner.characterData.heroName} played '{card.cardName}'.", new Color(0.9f, 0.5f, 1f));
+
+        if (ActionStackManager.Instance != null)
+        {
+            ActionStackManager.Instance.ResetPriorityPasses();
+        }
 
         StartCoroutine(ResolveCardRoutine(card, owner));
     }
@@ -73,17 +80,9 @@ public class CardResolver : MonoBehaviour
             }
         }
 
-        // resseting interaction state after playing a card
-        if (BattleManager.Instance.currentPhase == TurnPhase.OffensiveRollPhase ||
-            BattleManager.Instance.currentPhase == TurnPhase.DefensiveRollPhase)
-        {
-            DiceManager.Instance.SetInteractionState(DiceInteractionState.PlayerLocking);
-        }
-        else
-        {
-            DiceManager.Instance.SetInteractionState(DiceInteractionState.Disabled);
-        }
-
+        // After a card resolves, re-evaluate the dice interaction state based on who has priority.
+        ActionStackManager.Instance.ReassertPriority();
+        
         Debug.Log($"[CardResolver] {card.cardName} was resolved successfully!");
         yield return null;
     }
@@ -104,16 +103,25 @@ public class CardResolver : MonoBehaviour
         }
         else if (effect.targetMode == CardTargetMode.ChosenPlayer)
         {
-            Debug.Log("[CardResolver] BREAK: Choose the target.");
-            // TODO: UI_TargetModal. 
-            // oponentul by default pentru testare.
-            yield return new WaitForSeconds(1f);
-            target = opponent; 
+            BattleManager.Instance?.NotifyPhase("Click on a player's Token Pool to select them.");
+            bool targetSelected = false;
+            UI_TokensPoolModal.Instance.RequestPlayerSelection((p) => {
+                target = p;
+                targetSelected = true;
+            });
+            yield return new WaitUntil(() => targetSelected);
+            BattleManager.Instance?.NotifyPhase("");
         }
         else if (effect.targetMode == CardTargetMode.SourceToDestination)
         {
-            Debug.Log("[CardResolver] BREAK: Select Source.");
-            // TODO: who gives to whom
+            BattleManager.Instance?.NotifyPhase("Click on the SOURCE player's Token Pool.");
+            bool sourceSelected = false;
+            UI_TokensPoolModal.Instance.RequestPlayerSelection((p) => {
+                target = p;
+                sourceSelected = true;
+            });
+            yield return new WaitUntil(() => sourceSelected);
+            BattleManager.Instance?.NotifyPhase("");
         }
 
         // --- CONDITION LOGIC ---
@@ -168,32 +176,120 @@ public class CardResolver : MonoBehaviour
                 
             case CardActionType.GainStatus:
                 foreach (var statusApp in effect.statuses)
-                    target.AddStatus(statusApp.status, statusApp.amount);
-                break;
-                
-            case CardActionType.RemoveStatus:
-                if (effect.value == 0 || effect.value == -1) target.ClearAllStatuses();
-                else 
                 {
-                    Debug.Log("[CardResolver] Choose which Status Effect to be removed...");
-                    bool selectionDone = false;
-                    StatusEffectsData chosenToken = null;
-                    
-                    UI_TokensPoolModal.Instance.RequestTokenSelection(target, (token) => {
-                        chosenToken = token;
-                        selectionDone = true;
-                    });
-                    
-                    yield return new WaitUntil(() => selectionDone);
-
-                    if (chosenToken != null)
-                    {
-                        target.RemoveStatus(chosenToken, Mathf.Max(1, Mathf.CeilToInt(finalValue)));
-                        Debug.Log($"[CardResolver] Removed one {chosenToken.effectName} from {target.characterData.heroName}.");
-                    }
+                    // if the effect is scaling (roll x to gain), the calculated finalValue determines the amount
+                    // else: use the amount defined in the CardData
+                    int amountToAdd = effect.isScaling ? Mathf.CeilToInt(finalValue) : statusApp.amount;
+                    target.AddStatus(statusApp.status, amountToAdd);
                 }
                 break;
                 
+            case CardActionType.RemoveStatus:
+                if (effect.value == 0 || effect.value == -1) 
+                {
+                    target.ClearAllStatuses();
+                    UI_CombatLog.Instance?.LogMessage($"{target.characterData.heroName} was cleansed of all status effects.", Color.white);
+                }
+                else 
+                {
+                    int totalTokens = BattleManager.Instance.player1.activeStatuses.Count + BattleManager.Instance.player2.activeStatuses.Count;
+                    if (totalTokens == 0)
+                    {
+                        UI_CombatLog.Instance?.LogMessage("No tokens on the board to remove.", Color.gray);
+                        break;
+                    }
+
+                    bool effectResolved = false;
+                    while (!effectResolved)
+                    {
+                        BattleManager.Instance?.NotifyPhase($"Select a token to remove from {target.characterData.heroName}.");
+                        bool selectionDone = false;
+                        StatusEffectsData chosenToken = null;
+                        
+                        UI_TokensPoolModal.Instance.RequestTokenSelection(target, (token) => {
+                            chosenToken = token;
+                            selectionDone = true;
+                        });
+                        
+                        yield return new WaitUntil(() => selectionDone);
+
+                        if (chosenToken != null)
+                        {
+                            target.RemoveStatus(chosenToken, Mathf.Max(1, Mathf.CeilToInt(finalValue)));
+                            UI_CombatLog.Instance?.LogMessage($"Removed 1 {chosenToken.effectName} from {target.characterData.heroName}.", Color.white);
+                            effectResolved = true;
+                        }
+                        else
+                        {
+                            BattleManager.Instance?.NotifyPhase("Click on a player's Token Pool to select them.");
+                            bool targetSelected = false;
+                            UI_TokensPoolModal.Instance.RequestPlayerSelection((p) => {
+                                target = p;
+                                targetSelected = true;
+                            });
+                            yield return new WaitUntil(() => targetSelected);
+                        }
+                    }
+                    BattleManager.Instance?.NotifyPhase("");
+                }
+                break;
+                
+            case CardActionType.TransferStatus:
+            {
+                int totalTransferable = BattleManager.Instance.player1.activeStatuses.Count(s => s.data.isTransferable) + BattleManager.Instance.player2.activeStatuses.Count(s => s.data.isTransferable);
+                if (totalTransferable == 0)
+                {
+                    UI_CombatLog.Instance?.LogMessage("No transferable tokens on the board.", Color.gray);
+                    break;
+                }
+
+                PlayerController dest = (target == BattleManager.Instance.player1) ? BattleManager.Instance.player2 : BattleManager.Instance.player1;
+
+                bool effectResolved = false;
+                while (!effectResolved)
+                {
+                    BattleManager.Instance?.NotifyPhase($"Select a token to transfer from {target.characterData.heroName}.");
+                    bool transferSelectionDone = false;
+                    StatusEffectsData tokenToTransfer = null;
+
+                    UI_TokensPoolModal.Instance.RequestTokenSelection(target, (token) => {
+                        tokenToTransfer = token;
+                        transferSelectionDone = true;
+                    });
+
+                    yield return new WaitUntil(() => transferSelectionDone);
+
+                    if (tokenToTransfer != null)
+                    {
+                        if (tokenToTransfer.isTransferable)
+                        {
+                            target.RemoveStatus(tokenToTransfer, 1);
+                            dest.AddStatus(tokenToTransfer, 1);
+                            UI_CombatLog.Instance?.LogMessage($"Transferred {tokenToTransfer.effectName} from {target.characterData.heroName} to {dest.characterData.heroName}.", Color.magenta);
+                            effectResolved = true;
+                        }
+                        else 
+                        {
+                            UI_CombatLog.Instance?.LogMessage($"{tokenToTransfer.effectName} cannot be transferred!", Color.red);
+                        }
+                    }
+                    else
+                    {
+                        // Ne-am răzgândit la token! Alegem alt jucător sursă.
+                        BattleManager.Instance?.NotifyPhase("Click on the SOURCE player's Token Pool.");
+                        bool sourceSelected = false;
+                        UI_TokensPoolModal.Instance.RequestPlayerSelection((p) => {
+                            target = p;
+                            dest = (target == BattleManager.Instance.player1) ? BattleManager.Instance.player2 : BattleManager.Instance.player1;
+                            sourceSelected = true;
+                        });
+                        yield return new WaitUntil(() => sourceSelected);
+                    }
+                }
+                BattleManager.Instance?.NotifyPhase("");
+                break;
+            }
+
             // === ROLL PHASE & DICE ACTIONS ===
             case CardActionType.ChangeDiceValueToSix:
             {
@@ -208,20 +304,21 @@ public class CardResolver : MonoBehaviour
 
             case CardActionType.ChangeDiceValueIdenticalToAnother:
             {
-                Debug.Log("[CardResolver] BREAK: Select the source die and the destination die for chaning.");
-                bool sourceSelected = false;
-                int sourceDie = -1;
-                DiceManager.Instance.RequestDieSelection(rollingPlayer, (idx, p) => { sourceDie = idx; sourceSelected = true; });
-                yield return new WaitUntil(() => sourceSelected);
-
-                Debug.Log("[CardResolver] BREAK: Select the DESTINATION die for changing.");
+                BattleManager.Instance?.NotifyPhase("Select the die you want to CHANGE.");
                 bool destSelected = false;
                 int destDie = -1;
                 DiceManager.Instance.RequestDieSelection(rollingPlayer, (idx, p) => { destDie = idx; destSelected = true; });
                 yield return new WaitUntil(() => destSelected);
 
+                BattleManager.Instance?.NotifyPhase("Select the die to COPY the value from.");
+                bool sourceSelected = false;
+                int sourceDie = -1;
+                DiceManager.Instance.RequestDieSelection(rollingPlayer, (idx, p) => { sourceDie = idx; sourceSelected = true; });
+                yield return new WaitUntil(() => sourceSelected);
+
                 int copiedValue = DiceManager.Instance.dice[sourceDie].currentValue;
                 DiceManager.Instance.SetDieValue(destDie, copiedValue);
+                BattleManager.Instance?.NotifyPhase("");
                 break;
             }
 
@@ -230,15 +327,70 @@ public class CardResolver : MonoBehaviour
                 int timesToChange = Mathf.Max(1, Mathf.CeilToInt(finalValue));
                 for (int i = 0; i < timesToChange; i++)
                 {
-                    Debug.Log($"[CardResolver] BREAK: Select di(c)e ({i + 1}/{timesToChange}) and its new value.");
+                    BattleManager.Instance?.NotifyPhase($"Select die to change ({i + 1}/{timesToChange}).");
                     bool selected = false;
                     int pickedDie = -1;
                     DiceManager.Instance.RequestDieSelection(rollingPlayer, (idx, p) => { pickedDie = idx; selected = true; });
                     yield return new WaitUntil(() => selected);
                     
-                    // TODO: UI pentru a alege nr.
-                    DiceManager.Instance.SetDieValue(pickedDie, 5);
+                    bool faceSelected = false;
+                    int chosenFace = -1;
+                    
+                    List<int> validFaces = new List<int> { 1, 2, 3, 4, 5, 6 };
+                    
+                    UI_DiceFaceSelector.Instance.Show(rollingPlayer, validFaces, (face) => {
+                        chosenFace = face;
+                        faceSelected = true;
+                    });
+                    
+                    yield return new WaitUntil(() => faceSelected);
+                    
+                    if (chosenFace != -1)
+                    {
+                        DiceManager.Instance.SetDieValue(pickedDie, chosenFace);
+                        UI_CombatLog.Instance?.LogMessage($"{owner.characterData.heroName} changed a die to {chosenFace}.", Color.white);
+                    }
+                    else
+                    {
+                        i--;
+                    }
                 }
+                BattleManager.Instance?.NotifyPhase("");
+                break;
+            }
+
+            case CardActionType.IncrementOrDecrement:
+            {
+                int timesToChange = Mathf.Max(1, Mathf.CeilToInt(finalValue));
+                for (int i = 0; i < timesToChange; i++)
+                {
+                    BattleManager.Instance?.NotifyPhase("Select die to increase/decrease.");
+                    bool selected = false;
+                    int pickedDie = -1;
+                    DiceManager.Instance.RequestDieSelection(rollingPlayer, (idx, p) => { pickedDie = idx; selected = true; });
+                    yield return new WaitUntil(() => selected);
+                    
+                    int originalVal = DiceManager.Instance.dice[pickedDie].currentValue;
+                    List<int> validFaces = new List<int>();
+                    if (originalVal > 1) validFaces.Add(originalVal - 1);
+                    if (originalVal < 6) validFaces.Add(originalVal + 1);
+
+                    bool faceSelected = false;
+                    int chosenFace = -1;
+                    UI_DiceFaceSelector.Instance.Show(rollingPlayer, validFaces, (face) => {
+                        chosenFace = face;
+                        faceSelected = true;
+                    });
+                    yield return new WaitUntil(() => faceSelected);
+                    
+                    if (chosenFace != -1) 
+                    {
+                        DiceManager.Instance.SetDieValue(pickedDie, chosenFace);
+                        UI_CombatLog.Instance?.LogMessage($"{owner.characterData.heroName} tipped a die to {chosenFace}.", Color.white);
+                    }
+                    else i--;
+                }
+                BattleManager.Instance?.NotifyPhase("");
                 break;
             }
 
@@ -281,15 +433,17 @@ public class CardResolver : MonoBehaviour
                 else if (BattleManager.Instance.currentPhase == TurnPhase.DefensiveRollPhase)
                 {
                     int dCount = BattleManager.Instance.pendingDefenseSelection != null ? BattleManager.Instance.pendingDefenseSelection.diceToRoll : 0;
-                    DiceManager.Instance.ResetDice(3, dCount); 
+                    DiceManager.Instance.ResetDice(1, dCount); 
                 }
                 BattleManager.Instance.hasActivatedAbilityThisPhase = false;
                 break;
                 
             // === COMBAT ACTIONS (Resolution Phase) ===
             case CardActionType.PreventDamage:
-                Debug.Log($"[CardResolver] Player {target.characterData.heroName} prevents {finalValue} DMG!");
-                // TODO: de stocat valoarea intr-o variabila pe PlayerController pentru Resolution Phase
+                if (BattleManager.Instance != null)
+                {
+                    BattleManager.Instance.AddTurnPrevention(finalValue);
+                }
                 break;
                 
             case CardActionType.SwapRequiredSymbols:
@@ -333,7 +487,10 @@ public class CardResolver : MonoBehaviour
         }
         
         foreach (var statusApp in effect.statuses)
-            target.AddStatus(statusApp.status, statusApp.amount);
+        {
+            int amountToAdd = effect.isScaling ? Mathf.CeilToInt(finalValue) : statusApp.amount;
+            target.AddStatus(statusApp.status, amountToAdd);
+        }
 
         yield return null;
     }

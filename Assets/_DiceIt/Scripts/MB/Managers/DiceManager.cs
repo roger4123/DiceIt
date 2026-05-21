@@ -40,6 +40,10 @@ public class DiceManager : MonoBehaviour
     public bool hasRolledThisPhase = false;
     public DiceInteractionState CurrentInteractionState { get; private set; } = DiceInteractionState.Disabled;
 
+    private List<DieState> savedDiceState;
+    private int savedRollsLeft;
+    private bool isStateSaved = false;
+
     private Action<int, PlayerController> pendingDieSelectionCallback;
     private PlayerController validTargetPlayerForSelection;
 
@@ -51,6 +55,22 @@ public class DiceManager : MonoBehaviour
         for (int i = 0; i < 5; i++)
         {
             dice.Add(new DieState());
+        }
+    }
+
+    private void Start()
+    {
+        if (ActionStackManager.Instance != null)
+        {
+            ActionStackManager.Instance.OnPriorityChanged += HandlePriorityChange;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (ActionStackManager.Instance != null)
+        {
+            ActionStackManager.Instance.OnPriorityChanged -= HandlePriorityChange;
         }
     }
 
@@ -72,6 +92,10 @@ public class DiceManager : MonoBehaviour
         rollsLeft--;
         Debug.Log($"==> Rolled successfully! Remaining Roll Attemtps: {rollsLeft}");
         
+        var rollingPlayer = (BattleManager.Instance.currentPhase == TurnPhase.DefensiveRollPhase) ? BattleManager.Instance.opponentPlayer : BattleManager.Instance.activePlayer;
+        string rolledValuesStr = string.Join(", ", GetCurrentDiceValues().FindAll(v => v > 0));
+        UI_CombatLog.Instance?.LogMessage($"{rollingPlayer.characterData.heroName} rolled: {rolledValuesStr}", Color.white);
+
         BroadcastState();
     }
 
@@ -178,11 +202,90 @@ public class DiceManager : MonoBehaviour
     private void BroadcastState()
     {
         OnDiceStateChanged?.Invoke(dice, rollsLeft);
+        if (BattleManager.Instance != null) BattleManager.Instance.ValidatePendingAbilities();
     }
 
     public void SetInteractionState(DiceInteractionState newState)
     {
         CurrentInteractionState = newState;
-        Debug.Log($"[DiceManager] Interaction state set to: {newState}");
+        //Debug.Log($"[DiceManager] Interaction state set to: {newState}");
+    }
+
+    public void StoreDiceState()
+    {
+        if (isStateSaved)
+        {
+            Debug.LogWarning("[DiceManager] Tried to store state when a state was already saved. Overwriting.");
+        }
+        savedDiceState = new List<DieState>();
+        foreach(var die in dice)
+        {
+            savedDiceState.Add(new DieState { 
+                currentValue = die.currentValue, 
+                isLocked = die.isLocked, 
+                isActive = die.isActive 
+            });
+        }
+        savedRollsLeft = rollsLeft;
+        isStateSaved = true;
+        Debug.Log("[DiceManager] Dice state saved.");
+    }
+
+    public void RestoreDiceState()
+    {
+        if (!isStateSaved || savedDiceState == null)
+        {
+            Debug.LogWarning("[DiceManager] Tried to restore state, but no state was saved.");
+            return;
+        }
+
+        dice.Clear();
+        foreach(var savedDie in savedDiceState)
+        {
+            dice.Add(new DieState {
+                currentValue = savedDie.currentValue,
+                isLocked = savedDie.isLocked,
+                isActive = savedDie.isActive
+            });
+        }
+        rollsLeft = savedRollsLeft;
+        
+        savedDiceState = null;
+        isStateSaved = false;
+        
+        BroadcastState();
+        Debug.Log("[DiceManager] Dice state restored.");
+    }
+
+    private void HandlePriorityChange(PlayerController playerWithPriority)
+    {
+        // If we are in the middle of a card-based dice selection, don't change the state.
+        if (CurrentInteractionState == DiceInteractionState.SelectingDice)
+        {
+            return;
+        }
+
+        var currentPhase = BattleManager.Instance.currentPhase;
+        if (currentPhase != TurnPhase.OffensiveRollPhase && currentPhase != TurnPhase.DefensiveRollPhase)
+        {
+            SetInteractionState(DiceInteractionState.Disabled);
+            return;
+        }
+
+        // Determine who is the "owner" of the current roll phase
+        PlayerController rollingPlayer = (currentPhase == TurnPhase.DefensiveRollPhase)
+                                         ? BattleManager.Instance.opponentPlayer
+                                         : BattleManager.Instance.activePlayer;
+
+        if (playerWithPriority == rollingPlayer)
+        {
+            // The player who is supposed to roll has priority, allow locking.
+            SetInteractionState(DiceInteractionState.PlayerLocking);
+        }
+        else
+        {
+            // The other player has priority (to play cards, etc.), so disable dice locking.
+            SetInteractionState(DiceInteractionState.Disabled);
+        }
     }
 }

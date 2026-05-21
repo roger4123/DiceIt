@@ -26,6 +26,8 @@ public class PlayerController : MonoBehaviour
     public List<CardData> hand = new List<CardData>();
     public List<CardData> discardPile = new List<CardData>();
 
+    private bool isResolvingPassive = false;
+
     // Events
     public event Action<int, int, int, int> OnStatsChanged;
     public event Action<CharacterData, PlayerController> OnCharacterInitialization;
@@ -40,11 +42,13 @@ public class PlayerController : MonoBehaviour
     {
         public StatusEffectsData data;
         public int currentStacks;
+        public int turnInflicted;
 
-        public ActiveStatus(StatusEffectsData data, int amount)
+        public ActiveStatus(StatusEffectsData data, int amount, int turn)
         {
             this.data = data;
             currentStacks = amount;
+            turnInflicted = turn;
         }
     }
     public List<ActiveStatus> activeStatuses = new List<ActiveStatus>();
@@ -207,14 +211,33 @@ public class PlayerController : MonoBehaviour
 
     #region Health & Resources
     
-    public void ChangeHealth(int amount)
+    public void ChangeHealth(int amount, DamageType damageType = DamageType.Normal)
     {
+        int oldHealth = currentHealth;
         currentHealth = Mathf.Clamp(currentHealth + amount, 0, characterData.maxHealth);
         
+        int actualDamageTaken = oldHealth - currentHealth;
+
+        //  OnDamageTaken trigger (for Energy Absorption)
+        if (actualDamageTaken > 0 && activePassive != null && activePassive.trigger == PassiveTrigger.OnDamageTaken && !isResolvingPassive)
+        {
+            if (!(activePassive.ignoreUltimate && damageType == DamageType.Ultimate))
+            {
+                isResolvingPassive = true;
+                Debug.Log($"[Passive] {characterData.heroName}'s passive {activePassive.abilityName} triggered from taking {actualDamageTaken} DMG!");
+                UI_CombatLog.Instance?.LogMessage($"{characterData.heroName}'s '{activePassive.abilityName}' triggered! (Taken {actualDamageTaken} DMG)", new Color(0.4f, 0.8f, 1f));
+                foreach (var effect in activePassive.passiveEffects)
+                {
+                    ApplyOutcome(effect);
+                }
+                isResolvingPassive = false;
+            }
+        }
+
         if (currentHealth <= 0)
         {
             Debug.Log($"{characterData.heroName} was defeated!");
-            // de pus triggerul pentru evenimentul Defeat/Loss in TurnController
+            if (BattleManager.Instance != null) BattleManager.Instance.TriggerGameOver(this);
         }
 
         BroadcastStats();
@@ -237,19 +260,68 @@ public class PlayerController : MonoBehaviour
 
     public void AddStatus(StatusEffectsData status, int amount)
     {
+        // check global limit
+        if (status.maxGlobalTokens > 0)
+        {
+            int p1Stacks = BattleManager.Instance.player1.activeStatuses.FirstOrDefault(s => s.data == status)?.currentStacks ?? 0;
+            int p2Stacks = BattleManager.Instance.player2.activeStatuses.FirstOrDefault(s => s.data == status)?.currentStacks ?? 0;
+            int currentGlobalStacks = p1Stacks + p2Stacks;
+
+            if (currentGlobalStacks >= status.maxGlobalTokens)
+            {
+                string msg = $"Cannot add {status.effectName}. Global limit ({status.maxGlobalTokens}) reached!";
+                Debug.Log($"[Status] {msg}");
+                if (BattleManager.Instance != null) BattleManager.Instance.NotifyPhase(msg);
+                return;
+            }
+            
+            amount = Mathf.Min(amount, status.maxGlobalTokens - currentGlobalStacks);
+        }
+
         var existing = activeStatuses.FirstOrDefault(s => s.data == status);
+
+        bool reachedLimit = false;
 
         if (existing != null)
         {
-            existing.currentStacks = Mathf.Min(existing.currentStacks + amount, status.stackLimit);
+            if (existing.currentStacks >= status.stackLimit)
+            {
+                string msg = $"{characterData.heroName}: Stack limit reached for {status.effectName}!";
+                Debug.Log($"[Status] {msg}");
+                if (BattleManager.Instance != null) BattleManager.Instance.NotifyPhase(msg);
+                return;
+            }
+            
+            existing.currentStacks += amount;
+            if (existing.currentStacks >= status.stackLimit)
+            {
+                existing.currentStacks = status.stackLimit;
+                reachedLimit = true;
+            }
         }
         else
         {
-            activeStatuses.Add(new ActiveStatus(status, amount));
+            int currentTurn = BattleManager.Instance != null ? BattleManager.Instance.currentTurnNumber : 1;
+            int finalAmount = Mathf.Min(amount, status.stackLimit);
+            activeStatuses.Add(new ActiveStatus(status, finalAmount, currentTurn));
+            
+            if (finalAmount >= status.stackLimit) reachedLimit = true;
         }
         
         OnStatusChanged?.Invoke();
         Debug.Log($"{characterData.heroName} gained Status Effect: {status.effectName} (+{amount})");
+        UI_CombatLog.Instance?.LogMessage($"{characterData.heroName} gained {amount} {status.effectName}.", new Color(0.6f, 1f, 0.6f));
+
+        // trigger the "Stack Limit Reached" effects
+        if (reachedLimit && status.outcomes != null && status.outcomes.Any(o => o.activationTrigger == StatusTrigger.ReachingStackLimit))
+        {
+            Debug.Log($"[Status] {status.effectName} reached Stack Limit! Triggering overload effects...");
+            if (BattleManager.Instance != null) BattleManager.Instance.NotifyPhase($"{status.effectName} Overload!");
+
+            if (StatusResolver.Instance != null) StatusResolver.Instance.ResolveTrigger(StatusTrigger.ReachingStackLimit, this, status);
+            
+            RemoveStatus(status, 0);
+        }
     }
 
     public void RemoveStatus(StatusEffectsData status, int amount = 1)
@@ -283,6 +355,77 @@ public class PlayerController : MonoBehaviour
 
     // TODO: TransferStatus
 
+    public bool CanSpendStatus(StatusEffectsData status)
+    {
+        var bm = BattleManager.Instance;
+
+        if (status.effectName == "Combo")
+        {
+            // condition 1: only in the opponent's DefensiveRollPhase
+            if (bm.currentPhase != TurnPhase.DefensiveRollPhase) return false;
+            if (bm.activePlayer != this) return false;
+            
+            // condition 2: you commited an attack to the stack
+            if (bm.committedOffense == null || bm.committedOffense.SourcePlayer != this) return false;
+            
+            return true;
+        }
+        
+        if (status.effectName == "Invisibility")
+        {
+            // only in DefensiveRollPhase, when attacked with Undefendable
+            if (bm.currentPhase != TurnPhase.DefensiveRollPhase) return false;
+            if (bm.opponentPlayer != this) return false;
+
+            // Motivul 1: Atac Undefendable
+            if (bm.committedOffense != null && bm.committedOffense.runtimeAttackType == DamageType.Undefendable && !bm.canActivateDefensiveAbility) 
+                return true;
+
+            // Motivul 2: Roll-uri extra pentru Spider Sense
+            if (bm.pendingDefenseSelection != null)
+            {
+                foreach (var outcome in bm.pendingDefenseSelection.defenseOutcomes)
+                {
+                    if (outcome.type == OutcomeType.ModifyRollAttempts && outcome.statuses != null)
+                    {
+                        if (outcome.statuses.Any(s => s.status.effectName == "Invisibility" && s.amount < 0)) return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        if (status.effectName == "Vibranium Suit")
+        {
+            if (bm.currentPhase != TurnPhase.DefensiveRollPhase) return false;
+            if (bm.opponentPlayer != this) return false;
+            if (bm.committedOffense == null) return false;
+
+            return true;
+        }
+
+        return true;
+    }
+
+    public void SpendStatus(StatusEffectsData status)
+    {
+        var existing = activeStatuses.FirstOrDefault(s => s.data == status);
+        if (existing != null && existing.currentStacks > 0)
+        {
+            RemoveStatus(status, 1);
+            Debug.Log($"{characterData.heroName} spent 1 token of {status.effectName}.");
+            UI_CombatLog.Instance?.LogMessage($"{characterData.heroName} spent 1 {status.effectName}.", new Color(0.6f, 1f, 0.6f));
+
+            if (ActionStackManager.Instance != null)
+            {
+                ActionStackManager.Instance.ResetPriorityPasses();
+                var action = new SpendTokenAction(this, status);
+                ActionStackManager.Instance.AddActionToStack(action);
+            }
+        }
+    }
+
     #endregion
 
     #region Outcome Processing
@@ -304,12 +447,9 @@ public class PlayerController : MonoBehaviour
                 break;
 
             case OutcomeType.Prevent:
-                // Logica de prevenție va fi gestionată de BattleManager în faza de Defensive Roll,
-                // modificând incomingDamage înainte să apeleze ChangeHealth.
                 break;
 
             case OutcomeType.None:
-                // nu face nimic numeric, probabil doar statusuri for now
                 break;
                 
             default:

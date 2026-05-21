@@ -59,6 +59,10 @@ public class StatusEffectsData : ScriptableObject
     [TextArea] public string description;
     public Sprite icon;
 
+    [Header("Visuals")]
+    public Color backgroundColor = Color.white;
+    public Color iconColor = Color.white;
+
     [Header("Permissions (Token Pool Logic)")]
     public bool canBeRemovedByOwner = true;
     public bool canBeRemovedByOpponent = true;
