@@ -8,6 +8,19 @@ public enum ConditionType { Always, SpecificSymbols, SumValue, Parity }
 public enum CompareMode { None, LessOrEqual, GreaterOrEqual, Exactly }
 public enum PassiveTrigger { OnTurnStart, OnTurnEnd, OnDamageTaken, OnAttackDealt }
 
+public enum AbilityOutcomeType
+{
+    None,
+    Damage,
+    Healing,
+    GainCP,
+    DrawCard,
+    AttackModifier,
+    Prevent,
+    ModifyRollAttempts,
+    PreventHalfDamage
+}
+
 [System.Serializable]
 public class StatusApplication
 {
@@ -28,7 +41,7 @@ public class AbilityOutcome
 {
     public string label; 
     public StatusTarget target; // Self/Opponent
-    public OutcomeType type;   // Damage, Healing, AttackModifier, Prevent, etc.
+    public AbilityOutcomeType type;   // Damage, Healing, AttackModifier, Prevent, etc.
     public float value;
     public List<StatusApplication> statuses;
 

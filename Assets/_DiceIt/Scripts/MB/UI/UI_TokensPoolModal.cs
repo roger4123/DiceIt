@@ -42,7 +42,7 @@ public class UI_TokensPoolModal : MonoBehaviour
 
         RefreshPool();
         modalPanel.SetActive(true);
-        transform.SetAsLastSibling(); // Forteaza Pool-ul sa se puna in fata UI-ului principal
+        transform.SetAsLastSibling();
     }
 
     public void Hide()

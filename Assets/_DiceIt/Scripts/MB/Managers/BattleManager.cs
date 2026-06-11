@@ -34,9 +34,36 @@ public class BattleManager : MonoBehaviour
     public event Action<PlayerController> OnGameOver;
     public event Action OnCombatSkipped;
 
+    private Coroutine activeNotificationCoroutine;
+
     public void NotifyPhase(string message)
     {
+        if (activeNotificationCoroutine != null)
+        {
+            StopCoroutine(activeNotificationCoroutine);
+            activeNotificationCoroutine = null;
+        }
         OnPhaseNotification?.Invoke(message);
+    }
+
+    public Coroutine ShowNotification(string message, float duration)
+    {
+        if (activeNotificationCoroutine != null)
+        {
+            StopCoroutine(activeNotificationCoroutine);
+            activeNotificationCoroutine = null;
+        }
+        
+        OnPhaseNotification?.Invoke(message);
+        activeNotificationCoroutine = StartCoroutine(WaitAndHideRoutine(duration));
+        return activeNotificationCoroutine;
+    }
+
+    private IEnumerator WaitAndHideRoutine(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        OnPhaseNotification?.Invoke("");
+        activeNotificationCoroutine = null;
     }
 
     #endregion
@@ -67,7 +94,15 @@ public class BattleManager : MonoBehaviour
 
     public void StartNewTurn()
     {
-        Debug.Log($"===> {activePlayer.characterData.heroName}'s Turn <===");
+        StartCoroutine(StartNewTurnRoutine());
+    }
+
+    private IEnumerator StartNewTurnRoutine()
+    {
+        Debug.Log($"=> Starting turn {currentTurnNumber}: {activePlayer.characterData.heroName}'s turn");
+        UI_CombatLog.Instance?.LogMessage($"Turn {currentTurnNumber}: {activePlayer.characterData.heroName.ToUpper()}", Color.black);
+        yield return ShowNotification($"Starting turn {currentTurnNumber}: {activePlayer.characterData.heroName}'s turn.", 2.5f);
+        
         SetPhase(TurnPhase.Upkeep);
     }
 
@@ -75,7 +110,10 @@ public class BattleManager : MonoBehaviour
     {
         currentPhase = newPhase;
         PlayerController phaseOwner = (currentPhase == TurnPhase.DefensiveRollPhase) ? opponentPlayer : activePlayer;
-        Debug.Log($"Starting Phase: {currentPhase} for {phaseOwner.characterData.heroName}");        
+
+        Debug.Log($"Starting Phase: {currentPhase} for {phaseOwner.characterData.heroName}");   
+        UI_CombatLog.Instance?.LogMessage($"{currentPhase} for {phaseOwner.characterData.heroName}", Color.black);
+        ShowNotification($"{currentPhase} for {phaseOwner.characterData.heroName}", 2.5f);
 
         // reset state vars before launching OnPhaseChanged
         if (currentPhase == TurnPhase.OffensiveRollPhase || currentPhase == TurnPhase.DefensiveRollPhase)
@@ -124,7 +162,7 @@ public class BattleManager : MonoBehaviour
                     if (committedOffense.runtimeAttackType != DamageType.Normal)
                     {
                         canActivateDefensiveAbility = false;
-                        OnPhaseNotification?.Invoke($"Damage Type: {committedOffense.runtimeAttackType}. Cannot activate Defensive Ability!");
+                        NotifyPhase($"Damage Type: {committedOffense.runtimeAttackType}. Cannot activate Defensive Ability!");
                         //Debug.LogWarning($"[BattleManager] Damage Type is {offAb.attackType}. Opponent cannot activate a Defensive Ability.");
                     }
                 }
@@ -151,6 +189,7 @@ public class BattleManager : MonoBehaviour
                         DiceManager.Instance.SetInteractionState(DiceInteractionState.Disabled);
                     }
                 }
+
                 if (ActionStackManager.Instance != null) ActionStackManager.Instance.BeginInteractivePhase(opponentPlayer);
                 break;
             
@@ -187,7 +226,9 @@ public class BattleManager : MonoBehaviour
                         // shouldn't have effect if applied this turn
                         if (webbed != null && webbed.turnInflicted < currentTurnNumber)
                         {
-                            Debug.Log($"[BattleManager] WEBBED triggered! {opponentPlayer.characterData.heroName}'s token changes the attack to Undefendable!");
+                            Debug.Log($"[BattleManager] WEBBED triggered! {opponentPlayer.characterData.heroName}'s token changes the next attack to Undefendable!");
+                            UI_CombatLog.Instance?.LogMessage($"Webbed triggered! {opponentPlayer.characterData.heroName}'s token changes the next attack to Undefendable!", Color.black);
+                        ShowNotification($"Webbed triggered! {opponentPlayer.characterData.heroName}'s token changes the next attack to Undefendable!", 2.5f);
                             committedOffense.runtimeAttackType = DamageType.Undefendable;
                             opponentPlayer.RemoveStatus(webbed.data, 0);
                         }
@@ -197,8 +238,8 @@ public class BattleManager : MonoBehaviour
                 }
                 else
                 {
-                    OnPhaseNotification?.Invoke($"No incoming Attack from {activePlayer.characterData.heroName}. Skipping to Main Phase II!");
-                    StartCoroutine(SkipCombatAndAdvanceToMainPhase2());
+                    UI_CombatLog.Instance?.LogMessage($"{activePlayer.characterData.heroName} didn't activate an attack this turn.", Color.black);
+                    StartCoroutine(SkipCombatAndAdvanceToMainPhase2($"No incoming Attack from {activePlayer.characterData.heroName}. Skipping to Main Phase 2!"));
                 }
                 break;
 
@@ -209,7 +250,6 @@ public class BattleManager : MonoBehaviour
 
             case TurnPhase.Resolution:
                 // This is called when the stack is empty and both players passed.
-                // Mutat comportamentul în corutina ProcessResolutionRoutine
                 break;
 
             case TurnPhase.MainPhase2:
@@ -245,12 +285,23 @@ public class BattleManager : MonoBehaviour
 
     private IEnumerator ProcessResolutionRoutine()
     {
-        OnPhaseNotification?.Invoke("Resolution Phase: Resolving combat...");
-        yield return new WaitForSeconds(1.5f);
+        yield return ShowNotification("Resolution Phase: Resolving combat...", 1.5f);
 
         if (ActionStackManager.Instance != null)
         {
             ActionStackManager.Instance.ResolveAllPendingActions();
+        }
+
+        // resolve Defense logic first (so damage prevention applies)
+        if (committedDefense != null)
+        {
+            committedDefense.Execute();
+        }
+
+        // resolve Offense logic (damage is calculated against prevention)
+        if (committedOffense != null)
+        {
+            committedOffense.Execute();
         }
 
         yield return new WaitForSeconds(1.5f);
@@ -260,7 +311,11 @@ public class BattleManager : MonoBehaviour
         if (hasBonusOffensivePhase)
         {
             hasBonusOffensivePhase = false;
+
+            UI_CombatLog.Instance?.LogMessage($"Combo token resolved! Starting a Bonus Offensive Roll Phase for {activePlayer.characterData.heroName}!", Color.black);
+            yield return ShowNotification($"Combo token resolved! Starting a Bonus Offensive Roll Phase for {activePlayer.characterData.heroName}!", 1.5f);
             Debug.Log("[BattleManager] COMBO token resolved! Starting a Bonus Offensive Roll Phase!");
+
             SetPhase(TurnPhase.OffensiveRollPhase);
         }
         else
@@ -271,11 +326,43 @@ public class BattleManager : MonoBehaviour
 
     private IEnumerator ProcessUpkeepRoutine()
     {
-        OnPhaseNotification?.Invoke("Upkeep: No Status Effects to check.");
-        yield return new WaitForSeconds(2.5f);
+        bool hasUpkeepEffects = false;
 
-        // TODO: iterare prin Status Effects active si check for OnTurnStart types
-        // momentan e skippable
+        if (activePlayer != null)
+        {
+            foreach (var status in activePlayer.activeStatuses)
+            {
+                if (status.data.primaryStatusEffectOutcomes != null && 
+                    status.data.primaryStatusEffectOutcomes.Any(o => o.activationTrigger == StatusTrigger.OnTurnStart))
+                {
+                    hasUpkeepEffects = true;
+                    break;
+                }
+            }
+        }
+
+        if (hasUpkeepEffects)
+        {
+            yield return ShowNotification($"Upkeep: Resolving Status Effects for {activePlayer.characterData.heroName}...", 2.0f);
+            
+            var statusesToProcess = activePlayer.activeStatuses.ToList();
+            foreach (var status in statusesToProcess)
+            {
+                if (status.data.primaryStatusEffectOutcomes != null && 
+                    status.data.primaryStatusEffectOutcomes.Any(o => o.activationTrigger == StatusTrigger.OnTurnStart))
+                {
+                    Debug.Log($"[Upkeep] Resolving {status.data.effectName} on Turn Start.");
+                    if (StatusResolver.Instance != null) StatusResolver.Instance.ResolveTrigger(StatusTrigger.OnTurnStart, activePlayer, status.data);
+                }
+            }
+            yield return new WaitForSeconds(1.0f);
+        }
+        else
+        {
+            UI_CombatLog.Instance?.LogMessage("No Status Effects to check.", Color.black);
+            yield return ShowNotification("Upkeep: No Status Effects to check.", 1.5f);
+        }
+
         SetPhase(TurnPhase.Income);
     }
 
@@ -284,16 +371,16 @@ public class BattleManager : MonoBehaviour
         if (isFirstTurnOfGame)
         {
             isFirstTurnOfGame = false;
-            OnPhaseNotification?.Invoke("Starting player skips the first Income Phase!");
-            yield return new WaitForSeconds(2.5f);
+            UI_CombatLog.Instance?.LogMessage($"Starting player ({activePlayer.characterData.heroName}) skipped the first Income Phase.", Color.black);
+            yield return ShowNotification("Starting player skips the first Income Phase!", 2.5f);
         }
         else
         {
-            OnPhaseNotification?.Invoke("Income: +1 CP, +1 Card");
-            yield return new WaitForSeconds(2.5f);
-
             activePlayer.ChangeCP(1);
             activePlayer.DrawCards(1);
+            
+            UI_CombatLog.Instance?.LogMessage($"Current CP: {activePlayer.currentCombatPoints}, Cards: {activePlayer.hand.Count}", Color.black);
+            yield return ShowNotification("Income Phase: +1 CP, +1 Card", 2.5f);
         }
 
         SetPhase(TurnPhase.MainPhase1);
@@ -306,56 +393,32 @@ public class BattleManager : MonoBehaviour
             while (activePlayer.hand.Count > 6)
             {
                 int overLimit = activePlayer.hand.Count - 6;
+                UI_CombatLog.Instance?.LogMessage($"Over limit cards: {overLimit}", Color.black);
                 OnPhaseNotification?.Invoke($"Cleanup Phase: Please discard {overLimit} card(s)!");
                 
                 int currentCount = activePlayer.hand.Count;
                 yield return new WaitUntil(() => activePlayer.hand.Count < currentCount);
             }
+            NotifyPhase("");
         }
         else
         {
-            OnPhaseNotification?.Invoke("Cleanup Phase: Hand size is within limit.");
-            yield return new WaitForSeconds(1.5f);
+            UI_CombatLog.Instance?.LogMessage($"Cleanup Phase ended for {activePlayer.characterData.heroName}.", Color.black);
+            yield return ShowNotification("Cleanup Phase: Hand size is within limit.", 1.5f);
         }
 
         EndTurn();
     }
 
-    private IEnumerator SkipCombatAndAdvanceToMainPhase2()
+    private IEnumerator SkipCombatAndAdvanceToMainPhase2(string skipReason)
     {
         OnCombatSkipped?.Invoke();
 
-        yield return new WaitForSeconds(2.5f);
+        UI_CombatLog.Instance?.LogMessage($"{skipReason}", Color.black);
+        yield return ShowNotification(skipReason, 2.5f);
         
         ClearCombatIntent();
         SetPhase(TurnPhase.MainPhase2);
-    }
-
-    /// outcomes that should happen instantly upon declaration, before stack resolution
-    public void ApplyInstantEffects(AbilityOutcome outcome, PlayerController source, PlayerController opponent, float scalingMultiplier = 1f)
-    {
-        PlayerController target = (outcome.target == StatusTarget.Opponent) ? opponent : source;
-
-        float finalValue = outcome.isScaling ? outcome.value * scalingMultiplier : outcome.value;
-
-        switch (outcome.type)
-        {
-            case OutcomeType.GainCP: 
-                target.ChangeCP(Mathf.CeilToInt(finalValue)); 
-                break;
-            case OutcomeType.DrawCard: 
-                target.DrawCards(Mathf.CeilToInt(finalValue)); 
-                break;
-        }
-
-        if (outcome.statuses != null)
-        {
-            foreach (var statusApp in outcome.statuses)
-            {
-                int amountToAdd = outcome.isScaling ? Mathf.CeilToInt(finalValue) : statusApp.amount;
-                target.AddStatus(statusApp.status, amountToAdd);
-            }
-        }
     }
 
     #endregion
@@ -366,7 +429,7 @@ public class BattleManager : MonoBehaviour
     public bool hasActivatedAbilityThisPhase = false;
     public bool needsDefenseSelection = false;
     public bool canActivateDefensiveAbility = true;
-    private bool isPerformingSpecialRoll = false;
+    public bool isPerformingSpecialRoll = false;
 
     [Header("Pending Selections")]
     public DefensiveAbilityData pendingDefenseSelection;
@@ -380,7 +443,13 @@ public class BattleManager : MonoBehaviour
     public ActivateAbilityAction committedDefense;
 
     [Header("Turn-wide Combat Modifiers")]
-    public float turnDamagePrevention = 0f;
+    public float p1DamagePrevention = 0f;
+    public float p2DamagePrevention = 0f;
+    public bool turnDamageHalved = false;
+    public float turnAttackModifier = 0f;
+    public float turnCounterDamage = 0f;
+    public bool isSpiderSenseSwapped = false;
+    public bool turnAttackUndefendable = false;
 
     public void MarkAbilityActivated()
     {
@@ -400,6 +469,8 @@ public class BattleManager : MonoBehaviour
         }
         
         OnDefenseSelected?.Invoke();
+        UI_CombatLog.Instance?.LogMessage($"{opponentPlayer.characterData.heroName} selected {defAbility.abilityName} as defense. Rolling {defAbility.diceToRoll} dice.", Color.black);
+        ShowNotification($"Defense selected: {defAbility.abilityName}. Rolling {defAbility.diceToRoll} dice.", 1.5f);
         Debug.Log($"[BattleManager] Defense selected: {defAbility.abilityName}. Rolling {defAbility.diceToRoll} dice.");
     }
 
@@ -407,33 +478,46 @@ public class BattleManager : MonoBehaviour
     {
         pendingOffensiveAbility = ability;
         pendingOffensiveTierIndex = tierIndex;
+
+        UI_CombatLog.Instance?.LogMessage($"{activePlayer.characterData.heroName} selected {ability.abilityName} as pending attack.", Color.black);
+        ShowNotification($"Attack Ability selected: {ability.abilityName}.", 1.5f);
         Debug.Log($"[BattleManager] {activePlayer.characterData.heroName} selected {ability.abilityName} as pending attack.");
 
         var activation = ability.activations[tierIndex];
         if (activation.secondaryRolls != null && activation.secondaryRolls.Count > 0)
         {
-            StartCoroutine(PerformSecondaryRollsAndStoreRoutine(activation));
+            StartCoroutine(PerformSecondaryRollsAndStoreRoutine(activation, ability.abilityName));
         }
         else
         {
-            if (ActionStackManager.Instance != null) ActionStackManager.Instance.PassPriority(true);
+                if (ActionStackManager.Instance != null) 
+                {
+                    ActionStackManager.Instance.ResetPriorityPasses();
+                    ActionStackManager.Instance.PassPriority(false);
+                }
         }
     }
 
     public void SetPendingDefensiveAbility(DefensiveAbilityData ability)
     {
         pendingDefensiveAbility = ability;
+
+        UI_CombatLog.Instance?.LogMessage($"{opponentPlayer.characterData.heroName} selected {ability.abilityName} as pending defense.", Color.black);
+        ShowNotification($"Defense Ability selected: {ability.abilityName}.", 1.5f);
         Debug.Log($"[BattleManager] {opponentPlayer.characterData.heroName} selected {ability.abilityName} as pending defense.");
         
-        if (ActionStackManager.Instance != null) ActionStackManager.Instance.PassPriority(true);
+        if (ActionStackManager.Instance != null) 
+        {
+            ActionStackManager.Instance.ResetPriorityPasses();
+            ActionStackManager.Instance.PassPriority(false);
+        }
     }
 
-    private IEnumerator PerformSecondaryRollsAndStoreRoutine(OffensiveAbilityData.AttackActivation activation)
+    private IEnumerator PerformSecondaryRollsAndStoreRoutine(OffensiveAbilityData.AttackActivation activation, string abilityName)
     {
         isPerformingSpecialRoll = true;
         pendingSecondaryRollResults.Clear();
-        NotifyPhase("Rolling for ability effect...");
-        yield return new WaitForSeconds(1.0f);
+        yield return ShowNotification($"Rolling for {abilityName} effect...", 1.0f);
 
         DiceManager.Instance.StoreDiceState();
 
@@ -456,13 +540,16 @@ public class BattleManager : MonoBehaviour
         }
 
         yield return new WaitForSeconds(2.0f);
-
         DiceManager.Instance.RestoreDiceState();
         yield return new WaitForSeconds(0.5f);
 
         isPerformingSpecialRoll = false;
 
-        if (ActionStackManager.Instance != null) ActionStackManager.Instance.PassPriority(true);
+        if (ActionStackManager.Instance != null) 
+        {
+            ActionStackManager.Instance.ResetPriorityPasses();
+            ActionStackManager.Instance.PassPriority(false);
+        }
     }
 
     public void ValidatePendingAbilities()
@@ -476,7 +563,10 @@ public class BattleManager : MonoBehaviour
             
             if (!validTiers.Contains(pendingOffensiveTierIndex))
             {
+                UI_CombatLog.Instance?.LogMessage($"Dice changed! Pending ability {pendingOffensiveAbility.abilityName} for {activePlayer.characterData.heroName} is no longer valid.", Color.black);
+                ShowNotification($"Dice changed! Pending ability {pendingOffensiveAbility.abilityName} for {activePlayer.characterData.heroName} is no longer valid.", 1.5f);
                 Debug.LogWarning($"[BattleManager] Pending ability {pendingOffensiveAbility.abilityName} is NO LONGER VALID due to dice changes!");
+
                 pendingOffensiveAbility = null;
                 pendingOffensiveTierIndex = -1;
                 hasActivatedAbilityThisPhase = false; 
@@ -490,14 +580,27 @@ public class BattleManager : MonoBehaviour
         if (currentPhase == TurnPhase.OffensiveRollPhase && pendingOffensiveAbility != null)
         {
             committedOffense = new ActivateAbilityAction(activePlayer, pendingOffensiveAbility, pendingOffensiveTierIndex, new List<int>(pendingSecondaryRollResults));
-            ActionStackManager.Instance.AddActionToStack(committedOffense);
-            Debug.Log($"[BattleManager] Committed {pendingOffensiveAbility.abilityName} to the Action Stack.");
+            
+            // execute instant effects (CP, Draw) immediately upon commiting
+            if (AbilityResolver.Instance != null) AbilityResolver.Instance.ProcessInstantEffects(committedOffense);
+            
+            if (turnAttackUndefendable)
+            {
+                committedOffense.runtimeAttackType = DamageType.Undefendable;
+                turnAttackUndefendable = false;
+
+                Debug.Log($"[BattleManager] Card effect made this attack Undefendable!");
+            }
+
+            UI_CombatLog.Instance?.LogMessage($"Successfully committed {pendingOffensiveAbility.abilityName} for Resolution.", Color.black);
+            Debug.Log($"[BattleManager] Committed {pendingOffensiveAbility.abilityName} for Resolution.");
         }
         else if (currentPhase == TurnPhase.DefensiveRollPhase && pendingDefensiveAbility != null)
         {
             committedDefense = new ActivateAbilityAction(opponentPlayer, pendingDefensiveAbility, -1);
-            ActionStackManager.Instance.AddActionToStack(committedDefense);
-            Debug.Log($"[BattleManager] Committed {pendingDefensiveAbility.abilityName} to the Action Stack.");
+
+            UI_CombatLog.Instance?.LogMessage($"Successfully committed {pendingDefensiveAbility.abilityName} for Resolution.", Color.black);
+            Debug.Log($"[BattleManager] Committed {pendingDefensiveAbility.abilityName} for Resolution.");
         }
     }
 
@@ -509,71 +612,84 @@ public class BattleManager : MonoBehaviour
         pendingOffensiveTierIndex = -1;
         pendingDefensiveAbility = null;
         pendingSecondaryRollResults.Clear();
+        p1DamagePrevention = 0f;
+        p2DamagePrevention = 0f;
+        turnDamageHalved = false;
+        turnAttackModifier = 0f;
+        turnCounterDamage = 0f;
+        isSpiderSenseSwapped = false;
+        turnAttackUndefendable = false;
+
+        if (DiceManager.Instance != null)
+        {
+            DiceManager.Instance.ResetDice(0, 5);
+        }
     }
 
-    public void AddTurnPrevention(float value)
+    public void AddTurnPrevention(PlayerController player, float value)
     {
-        turnDamagePrevention += value;
-        Debug.Log($"[BattleManager] Added {value} to turn prevention. Total: {turnDamagePrevention}");
+        if (player == player1) p1DamagePrevention += value;
+        else if (player == player2) p2DamagePrevention += value;
+
+        UI_CombatLog.Instance?.LogMessage($"Added {value} prevention to {player.characterData.heroName}.", Color.black);
+        Debug.Log($"[BattleManager] Added {value} prevention to {player.characterData.heroName}.");
     }
 
-    public float GetAndClearTurnPrevention()
+    public float ConsumePrevention(PlayerController player, float damageAmount)
     {
-        float value = turnDamagePrevention;
-        turnDamagePrevention = 0f;
+        float preventionAvailable = (player == player1) ? p1DamagePrevention : p2DamagePrevention;
+        float preventionUsed = Mathf.Min(preventionAvailable, damageAmount);
+        
+        if (player == player1) p1DamagePrevention -= preventionUsed;
+        else if (player == player2) p2DamagePrevention -= preventionUsed;
+        
+        return preventionUsed;
+    }
+
+    public void HalveTurnDamage()
+    {
+        turnDamageHalved = true;
+        
+        UI_CombatLog.Instance?.LogMessage($"Incoming damage for {opponentPlayer.characterData.heroName} will be halved this turn.", Color.black);
+        Debug.Log("[BattleManager] Ability activated: Incoming damage will be halved this turn.");
+    }
+
+    public bool GetAndClearTurnDamageHalved()
+    {
+        bool val = turnDamageHalved;
+        turnDamageHalved = false;
+        return val;
+    }
+
+    public void AddTurnAttackModifier(float value)
+    {
+        turnAttackModifier += value;
+
+        UI_CombatLog.Instance?.LogMessage($"{activePlayer.characterData.heroName} added {value} as attack modifier. Total additional damage: {turnAttackModifier}", Color.black);
+        Debug.Log($"[BattleManager] Added {value} to turn attack modifier. Total: {turnAttackModifier}");
+    }
+
+    public float GetAndClearTurnAttackModifier()
+    {
+        float value = turnAttackModifier;
+        turnAttackModifier = 0f;
+        return value;
+    }
+
+    public void AddTurnCounterDamage(float value)
+    {
+        turnCounterDamage += value;
+
+        UI_CombatLog.Instance?.LogMessage($"{activePlayer.characterData.heroName} added {value} as counterattack damage. Total counterattack damage: {turnAttackModifier}", Color.black);
+        Debug.Log($"[BattleManager] Added {value} to turn counter damage. Total: {turnCounterDamage}");
+    }
+
+    public float GetAndClearTurnCounterDamage()
+    {
+        float value = turnCounterDamage;
+        turnCounterDamage = 0f;
         return value;
     }
     #endregion
 
-    #region Combat Resolution Logic
-
-    /// checks if the conditions for an ability outcome are met based on the rolled dice
-    public bool IsConditionMet(AbilityOutcome outcome, List<int> rolledValues, DiceKeyData diceKey, out float scalingMultiplier)
-    {
-        scalingMultiplier = 1f;
-
-        if (outcome.condition == ConditionType.Always) return true;
-
-        if (outcome.condition == ConditionType.SpecificSymbols)
-        {
-            if (outcome.symbolRequirements == null || outcome.symbolRequirements.Count == 0) return false;
-
-            int minSets = int.MaxValue;
-            foreach (var req in outcome.symbolRequirements)
-            {
-                int countInRoll = 0;
-                foreach (int val in rolledValues)
-                {
-                    if (val == 0) continue;
-                    var symbolData = diceKey.GetSymbolForValue(val);
-                    if (symbolData != null && symbolData == req.symbol) countInRoll++;
-                }
-                if (countInRoll < req.count) return false;
-                minSets = Mathf.Min(minSets, countInRoll / Mathf.Max(1, req.count));
-            }
-            
-            if (outcome.isScaling) scalingMultiplier = minSets;
-            return true;
-        }
-
-        if (outcome.condition == ConditionType.SumValue)
-        {
-            int sum = 0;
-            foreach (int v in rolledValues) sum += v;
-            
-            if (outcome.isScaling) scalingMultiplier = sum;
-
-            switch (outcome.compareMode)
-            {
-                case CompareMode.LessOrEqual: return sum <= outcome.threshold;
-                case CompareMode.GreaterOrEqual: return sum >= outcome.threshold;
-                case CompareMode.Exactly: return sum == outcome.threshold;
-                case CompareMode.None: return true;
-            }
-        }
-
-        return false;
-    }
-    
-    #endregion
 }

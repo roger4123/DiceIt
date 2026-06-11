@@ -12,15 +12,6 @@ public class UI_VictoryScreen : MonoBehaviour
     {
         if (victoryPanel != null)
         {
-            Canvas canvas = victoryPanel.GetComponent<Canvas>();
-            if (canvas == null)
-            {
-                canvas = victoryPanel.AddComponent<Canvas>();
-                victoryPanel.AddComponent<GraphicRaycaster>();
-            }
-            canvas.overrideSorting = true;
-            canvas.sortingOrder = 30000;
-            
             victoryPanel.SetActive(false);
         }
         
@@ -40,12 +31,16 @@ public class UI_VictoryScreen : MonoBehaviour
 
     private void HandleGameOver(PlayerController winner)
     {
-        if (victoryPanel != null) victoryPanel.SetActive(true);
+        if (victoryPanel != null) 
+        {
+            victoryPanel.SetActive(true);
+            transform.SetAsLastSibling();
+        }
         
         if (victoryText != null && winner != null && winner.characterData != null) 
         {
-            victoryText.text = $"VICTORY!\n{winner.characterData.heroName} WON!";
-            victoryText.color = winner.characterData.diceKey.dieColor; // Colorează textul în culoarea eroului!
+            victoryText.text = $"VICTORY!\n{winner.characterData.heroName} won the game!";
+            victoryText.color = winner.characterData.diceKey.dieColor;
         }
         
         Time.timeScale = 0f;

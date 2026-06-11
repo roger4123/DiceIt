@@ -33,7 +33,6 @@ public class UI_DicePanels : MonoBehaviour
             BattleManager.Instance.OnPhaseChanged += HandlePhaseChange;
         }
 
-        // Ensure dice are blank at the very start of the game.
         ResetAllDiceVisuals();
     }
 
@@ -51,7 +50,6 @@ public class UI_DicePanels : MonoBehaviour
 
     private void UpdateDiceVisuals(List<DiceManager.DieState> currentDice, int rollsLeft)
     {
-        // Determinăm cine este jucătorul care ar trebui să ruleze zarurile în faza curentă
         PlayerController rollingPlayer = (BattleManager.Instance.currentPhase == TurnPhase.DefensiveRollPhase) 
                                          ? BattleManager.Instance.opponentPlayer 
                                          : BattleManager.Instance.activePlayer;
@@ -85,12 +83,11 @@ public class UI_DicePanels : MonoBehaviour
             activeUIList[i].SetLockVisual(currentDice[i].isLocked);
         }
 
-        // un eventual buton de RollsLeft? pe ecran?
     }
 
     private void HandlePhaseChange(TurnPhase newPhase)
     {
-        // If we enter any phase that is NOT a roll phase, blank out all dice visuals.
+        // if we enter any phase that is NOT a roll phase, blank out all dice visuals.
         if (newPhase != TurnPhase.OffensiveRollPhase && newPhase != TurnPhase.DefensiveRollPhase)
         {
             ResetAllDiceVisuals();

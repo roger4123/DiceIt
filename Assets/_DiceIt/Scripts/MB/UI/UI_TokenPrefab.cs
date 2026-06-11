@@ -65,14 +65,12 @@ public class UI_TokenPrefab : MonoBehaviour, IPointerClickHandler
                 {
                     PlayerController owner = UI_TokensPoolModal.Instance.CurrentOwner;
 
-                    // ca
                     if (ActionStackManager.Instance != null && owner != ActionStackManager.Instance.playerWithPriority)
                     {
                         Debug.LogWarning($"[TokensPool] Cant't spend a token right now! Either you don't have priority or the selected token is the oponent's one.");
                         return;
                     }
 
-                    // Regula 2: Verificăm dacă regulile specifice tokenului sunt îndeplinite (ex: Combo / Invisibility)
                     if (!owner.CanSpendStatus(data))
                     {
                         Debug.LogWarning($"[TokensPool] The conditions for spending {data.effectName} are not fulfilled!");

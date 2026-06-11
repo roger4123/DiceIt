@@ -30,6 +30,7 @@ public class UI_RollButton : MonoBehaviour
             BattleManager.Instance.OnPhaseChanged += UpdateButtonState;
             BattleManager.Instance.OnDefenseSelected += UpdateButtonOnEvent;
             BattleManager.Instance.OnAbilityActivated += UpdateButtonOnEvent;
+            BattleManager.Instance.OnCombatSkipped += DisableButtonOnSkip;
             UpdateButtonState(BattleManager.Instance.currentPhase);
         }
 
@@ -37,6 +38,11 @@ public class UI_RollButton : MonoBehaviour
         {
             DiceManager.Instance.OnDiceStateChanged += UpdateRollText;
             UpdateRollText(DiceManager.Instance.dice, DiceManager.Instance.rollsLeft);
+        }
+
+        if (ActionStackManager.Instance != null)
+        {
+            ActionStackManager.Instance.OnPriorityChanged += OnPriorityChanged;
         }
     }
 
@@ -47,17 +53,36 @@ public class UI_RollButton : MonoBehaviour
             BattleManager.Instance.OnPhaseChanged -= UpdateButtonState;
             BattleManager.Instance.OnDefenseSelected -= UpdateButtonOnEvent;
             BattleManager.Instance.OnAbilityActivated -= UpdateButtonOnEvent;
+            BattleManager.Instance.OnCombatSkipped -= DisableButtonOnSkip;
         }
 
         if (DiceManager.Instance != null)
         {
             DiceManager.Instance.OnDiceStateChanged -= UpdateRollText;
         }
+
+        if (ActionStackManager.Instance != null)
+        {
+            ActionStackManager.Instance.OnPriorityChanged -= OnPriorityChanged;
+        }
+    }
+
+    private void DisableButtonOnSkip()
+    {
+        if (rollButton != null)
+        {
+            rollButton.interactable = false;
+        }
     }
 
     private void UpdateButtonOnEvent()
     {
         UpdateButtonState(BattleManager.Instance.currentPhase);
+    }
+
+    private void OnPriorityChanged(PlayerController playerWithPriority)
+    {
+        if (BattleManager.Instance != null) UpdateButtonState(BattleManager.Instance.currentPhase);
     }
 
     private void UpdateRollText(List<DiceManager.DieState> currentDice, int rollsLeft)
@@ -99,7 +124,11 @@ public class UI_RollButton : MonoBehaviour
             }
         }
 
-        // TODO: verificare daca pe stack exista o carte/status care necesita rolls
+        // can't roll if you dont have prio
+        if (ActionStackManager.Instance != null && ActionStackManager.Instance.playerWithPriority != ownerPlayer)
+        {
+            canRoll = false;
+        }
 
         if (DiceManager.Instance != null && DiceManager.Instance.rollsLeft <= 0)
         {

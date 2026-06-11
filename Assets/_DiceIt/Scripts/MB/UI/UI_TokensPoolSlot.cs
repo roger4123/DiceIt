@@ -17,7 +17,7 @@ public class UI_TokensPoolSlot : MonoBehaviour
     {
         if (owner != null && UI_TokensPoolModal.Instance != null)
         {
-            // Dacă o carte așteaptă să selectăm un jucător țintă
+            // for target selecting
             if (UI_TokensPoolModal.Instance.IsSelectingPlayer)
             {
                 UI_TokensPoolModal.Instance.SelectPlayer(owner);

@@ -1,10 +1,9 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-// Definim tipurile de statusuri pentru a le putea colora diferit în UI mai târziu
 public enum StatusType { Positive, Negative }
 public enum StatusTarget { Self, Opponent }
-public enum StatusTrigger   // When to execute the SE logic.
+public enum StatusTrigger
 { 
     None,            // Passive
     OnTurnStart,     // Upkeep Phase (SOT)
@@ -17,23 +16,16 @@ public enum StatusTrigger   // When to execute the SE logic.
     ReachingStackLimit,
 }
 
-public enum OutcomeType     // What does the SE do when activated
+public enum StatusOutcomeType     // What does the SE do when activated
 {
     None,
     Damage,
     Healing,
     GainCP,
     DrawCard,
-    AttackModifier,
     Prevent,
     TakeBonusORP,
-    ChangeAttackType,   // Webbed/Invisibility
-    RemoveStatus,       // Cleanse/Disruption
-    StealStatus,        // Trickster
-    DisableAbility,     // Spellbound
-    ModifyRollAttempts, // Influence/Acuity
-    TransformStatus,    // Time Bomb
-    SwapDie             // Reality Warp
+    ChangeAttackType,
 }
 
 [System.Serializable]
@@ -41,7 +33,7 @@ public class StatusOutcome
 {
     public StatusTrigger activationTrigger;
     public StatusTarget target;
-    public OutcomeType type;
+    public StatusOutcomeType type;
     public float value;
 
     [Header("Condition (Optional)")]
@@ -73,8 +65,8 @@ public class StatusEffectsData : ScriptableObject
     public int stackLimit = 1;
     public int maxGlobalTokens;
     public bool isPersistent; // persists in between turns if not spent
-    public bool isSpendable; // Dacă necesită acțiune manuală pentru consum
+    public bool isSpendable; // != passive effect
 
     [Header("Logic & Triggers")]
-    public List<StatusOutcome> outcomes; // effects list (CP, Cards, Damage, etc.)
+    public List<StatusOutcome> primaryStatusEffectOutcomes; // effects list
 }

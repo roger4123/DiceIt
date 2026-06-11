@@ -19,7 +19,7 @@ public enum CardActionType
     Damage, Heal, GainCP, DrawCard, GainStatus,
     
     // statuses
-    RemoveStatus, TransferStatus, DiscardToGain,     
+    RemoveStatus, TransferStatus, MakeAttackUndefendable,     
     
     // dice
     ChangeDiceValue,
@@ -31,7 +31,7 @@ public enum CardActionType
     IncrementOrDecrement,
     
     // attack/defence
-    PreventDamage, AttackModifier,
+    PreventDamage, AddAttackModifier, AddCounterDamage,
 
     // special
     SwapRequiredSymbols
@@ -42,7 +42,9 @@ public enum CardConditionType
     None,
     OnOffensiveRoll,
     OnDefensiveRoll,
-    WhenAttacked
+    WhenAttacked,
+    DiscardStatus,
+    StatusStacksScaling
 }
 
 [System.Serializable]

@@ -36,13 +36,6 @@ public class UI_PhaseTracker : MonoBehaviour
 
     private void UpdatePhaseHighlight(TurnPhase currentPhase)
     {
-        // Ascundem automat panoul de notificare când intrăm într-o fază interactivă (M1, ORP, DRP, M2)
-        if (currentPhase == TurnPhase.MainPhase1 || currentPhase == TurnPhase.OffensiveRollPhase || 
-            currentPhase == TurnPhase.DefensiveRollPhase || currentPhase == TurnPhase.MainPhase2)
-        {
-            if (notificationPanel != null) notificationPanel.SetActive(false);
-        }
-
         for (int i = 0; i < phaseLetters.Count; i++)
         {
             if (phaseLetters[i] == null) continue;
@@ -57,7 +50,11 @@ public class UI_PhaseTracker : MonoBehaviour
 
     private void ShowNotification(string message)
     {
-        if (notificationPanel != null && notificationText != null)
+         if (string.IsNullOrEmpty(message))
+        {
+            notificationPanel.SetActive(false);
+        }
+        else
         {
             notificationPanel.SetActive(true);
             notificationText.text = message;

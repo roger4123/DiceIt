@@ -13,8 +13,8 @@ public class StatusResolver : MonoBehaviour
 
     public void ResolveTrigger(StatusTrigger trigger, PlayerController source, StatusEffectsData tokenData)
     {
-        if (tokenData.outcomes == null) return;
-        foreach (var outcome in tokenData.outcomes)
+        if (tokenData.primaryStatusEffectOutcomes == null) return;
+        foreach (var outcome in tokenData.primaryStatusEffectOutcomes)
         {
             if (outcome.activationTrigger == trigger)
             {
@@ -26,6 +26,7 @@ public class StatusResolver : MonoBehaviour
     public void ResolveSpend(SpendTokenAction action)
     {
         Debug.Log($"[StatusResolver] Resolving spent token: {action.tokenData.effectName} by {action.SourcePlayer.characterData.heroName}");
+        UI_CombatLog.Instance?.LogMessage($"Resolving spent token: {action.tokenData.effectName}", Color.black);
 
         var bm = BattleManager.Instance;
         bool usedForRolls = false;
@@ -33,9 +34,9 @@ public class StatusResolver : MonoBehaviour
         // additionall roll in defense
         if (action.tokenData.effectName == "Invisibility" && bm.currentPhase == TurnPhase.DefensiveRollPhase && bm.pendingDefenseSelection != null)
         {
-            foreach (var outcome in bm.pendingDefenseSelection.defenseOutcomes)
+            foreach (var outcome in bm.pendingDefenseSelection.primaryDefensiveOutcomes)
             {
-                if (outcome.type == OutcomeType.ModifyRollAttempts && outcome.statuses != null)
+                if (outcome.type == AbilityOutcomeType.ModifyRollAttempts && outcome.statuses != null)
                 {
                     if (outcome.statuses.Any(s => s.status.effectName == "Invisibility" && s.amount < 0))
                     {
@@ -43,7 +44,9 @@ public class StatusResolver : MonoBehaviour
                         {
                             int currentRolls = DiceManager.Instance.rollsLeft;
                             DiceManager.Instance.ResetDice(currentRolls + (int)outcome.value, bm.pendingDefenseSelection.diceToRoll);
-                            bm.NotifyPhase($"Spent Invisibility for {outcome.value} extra roll(s)!");
+
+                            UI_CombatLog.Instance?.LogMessage($"Spent Invisibility for {outcome.value} extra roll(s)!", Color.black);
+                            bm?.ShowNotification($"Spent Invisibility for {outcome.value} extra roll(s)!", 2.5f);
                             usedForRolls = true;
                         }
                         break;
@@ -52,14 +55,14 @@ public class StatusResolver : MonoBehaviour
             }
         }
 
-        if (action.tokenData.outcomes == null) return;
+        if (action.tokenData.primaryStatusEffectOutcomes == null) return;
 
-        foreach (var outcome in action.tokenData.outcomes)
+        foreach (var outcome in action.tokenData.primaryStatusEffectOutcomes)
         {
             if (outcome.activationTrigger == StatusTrigger.OnManualSpend)
             {
                 // skip the base effect (ChangeAttackType)
-                if (usedForRolls && outcome.type == OutcomeType.ChangeAttackType) continue;
+                if (usedForRolls && outcome.type == StatusOutcomeType.ChangeAttackType) continue;
 
                 ApplyOutcome(outcome, action.SourcePlayer, action.tokenData);
             }
@@ -73,18 +76,19 @@ public class StatusResolver : MonoBehaviour
 
         switch (outcome.type)
         {
-            case OutcomeType.TakeBonusORP:
+            case StatusOutcomeType.TakeBonusORP:
+                Debug.Log($"[StatusResolver] {tokenData.effectName} grants a Bonus Offensive Roll Phase to {target.characterData.heroName}.");
+                UI_CombatLog.Instance?.LogMessage($"{target.characterData.heroName} gains a Bonus Offensive Roll Phase from {tokenData.effectName}!", Color.black);
                 bm.hasBonusOffensivePhase = true;
                 break;
 
-            case OutcomeType.ChangeAttackType:
+            case StatusOutcomeType.ChangeAttackType:
                 // base logic for Invisibility
                 if (tokenData.effectName == "Invisibility" && bm.currentPhase == TurnPhase.DefensiveRollPhase)
                 {
-                    Debug.Log("[StatusResolver] INVISIBILITY used! Removing Undefendable restriction for this phase.");
+                    UI_CombatLog.Instance?.LogMessage("INVISIBILITY used! Defensive Abilities are now allowed.", Color.black);
+                    bm?.ShowNotification("Invisibility active! Defensive Abilities are now allowed.", 2.5f);
                     bm.canActivateDefensiveAbility = true;
-                    
-                    bm.NotifyPhase("Invisibility active! Defensive Abilities are now allowed.");
                     
                     if (target.activeDefensiveAbilities.Count > 0)
                     {
@@ -105,22 +109,30 @@ public class StatusResolver : MonoBehaviour
                 }
                 break;
             
-            case OutcomeType.Damage:
+            case StatusOutcomeType.Damage:
+                UI_CombatLog.Instance?.LogMessage($"{tokenData.effectName} deals {outcome.value} damage to {target.characterData.heroName}.", Color.black);
                 target.ChangeHealth(-(int)outcome.value);
                 break;
-            case OutcomeType.Healing:
+                
+            case StatusOutcomeType.Healing:
+                UI_CombatLog.Instance?.LogMessage($"{tokenData.effectName} heals {target.characterData.heroName} for {outcome.value} HP.", Color.black);
                 target.ChangeHealth((int)outcome.value);
                 break;
-            case OutcomeType.GainCP:
+                
+            case StatusOutcomeType.GainCP:
+                UI_CombatLog.Instance?.LogMessage($"{target.characterData.heroName} gains {outcome.value} CP from {tokenData.effectName}.", Color.black);
                 target.ChangeCP((int)outcome.value);
                 break;
-            case OutcomeType.DrawCard:
+                
+            case StatusOutcomeType.DrawCard:
+                UI_CombatLog.Instance?.LogMessage($"{target.characterData.heroName} draws {outcome.value} card(s) from {tokenData.effectName}.", Color.black);
                 target.DrawCards(Mathf.CeilToInt(outcome.value));
                 break;
-            case OutcomeType.Prevent:
-                bm.AddTurnPrevention(outcome.value);
-                Debug.Log($"[StatusResolver] {tokenData.effectName} adds {outcome.value} damage prevention.");
-                bm.NotifyPhase($"{tokenData.effectName} active! Prevents {outcome.value} damage.");
+                
+            case StatusOutcomeType.Prevent:
+                bm.AddTurnPrevention(target, outcome.value);
+                UI_CombatLog.Instance?.LogMessage($"{tokenData.effectName} adds {outcome.value} damage prevention.", Color.black);
+                bm?.ShowNotification($"{tokenData.effectName} active! Prevents {outcome.value} damage.", 2.5f);
                 break;
         }
     }

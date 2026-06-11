@@ -59,7 +59,11 @@ public class UI_CombatLog : MonoBehaviour
 
     private IEnumerator ScrollToBottom()
     {
-        yield return new WaitForEndOfFrame();
+        yield return new WaitForEndOfFrame(); 
+        
+        if (contentContainer != null) LayoutRebuilder.ForceRebuildLayoutImmediate(contentContainer.GetComponent<RectTransform>());
+        Canvas.ForceUpdateCanvases();
+
         if (scrollRect != null)
         {
             scrollRect.verticalNormalizedPosition = 0f;

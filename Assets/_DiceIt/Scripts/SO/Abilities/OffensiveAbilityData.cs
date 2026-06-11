@@ -13,8 +13,8 @@ public class OffensiveAbilityData : BaseAbilityData
         public RequirementType type;
         public List<SymbolRequirement> symbolsNeeded;
 
-        [Header("Primary Outcomes (Guaranteed)")]
-        public List<AbilityOutcome> primaryOutcomes;
+        [Header("Primary Ability Outcomes (Guaranteed)")]
+        public List<AbilityOutcome> primaryOffensiveOutcomes;
 
         [Header("Secondary Rolls (Optional)")]
         public List<SecondaryRoll> secondaryRolls;

@@ -47,7 +47,7 @@ public class UI_HandManager : MonoBehaviour
             if (cardController != null)
             {
                 cardController.Initialize(card, targetPlayer);
-                cardController.SetCardOrder(sortOrderIndex);
+                cardController.SetAsHandCard(sortOrderIndex);
             }
             sortOrderIndex++;
         }

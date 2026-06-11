@@ -42,6 +42,7 @@ public class DiceManager : MonoBehaviour
 
     private List<DieState> savedDiceState;
     private int savedRollsLeft;
+    private bool savedHasRolledThisPhase;
     private bool isStateSaved = false;
 
     private Action<int, PlayerController> pendingDieSelectionCallback;
@@ -78,7 +79,8 @@ public class DiceManager : MonoBehaviour
     {
         if (rollsLeft <= 0)
         {
-            Debug.Log("==> No more Roll Attempts left!");
+            UI_CombatLog.Instance?.LogMessage("No more Roll Attempts left!", Color.black);
+            BattleManager.Instance?.ShowNotification("No more Roll Attempts left!", 2.0f);
             return;
         }
 
@@ -90,11 +92,11 @@ public class DiceManager : MonoBehaviour
         }
 
         rollsLeft--;
-        Debug.Log($"==> Rolled successfully! Remaining Roll Attemtps: {rollsLeft}");
+        BattleManager.Instance?.ShowNotification($"Rolled successfully! {rollsLeft} left.", 2.0f);
         
         var rollingPlayer = (BattleManager.Instance.currentPhase == TurnPhase.DefensiveRollPhase) ? BattleManager.Instance.opponentPlayer : BattleManager.Instance.activePlayer;
         string rolledValuesStr = string.Join(", ", GetCurrentDiceValues().FindAll(v => v > 0));
-        UI_CombatLog.Instance?.LogMessage($"{rollingPlayer.characterData.heroName} rolled: {rolledValuesStr}", Color.white);
+        UI_CombatLog.Instance?.LogMessage($"{rollingPlayer.characterData.heroName} rolled: {rolledValuesStr}", Color.black);
 
         BroadcastState();
     }
@@ -105,7 +107,7 @@ public class DiceManager : MonoBehaviour
         validTargetPlayerForSelection = targetPlayer;
         pendingDieSelectionCallback = callback;
         SetInteractionState(DiceInteractionState.SelectingDice);
-        Debug.Log($"[DiceManager] Waiting for player to select a die...");
+        BattleManager.Instance?.ShowNotification("Waiting for player to select a die...", 2.0f);
     }
 
     public void OnDieClicked(int index, PlayerController clickedOwner)
@@ -130,7 +132,7 @@ public class DiceManager : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning($"[DiceManager] {clickedOwner.characterData.heroName} tried to lock a die, but it's {rightfulLocker.characterData.heroName}'s turn to do so.");
+                BattleManager.Instance?.ShowNotification("Not your turn to lock dice!", 2.0f);
             }
         }
         // Rule 4: Handle selection targeting from cards/effects.
@@ -144,7 +146,10 @@ public class DiceManager : MonoBehaviour
                 
                 callback?.Invoke(index, clickedOwner);
             }
-            else Debug.LogWarning($"[DiceManager] You must select a valid die!");
+            else 
+            {
+                BattleManager.Instance?.ShowNotification("Select a valid die!", 2.0f);
+            }
         }
     }
 
@@ -189,6 +194,12 @@ public class DiceManager : MonoBehaviour
         BroadcastState();
     }
 
+    public void AddRollAttempts(int amount)
+    {
+        rollsLeft += amount;
+        BroadcastState();
+    }
+
     public List<int> GetCurrentDiceValues()
     {
         List<int> values = new List<int>();
@@ -227,6 +238,7 @@ public class DiceManager : MonoBehaviour
             });
         }
         savedRollsLeft = rollsLeft;
+        savedHasRolledThisPhase = hasRolledThisPhase;
         isStateSaved = true;
         Debug.Log("[DiceManager] Dice state saved.");
     }
@@ -249,6 +261,7 @@ public class DiceManager : MonoBehaviour
             });
         }
         rollsLeft = savedRollsLeft;
+        hasRolledThisPhase = savedHasRolledThisPhase;
         
         savedDiceState = null;
         isStateSaved = false;

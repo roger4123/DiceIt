@@ -39,38 +39,6 @@ public class ActionStackManager : MonoBehaviour
     {
         actionStack.Push(action);
         consecutivePasses = 0; // when an action has happened
-        
-        // INSTANT EFFECTS RESOLUTION
-        if (action is ActivateAbilityAction abilityAction)
-        {
-            var bm = BattleManager.Instance;
-            if (abilityAction.ability is OffensiveAbilityData offAb && abilityAction.activationIndex != -1)
-            {
-                var activation = offAb.activations[abilityAction.activationIndex];
-                var primaryDice = DiceManager.Instance != null ? DiceManager.Instance.GetCurrentDiceValues() : new List<int>();
-                
-                foreach (var outcome in activation.primaryOutcomes)
-                {
-                    if (bm.IsConditionMet(outcome, primaryDice, abilityAction.SourcePlayer.characterData.diceKey, out float primaryScalingMult))
-                    {
-                        bm.ApplyInstantEffects(outcome, abilityAction.SourcePlayer, bm.opponentPlayer, primaryScalingMult);
-                    }
-                }
-                
-                // secondary outcomes
-                if (activation.secondaryRolls != null && activation.secondaryRolls.Count > 0)
-                {
-                    var secRoll = activation.secondaryRolls[0];
-                    foreach (var outcome in secRoll.outcomes)
-                    {
-                        if (bm.IsConditionMet(outcome, abilityAction.secondaryRollResults, abilityAction.SourcePlayer.characterData.diceKey, out float scalingMult))
-                        {
-                            bm.ApplyInstantEffects(outcome, abilityAction.SourcePlayer, bm.opponentPlayer, scalingMult);
-                        }
-                    }
-                }
-            }
-        }
 
         Debug.Log($"[Stack] {action.SourcePlayer.characterData.heroName} added {action.ActionName} to the stack.");
         OnActionAddedToStack?.Invoke(action);
@@ -98,17 +66,17 @@ public class ActionStackManager : MonoBehaviour
 
         if (consecutivePasses >= 2)
         {
-            consecutivePasses = 0;
-
-            // if top action is a non-damage-ability action, resolve instantly
-            if (actionStack.Count > 0 && !(actionStack.Peek() is ActivateAbilityAction))
+            // Both players passed. Time to act.
+            if (actionStack.Count > 0)
             {
-                Debug.Log("[Stack] Both players passed. Resolving Instant Action.");
+                // If there's something on the stack, resolve the top action.
+                Debug.Log("[Stack] Both players passed. Resolving top action on the stack.");
                 ResolveTopAction();
             }
             else
             {
-                Debug.Log("[Stack] Both players passed. Advancing phase.");
+                // If the stack is empty, it's safe to advance the phase.
+                Debug.Log("[Stack] Both players passed and stack is empty. Advancing phase.");
                 BattleManager.Instance.AdvancePhase();
             }
         }
@@ -140,6 +108,7 @@ public class ActionStackManager : MonoBehaviour
         topAction.Execute();
         OnActionResolved?.Invoke(topAction);
 
+        ResetPriorityPasses();
         GivePriorityTo(BattleManager.Instance.activePlayer);
     }
 

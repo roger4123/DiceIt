@@ -39,16 +39,6 @@ public class UI_CardController : MonoBehaviour, IPointerEnterHandler, IPointerEx
     private void Awake()
     {
         initialScale = transform.localScale;
-        
-        //  Canvas & Raycaster -> rendering over other components (cards), without breaking the Layout Group
-        cardCanvas = GetComponent<Canvas>();
-        if (cardCanvas == null)
-        {
-            cardCanvas = gameObject.AddComponent<Canvas>();
-            gameObject.AddComponent<GraphicRaycaster>();
-        }
-        cardCanvas.overrideSorting = true;
-        cardCanvas.sortingOrder = baseSortingOrder; 
     }
 
     public void Initialize(CardData data, PlayerController ownerPlayer = null)
@@ -106,10 +96,17 @@ public class UI_CardController : MonoBehaviour, IPointerEnterHandler, IPointerEx
         UpdateBorderColor();
     }
 
-    public void SetCardOrder(int order)
+    public void SetAsHandCard(int order)
     {
         baseSortingOrder = order;
-        if (cardCanvas != null) cardCanvas.sortingOrder = baseSortingOrder;
+        cardCanvas = GetComponent<Canvas>();
+        if (cardCanvas == null)
+        {
+            cardCanvas = gameObject.AddComponent<Canvas>();
+            gameObject.AddComponent<GraphicRaycaster>();
+        }
+        cardCanvas.overrideSorting = true;
+        cardCanvas.sortingOrder = baseSortingOrder; 
     }
     
     private void UpdateBorderColor()
@@ -125,10 +122,21 @@ public class UI_CardController : MonoBehaviour, IPointerEnterHandler, IPointerEx
         }
     }
 
+    public void SetViewOnly()
+    {
+        Canvas canvas = GetComponent<Canvas>();
+        if (canvas != null) Destroy(canvas);
+        
+        GraphicRaycaster raycaster = GetComponent<GraphicRaycaster>();
+        if (raycaster != null) Destroy(raycaster);
+        
+        this.enabled = false;
+    }
+
     public void OnPointerEnter(PointerEventData eventData)
     {
         // bring to front and scale up
-        if (cardCanvas != null) cardCanvas.sortingOrder = 100;
+        if (cardCanvas != null) cardCanvas.sortingOrder = baseSortingOrder + 100;
         transform.localScale = initialScale * zoomScale;
 
         // highlight white for discard if in cleanup phase

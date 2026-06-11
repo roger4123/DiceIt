@@ -759,9 +759,9 @@ MonoBehaviour:
   mainPhaseSprite: {fileID: 21300000, guid: 7ccb378d8ae199a48babb48fc2279c76, type: 3}
   rollPhaseSprite: {fileID: 21300000, guid: 3ad95a5ed4236cc4a839b12151a2f74f, type: 3}
   instantSprite: {fileID: 21300000, guid: 90daa1dd0575e134596ee47e3fcaa662, type: 3}
-  mainPhaseColor: {r: 0, g: 0, b: 1, a: 1}
-  rollPhaseColor: {r: 1, g: 0.6470588, b: 0, a: 1}
-  instantColor: {r: 1, g: 0, b: 0, a: 1}
+  mainPhaseColor: {r: 0.12941177, g: 0.5529412, b: 0.7725491, a: 1}
+  rollPhaseColor: {r: 0.9921569, g: 0.5176471, b: 0.043137256, a: 1}
+  instantColor: {r: 0.9686275, g: 0.18431373, b: 0.13725491, a: 1}
   zoomScale: 1.1
 --- !u!1 &5911638153630433228
 GameObject:

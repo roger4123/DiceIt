@@ -69,7 +69,7 @@ public class DevModeController : MonoBehaviour
         {
             if (DiceManager.Instance != null)
             {
-                DiceManager.Instance.rollsLeft++;
+                DiceManager.Instance.AddRollAttempts(1);
                 Debug.Log($"[DevMode] Added 1 roll attempt. Current: {DiceManager.Instance.rollsLeft}");
             }
         }

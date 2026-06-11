@@ -46,7 +46,7 @@ public class UI_TokenDetailModal : MonoBehaviour
                           $"Transferable: {(data.isTransferable ? "Yes" : "No")}";
 
         modalPanel.SetActive(true);
-        transform.SetAsLastSibling(); // Forteaza Detail-ul sa se puna in fata Pool-ului
+        transform.SetAsLastSibling();
     }
 
     public void Hide()

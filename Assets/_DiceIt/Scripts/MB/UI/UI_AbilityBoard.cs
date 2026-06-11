@@ -27,9 +27,35 @@ public class UI_AbilityBoard : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        if (DiceManager.Instance != null) DiceManager.Instance.OnDiceStateChanged += OnDiceChanged;
+        if (BattleManager.Instance != null)
+        {
+            BattleManager.Instance.OnPhaseChanged += OnPhaseChanged;
+            BattleManager.Instance.OnDefenseSelected += UpdateHighlights;
+        }
+        UpdateHighlights();
+    }
+
+    private void OnDestroy()
+    {
+        if (DiceManager.Instance != null) DiceManager.Instance.OnDiceStateChanged -= OnDiceChanged;
+        if (BattleManager.Instance != null)
+        {
+            BattleManager.Instance.OnPhaseChanged -= OnPhaseChanged;
+            BattleManager.Instance.OnDefenseSelected -= UpdateHighlights;
+        }
+    }
+
+    private void OnDiceChanged(List<DiceManager.DieState> dice, int rollsLeft) { UpdateHighlights(); }
+    
+    private void OnPhaseChanged(TurnPhase phase) { UpdateHighlights(); }
+
     private void RefreshBoard()
     {
         PopulateBoard(targetPlayer.characterData, targetPlayer);
+        UpdateHighlights();
     }
 
     private void PopulateBoard(CharacterData characterData, PlayerController owner)
@@ -106,6 +132,74 @@ public class UI_AbilityBoard : MonoBehaviour
             {
                 slot.gameObject.SetActive(false);
             }            
+        }
+    }
+
+    private void UpdateHighlights()
+    {
+        if (targetPlayer == null || BattleManager.Instance == null) return;
+
+        var currentPhase = BattleManager.Instance.currentPhase;
+        bool isRollingPlayer = (currentPhase == TurnPhase.DefensiveRollPhase) 
+                             ? targetPlayer == BattleManager.Instance.opponentPlayer 
+                             : targetPlayer == BattleManager.Instance.activePlayer;
+
+        List<int> currentDice = DiceManager.Instance != null ? DiceManager.Instance.GetCurrentDiceValues() : new List<int>();
+
+        foreach (var slot in abilitySlots)
+        {
+            if (!slot.gameObject.activeSelf || slot.assignedAbility == null) continue;
+
+            if (slot.assignedAbility is OffensiveAbilityData offAb)
+            {
+                // Offensive: matched the required dice?
+                if (currentPhase == TurnPhase.OffensiveRollPhase && isRollingPlayer)
+                {
+                    var validTiers = AbilityMatcher.GetValidActivations(offAb, currentDice, targetPlayer.characterData.diceKey);
+                    if (validTiers.Count > 0) slot.SetHighlight(new Color(0.4f, 1f, 0.4f));
+                    else slot.ResetHighlight();
+                }
+                else slot.ResetHighlight();
+            }
+            else if (slot.assignedAbility is DefensiveAbilityData defAb)
+            {
+                // Defensive: Normal damage type?
+                if (currentPhase == TurnPhase.DefensiveRollPhase && isRollingPlayer && BattleManager.Instance.canActivateDefensiveAbility)
+                {
+                    if (BattleManager.Instance.pendingDefenseSelection == null)
+                    {
+                        slot.SetHighlight(Color.yellow);
+                    }
+                    else if (BattleManager.Instance.pendingDefenseSelection == defAb)
+                    {
+                        if (DiceManager.Instance != null && DiceManager.Instance.hasRolledThisPhase)
+                        {
+                            bool anyConditionMet = false;
+                            if (AbilityResolver.Instance != null)
+                            {
+                                foreach (var outcome in defAb.primaryDefensiveOutcomes)
+                                {
+                                    if (AbilityResolver.Instance.IsConditionMet(outcome, currentDice, targetPlayer.characterData.diceKey, out _))
+                                    {
+                                        anyConditionMet = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            slot.SetHighlight(anyConditionMet ? new Color(0.4f, 1f, 0.4f) : Color.yellow);
+                        }
+                        else
+                        {
+                            slot.SetHighlight(Color.yellow);
+                        }
+                    }
+                    else
+                    {
+                        slot.ResetHighlight();
+                    }
+                }
+                else slot.ResetHighlight();
+            }
         }
     }
 }

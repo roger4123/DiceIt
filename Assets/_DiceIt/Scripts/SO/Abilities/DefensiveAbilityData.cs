@@ -6,5 +6,5 @@ public class DefensiveAbilityData : BaseAbilityData
 {
     [Header("Defense Mechanics")]
     public int diceToRoll = 5;
-    public List<AbilityOutcome> defenseOutcomes;
+    public List<AbilityOutcome> primaryDefensiveOutcomes;
 }

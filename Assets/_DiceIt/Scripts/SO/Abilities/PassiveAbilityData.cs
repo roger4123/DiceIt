@@ -6,6 +6,6 @@ public class PassiveAbilityData : BaseAbilityData
 {
     [Header("Logic")]
     public PassiveTrigger trigger;
-    public List<AbilityOutcome> passiveEffects;
+    public List<AbilityOutcome> primaryPassiveOutcomes;
     public bool ignoreUltimate = true;
 }

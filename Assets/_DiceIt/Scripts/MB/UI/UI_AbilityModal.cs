@@ -28,7 +28,8 @@ public class UI_AbilityModal : MonoBehaviour
 
     private void Awake()
     {
-        Instance = this;
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
 
         if (activateButtonComponent != null)
         {
@@ -53,7 +54,7 @@ public class UI_AbilityModal : MonoBehaviour
         if (activateButtonText != null)
         {
             activateButtonText.text = "ACTIVATE";
-            activateButtonComponent.colors = defaultButtonColors; // Reseteaza la verdele initial
+            activateButtonComponent.colors = defaultButtonColors;
         }
 
 
@@ -71,7 +72,7 @@ public class UI_AbilityModal : MonoBehaviour
             List<int> validTiers = AbilityMatcher.GetValidActivations(oad, currentDice, slotOwner.characterData.diceKey);
 
             canActivate = validTiers.Count > 0;
-            if (canActivate) currentTierIndex = validTiers[validTiers.Count - 1]; // Salvam cel mai puternic tier valid!
+            if (canActivate) currentTierIndex = validTiers[validTiers.Count - 1]; // saving the strongest valid tier
 
             if (oad.activations.Count > 1)
             {
@@ -197,17 +198,19 @@ public class UI_AbilityModal : MonoBehaviour
         bool isOffensivePhase = BattleManager.Instance.currentPhase == TurnPhase.OffensiveRollPhase;
         bool isDefensivePhase = BattleManager.Instance.currentPhase == TurnPhase.DefensiveRollPhase;
         
+        bool hasPriority = ActionStackManager.Instance != null && ActionStackManager.Instance.playerWithPriority == currentOwner;
+
         bool canUseOffensive = isOffensivePhase && (BattleManager.Instance.activePlayer == currentOwner) && (data is OffensiveAbilityData);
         bool canUseDefensive = isDefensivePhase && (BattleManager.Instance.opponentPlayer == currentOwner) && (data is DefensiveAbilityData) && BattleManager.Instance.canActivateDefensiveAbility;
         
-        // Regula 1: If you successfully activate an ability, you can't activate another one in the same turn
+        // rule 1: If you successfully activate an ability, you can't activate another one in the same turn
         if (BattleManager.Instance.hasActivatedAbilityThisPhase)
         {
             canUseOffensive = false;
             canUseDefensive = false;
         }
 
-        // Regula 2: Only the selected Defensive Ability is available for activation
+        // rule 2: Only the selected Defensive Ability is available for activation
         if (isDefensivePhase && !BattleManager.Instance.needsDefenseSelection && BattleManager.Instance.pendingDefenseSelection != null)
         {
             if (data != BattleManager.Instance.pendingDefenseSelection) canUseDefensive = false;
@@ -226,12 +229,13 @@ public class UI_AbilityModal : MonoBehaviour
             activateButton.SetActive(canUseOffensive || canUseDefensive);
             if (canUseOffensive || canUseDefensive)
             {
-                activateButtonComponent.interactable = canActivate; //  hasRolledThisPhase == true
+                activateButtonComponent.interactable = canActivate && hasPriority;
                 if (activateButtonText != null) activateButtonText.text = "ACTIVATE";
             }
         }
 
         modalPanel.SetActive(true);
+        transform.SetAsLastSibling();
     }
 
     private void OnActivateClicked()
