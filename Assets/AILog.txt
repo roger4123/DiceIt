@@ -1227,3 +1227,712 @@
  => WINNER: Heart Shaped Herb (Tier 0) [EV: 50,0]
 [19:27:05] [AIManager] Reached a solid target: Heart Shaped Herb. Stopping rerolls.
 [19:27:07] [AIManager] AI activates Heart Shaped Herb at Tier 0.
+
+
+========================================
+=== NEW GAME [12-06-2026 22:04:55] ===
+========================================
+[22:05:45] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[22:05:45] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+
+
+========================================
+=== NEW GAME [12-06-2026 22:09:00] ===
+========================================
+[22:09:38] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[22:09:38] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[22:10:11] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[22:10:11] [Utility AI] Evaluated Helping Hand with score: 40
+[22:10:11] [AIManager] AI decided to play: Helping Hand (Score: 40)
+[22:10:15] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[22:10:15] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[22:10:30] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[22:10:30] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[22:11:12] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[22:11:12] [AIManager] AI is rolling defensive dice.
+[22:11:16] [AIManager] AI activates defense: Bashenga Honor
+[22:11:24] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[22:11:24] [AIManager] Passing priority.
+[22:12:07] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[22:12:07] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+[22:12:33] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[22:12:33] [Utility AI] Evaluated Stealth Strike II with score: 25
+[22:12:33] [Utility AI] Evaluated Kinetic Therapy with score: -55,5
+[22:12:33] [Utility AI] Evaluated Triple Threat II with score: -30
+[22:12:33] [AIManager] AI decided to play: Stealth Strike II (Score: 25)
+[22:12:35] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[22:12:35] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[22:12:42] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[22:12:42] [Utility AI] Evaluated Samesies with score: -1005
+[22:12:42] [AIManager] AI is rolling the dice.
+[22:12:44] [Smart Reroll] --- EV Calculations Summary (Rolls Left: 2) ---
+ - Vibranium Claws (Tier 0): Util=12,0 | Fallback=12,0 | Missing=0 | EV=12,0 | P=100%
+ - Vibranium Claws (Tier 1): Util=15,0 | Fallback=15,0 | Missing=0 | EV=15,0 | P=100%
+ - Vibranium Claws (Tier 2): Util=18,0 | Fallback=15,0 | Missing=1 | EV=17,6 | P=88%
+ - Stealth Strike II (Tier 0): Util=12,0 | Fallback=0,0 | Missing=2 | EV=8,0 | P=67%
+ - Meteoric Punch (Tier 0): Util=43,0 | Fallback=43,0 | Missing=0 | EV=43,0 | P=100%
+ - Meteoric Punch (Tier 1): Util=49,0 | Fallback=43,0 | Missing=1 | EV=48,3 | P=88%
+ - Ancestral Power (Tier 0): Util=62,0 | Fallback=0,0 | Missing=4 | EV=20,2 | P=33%
+ - Heart Shaped Herb (Tier 0): Util=50,0 | Fallback=0,0 | Missing=2 | EV=33,3 | P=67%
+ - Triple Threat (Tier 0): Util=49,5 | Fallback=0,0 | Missing=2 | EV=33,0 | P=67%
+ - Wakanda Forever (Tier 0): Util=83,0 | Fallback=0,0 | Missing=5 | EV=18,1 | P=22%
+ => WINNER: Meteoric Punch (Tier 1) [EV: 48,3]
+[22:12:44] [AIManager] Smart Reroll: Targeting Meteoric Punch (Tier 1). EV: 48,3. Missing: 1 dice.
+[22:12:47] [AIManager] AI is rerolling the remaining 1 dice.
+[22:12:49] [Smart Reroll] --- EV Calculations Summary (Rolls Left: 1) ---
+ - Vibranium Claws (Tier 0): Util=12,0 | Fallback=12,0 | Missing=0 | EV=12,0 | P=100%
+ - Vibranium Claws (Tier 1): Util=15,0 | Fallback=15,0 | Missing=0 | EV=15,0 | P=100%
+ - Vibranium Claws (Tier 2): Util=18,0 | Fallback=15,0 | Missing=1 | EV=17,0 | P=65%
+ - Stealth Strike II (Tier 0): Util=12,0 | Fallback=0,0 | Missing=2 | EV=5,1 | P=42%
+ - Meteoric Punch (Tier 0): Util=43,0 | Fallback=43,0 | Missing=0 | EV=43,0 | P=100%
+ - Meteoric Punch (Tier 1): Util=49,0 | Fallback=43,0 | Missing=1 | EV=46,9 | P=65%
+ - Ancestral Power (Tier 0): Util=62,0 | Fallback=0,0 | Missing=4 | EV=11,1 | P=18%
+ - Heart Shaped Herb (Tier 0): Util=50,0 | Fallback=0,0 | Missing=2 | EV=21,1 | P=42%
+ - Triple Threat (Tier 0): Util=49,5 | Fallback=0,0 | Missing=2 | EV=20,9 | P=42%
+ - Wakanda Forever (Tier 0): Util=83,0 | Fallback=0,0 | Missing=5 | EV=9,6 | P=12%
+ => WINNER: Meteoric Punch (Tier 1) [EV: 46,9]
+[22:12:49] [AIManager] Smart Reroll: Targeting Meteoric Punch (Tier 1). EV: 46,9. Missing: 1 dice.
+[22:12:49] [AIManager] AI is rerolling the remaining 1 dice.
+[22:12:53] [AIManager] AI activates Meteoric Punch at Tier 0.
+[22:13:00] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[22:13:00] [Utility AI] Evaluated Samesies with score: 35
+[22:13:00] [AIManager] AI decided to play: Samesies (Score: 35)
+[22:13:04] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[22:13:04] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[22:13:27] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[22:13:27] [AIManager] Passing priority.
+[22:13:37] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[22:13:37] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+[22:13:59] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[22:13:59] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[22:14:10] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[22:14:10] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[22:14:13] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[22:14:13] [AIManager] Passing priority.
+[22:14:29] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[22:14:29] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+
+
+========================================
+=== NEW GAME [12-06-2026 23:18:22] ===
+========================================
+
+
+========================================
+=== NEW GAME [12-06-2026 23:26:18] ===
+========================================
+
+
+========================================
+=== NEW GAME [12-06-2026 23:26:49] ===
+========================================
+
+
+========================================
+=== NEW GAME [12-06-2026 23:27:04] ===
+========================================
+
+
+========================================
+=== NEW GAME [12-06-2026 23:31:01] ===
+========================================
+
+
+========================================
+=== NEW GAME [12-06-2026 23:35:26] ===
+========================================
+
+
+========================================
+=== NEW GAME [12-06-2026 23:36:53] ===
+========================================
+
+
+========================================
+=== NEW GAME [12-06-2026 23:43:37] ===
+========================================
+[00:24:19] 
+=== GAME OVER ===
+[00:24:19] Winner: Spider Man
+[00:24:19] --- AI STATISTICS ---
+[00:24:19] Total Cards Played: 0
+[00:24:19] Total Abilities Activated: 0
+[00:24:19] Total Tokens Spent: 0
+[00:24:19] Total Priority Passes: 0
+[00:24:19] =====================
+
+
+
+========================================
+=== NEW GAME [13-06-2026 18:18:32] ===
+========================================
+
+
+========================================
+=== NEW GAME [13-06-2026 18:21:48] ===
+========================================
+[18:39:56] 
+=== GAME OVER ===
+[18:39:56] Winner: Spider Man
+[18:39:56] --- AI STATISTICS ---
+[18:39:56] Total Cards Played: 0
+[18:39:56] Total Abilities Activated: 0
+[18:39:56] Total Tokens Spent: 0
+[18:39:56] Total Priority Passes: 0
+[18:39:56] =====================
+
+
+
+========================================
+=== NEW GAME [13-06-2026 18:48:11] ===
+========================================
+
+
+========================================
+=== NEW GAME [14-06-2026 16:24:02] ===
+========================================
+
+
+========================================
+=== NEW GAME [14-06-2026 16:30:18] ===
+========================================
+
+
+========================================
+=== NEW GAME [14-06-2026 16:32:26] ===
+========================================
+
+
+========================================
+=== NEW GAME [14-06-2026 16:41:23] ===
+========================================
+
+
+========================================
+=== NEW GAME [14-06-2026 16:46:28] ===
+========================================
+
+
+========================================
+=== NEW GAME [14-06-2026 19:18:23] ===
+========================================
+
+
+========================================
+=== NEW GAME [14-06-2026 19:28:35] ===
+========================================
+
+
+========================================
+=== NEW GAME [14-06-2026 19:29:02] ===
+========================================
+
+
+========================================
+=== NEW GAME [14-06-2026 19:30:42] ===
+========================================
+
+
+========================================
+=== NEW GAME [14-06-2026 19:52:36] ===
+========================================
+[21:02:10] 
+=== GAME OVER ===
+[21:02:10] Winner: Spider Man
+[21:02:10] --- AI STATISTICS ---
+[21:02:10] Total Cards Played: 0
+[21:02:10] Total Abilities Activated: 0
+[21:02:10] Total Tokens Spent: 0
+[21:02:10] Total Priority Passes: 0
+[21:02:10] =====================
+
+
+
+========================================
+=== NEW GAME [14-06-2026 21:22:54] ===
+========================================
+[21:41:49] 
+=== GAME OVER ===
+[21:41:49] Winner: Spider Man
+[21:41:49] --- AI STATISTICS ---
+[21:41:49] Total Cards Played: 0
+[21:41:49] Total Abilities Activated: 0
+[21:41:49] Total Tokens Spent: 0
+[21:41:49] Total Priority Passes: 0
+[21:41:49] =====================
+
+
+
+========================================
+=== NEW GAME [14-06-2026 23:29:27] ===
+========================================
+[23:43:29] 
+=== GAME OVER ===
+[23:43:29] Winner: Spider Man
+[23:43:29] --- AI STATISTICS ---
+[23:43:29] Total Cards Played: 0
+[23:43:29] Total Abilities Activated: 0
+[23:43:29] Total Tokens Spent: 0
+[23:43:29] Total Priority Passes: 0
+[23:43:29] =====================
+
+
+
+========================================
+=== NEW GAME [14-06-2026 23:46:21] ===
+========================================
+[00:04:38] 
+=== GAME OVER ===
+[00:04:38] Winner: Spider Man
+[00:04:38] --- AI STATISTICS ---
+[00:04:38] Total Cards Played: 0
+[00:04:38] Total Abilities Activated: 0
+[00:04:38] Total Tokens Spent: 0
+[00:04:38] Total Priority Passes: 0
+[00:04:38] =====================
+
+
+
+========================================
+=== NEW GAME [15-06-2026 00:06:24] ===
+========================================
+[00:30:26] 
+=== GAME OVER ===
+[00:30:26] Winner: Spider Man
+[00:30:26] --- AI STATISTICS ---
+[00:30:26] Total Cards Played: 0
+[00:30:26] Total Abilities Activated: 0
+[00:30:26] Total Tokens Spent: 0
+[00:30:26] Total Priority Passes: 0
+[00:30:26] =====================
+
+[00:30:26] 
+=== GAME OVER ===
+[00:30:26] Winner: Black Panther
+[00:30:26] --- AI STATISTICS ---
+[00:30:26] Total Cards Played: 0
+[00:30:26] Total Abilities Activated: 0
+[00:30:26] Total Tokens Spent: 0
+[00:30:26] Total Priority Passes: 0
+[00:30:26] =====================
+
+
+
+========================================
+=== NEW GAME [15-06-2026 23:20:39] ===
+========================================
+[23:40:11] 
+=== GAME OVER ===
+[23:40:11] Winner: Spider Man
+[23:40:11] --- AI STATISTICS ---
+[23:40:11] Total Cards Played: 0
+[23:40:11] Total Abilities Activated: 0
+[23:40:11] Total Tokens Spent: 0
+[23:40:11] Total Priority Passes: 0
+[23:40:11] =====================
+
+
+
+========================================
+=== NEW GAME [15-06-2026 23:47:31] ===
+========================================
+[00:02:00] 
+=== GAME OVER ===
+[00:02:00] Winner: Spider Man
+[00:02:00] --- AI STATISTICS ---
+[00:02:00] Total Cards Played: 0
+[00:02:00] Total Abilities Activated: 0
+[00:02:00] Total Tokens Spent: 0
+[00:02:00] Total Priority Passes: 0
+[00:02:00] =====================
+
+
+
+========================================
+=== NEW GAME [16-06-2026 00:05:47] ===
+========================================
+[00:05:53] 
+=== GAME OVER ===
+[00:05:53] Winner: Black Panther
+[00:05:53] --- AI STATISTICS ---
+[00:05:53] Total Cards Played: 0
+[00:05:53] Total Abilities Activated: 0
+[00:05:53] Total Tokens Spent: 0
+[00:05:53] Total Priority Passes: 0
+[00:05:53] =====================
+
+
+
+========================================
+=== NEW GAME [16-06-2026 12:45:04] ===
+========================================
+[12:59:25] 
+=== GAME OVER ===
+[12:59:25] Winner: Spider Man
+[12:59:25] --- AI STATISTICS ---
+[12:59:25] Total Cards Played: 0
+[12:59:25] Total Abilities Activated: 0
+[12:59:25] Total Tokens Spent: 0
+[12:59:25] Total Priority Passes: 0
+[12:59:25] =====================
+
+
+
+========================================
+=== NEW GAME [16-06-2026 13:00:09] ===
+========================================
+
+
+========================================
+=== NEW GAME [16-06-2026 22:45:32] ===
+========================================
+[22:46:28] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[22:46:28] [Hybrid Fallback] Evaluating heuristics...
+[22:46:28] [Utility AI] Evaluated Triple Up! with score: 45
+[22:46:28] [AIManager] AI decided to play: Triple Up! (Score: 45)
+[22:46:30] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[22:46:30] [Hybrid Fallback] Evaluating heuristics...
+[22:46:30] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[22:47:05] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[22:47:05] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[22:47:09] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[22:47:09] [AIManager] AI is rolling defensive dice.
+[22:47:17] [AIManager] AI activates defense: Bashenga Honor
+[22:47:33] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[22:47:33] [AIManager] Passing priority.
+[22:48:15] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[22:48:15] [Hybrid Fallback] Evaluating heuristics...
+[22:48:15] [Utility AI] Evaluated Vegas, Baby! with score: 35
+[22:48:15] [AIManager] AI decided to play: Vegas, Baby! (Score: 35)
+[22:48:20] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[22:48:20] [Hybrid Fallback] Evaluating heuristics...
+[22:48:20] [Utility AI] Evaluated What Status Effects? with score: 20
+[22:48:20] [Utility AI] Evaluated Ancestral Power II with score: -30
+[22:48:20] [Utility AI] Evaluated Meteoric Punch II with score: -30
+[22:48:20] [Utility AI] Evaluated Transference! with score: -60
+[22:48:20] [Utility AI] Evaluated Buh, Bye! with score: 70
+[22:48:20] [AIManager] AI decided to play: Buh, Bye! (Score: 70)
+[22:48:23] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[22:48:23] [Hybrid Fallback] Evaluating heuristics...
+[22:48:23] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[22:48:31] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[22:48:31] [AIManager] AI is rolling the dice.
+[22:48:33] [Smart Reroll] --- EV Calculations Summary (Rolls Left: 2) ---
+ - Vibranium Claws (Tier 0): Util=12,0 | Fallback=0,0 | Missing=1 | EV=10,5 | P=88%
+ - Vibranium Claws (Tier 1): Util=15,0 | Fallback=0,0 | Missing=2 | EV=10,0 | P=67%
+ - Vibranium Claws (Tier 2): Util=18,0 | Fallback=0,0 | Missing=3 | EV=8,5 | P=47%
+ - Stealth Strike (Tier 0): Util=9,0 | Fallback=0,0 | Missing=1 | EV=7,9 | P=88%
+ - Meteoric Punch (Tier 0): Util=43,0 | Fallback=43,0 | Missing=0 | EV=43,0 | P=100%
+ - Meteoric Punch (Tier 1): Util=49,0 | Fallback=43,0 | Missing=1 | EV=48,3 | P=88%
+ - Ancestral Power (Tier 0): Util=62,0 | Fallback=0,0 | Missing=3 | EV=29,4 | P=47%
+ - Heart Shaped Herb (Tier 0): Util=50,0 | Fallback=0,0 | Missing=1 | EV=43,9 | P=88%
+ - Triple Threat (Tier 0): Util=49,5 | Fallback=49,5 | Missing=0 | EV=49,5 | P=100%
+ - Wakanda Forever (Tier 0): Util=83,0 | Fallback=0,0 | Missing=4 | EV=27,0 | P=33%
+ => WINNER: Triple Threat (Tier 0) [EV: 49,5]
+[22:48:33] [AIManager] Reached a solid target: Triple Threat. Stopping rerolls.
+[22:48:35] [AIManager] AI activates Triple Threat at Tier 0.
+[22:48:58] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[22:48:58] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[22:49:45] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[22:49:45] [AIManager] Passing priority.
+[22:49:54] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[22:49:54] [Hybrid Fallback] Evaluating heuristics...
+[22:49:54] [Utility AI] Evaluated Stop At Nothing! with score: 60
+[22:49:54] [AIManager] AI decided to play: Stop At Nothing! (Score: 60)
+[22:49:56] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[22:49:56] [Hybrid Fallback] Evaluating heuristics...
+[22:49:56] [Utility AI] Evaluated What Status Effects? with score: -10
+[22:49:56] [Utility AI] Evaluated Ancestral Power II with score: 25
+[22:49:56] [Utility AI] Evaluated Meteoric Punch II with score: 25
+[22:49:56] [Utility AI] Evaluated Transference! with score: -10
+[22:49:56] [AIManager] AI decided to play: Ancestral Power II (Score: 25)
+[22:49:58] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[22:49:58] [Hybrid Fallback] Evaluating heuristics...
+[22:49:58] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+
+
+========================================
+=== NEW GAME [17-06-2026 10:16:09] ===
+========================================
+
+
+========================================
+=== NEW GAME [17-06-2026 12:03:57] ===
+========================================
+[12:04:13] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[12:04:13] [ML Brain] Predicted Intent: PassPriority
+[12:04:13] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[12:04:35] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[12:04:35] [ML Brain] Predicted Intent: PassPriority
+[12:04:35] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[12:04:49] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[12:04:49] [ML Brain] Predicted Intent: PassPriority
+[12:04:49] [AIManager] Passing priority.
+[12:05:00] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[12:05:00] [ML Brain] Predicted Intent: PassPriority
+[12:05:00] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+[12:05:10] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[12:05:10] [ML Brain] Predicted Intent: PassPriority
+[12:05:10] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[12:05:14] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[12:05:14] [ML Brain] Predicted Intent: PassPriority
+[12:05:14] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[12:05:26] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[12:05:26] [ML Brain] Predicted Intent: PassPriority
+[12:05:26] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+[12:05:43] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[12:05:43] [ML Brain] Predicted Intent: PassPriority
+[12:05:43] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[12:06:12] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[12:06:12] [ML Brain] Predicted Intent: PassPriority
+[12:06:12] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[12:06:15] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[12:06:15] [ML Brain] Predicted Intent: PassPriority
+[12:06:15] [AIManager] Passing priority.
+[12:06:23] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[12:06:23] [ML Brain] Predicted Intent: PassPriority
+[12:06:23] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+[12:06:33] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[12:06:33] [ML Brain] Predicted Intent: PassPriority
+[12:06:33] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[12:06:37] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[12:06:37] [ML Brain] Predicted Intent: PassPriority
+[12:06:37] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+
+
+========================================
+=== NEW GAME [17-06-2026 12:14:10] ===
+========================================
+[12:14:25] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[12:14:26] [ML Brain] Predicted Intent: PassPriority
+[12:14:26] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[12:14:36] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[12:14:36] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[12:14:43] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[12:14:43] [ML Brain] Predicted Intent: PassPriority
+[12:14:43] [AIManager] Passing priority.
+[12:14:54] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[12:14:54] [ML Brain] Predicted Intent: PassPriority
+[12:14:54] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+[12:15:04] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[12:15:04] [ML Brain] Predicted Intent: PassPriority
+[12:15:04] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[12:15:09] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[12:15:09] [AIManager] Performing mandatory initial roll for the phase.
+[12:15:11] [ML Brain] Predicted Intent: LockDie
+[12:15:11] [Hybrid Fallback] Evaluating heuristics...
+[12:15:11] [Utility AI] Evaluated Double Up! with score: 30
+[12:15:11] [Utility AI] Evaluated Buh, Bye! with score: -10
+[12:15:11] [AIManager] AI decided to play: Double Up! (Score: 30)
+[12:15:13] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[12:15:13] [ML Brain] Predicted Intent: LockDie
+[12:15:13] [Hybrid Fallback] Evaluating heuristics...
+[12:15:13] [Utility AI] Evaluated Buh, Bye! with score: -10
+[12:15:13] [Smart Reroll] --- EV Calculations Summary (Rolls Left: 2) ---
+ - Vibranium Claws (Tier 0): Util=12,0 | Fallback=12,0 | Missing=0 | EV=12,0 | P=100%
+ - Vibranium Claws (Tier 1): Util=15,0 | Fallback=15,0 | Missing=0 | EV=15,0 | P=100%
+ - Vibranium Claws (Tier 2): Util=18,0 | Fallback=15,0 | Missing=1 | EV=17,6 | P=88%
+ - Stealth Strike (Tier 0): Util=9,0 | Fallback=0,0 | Missing=2 | EV=6,0 | P=67%
+ - Meteoric Punch (Tier 0): Util=43,0 | Fallback=0,0 | Missing=2 | EV=28,7 | P=67%
+ - Meteoric Punch (Tier 1): Util=49,0 | Fallback=0,0 | Missing=3 | EV=23,2 | P=47%
+ - Ancestral Power (Tier 0): Util=62,0 | Fallback=0,0 | Missing=4 | EV=20,2 | P=33%
+ - Heart Shaped Herb (Tier 0): Util=50,0 | Fallback=0,0 | Missing=2 | EV=33,3 | P=67%
+ - Triple Threat (Tier 0): Util=49,5 | Fallback=0,0 | Missing=2 | EV=33,0 | P=67%
+ - Wakanda Forever (Tier 0): Util=83,0 | Fallback=0,0 | Missing=5 | EV=18,1 | P=22%
+ => WINNER: Heart Shaped Herb (Tier 0) [EV: 33,3]
+[12:15:13] [AIManager] Smart Reroll: Targeting Heart Shaped Herb (Tier 0). EV: 33,3. Missing: 2 dice.
+[12:15:14] [AIManager] AI is rerolling the remaining 4 dice.
+[12:15:16] [Smart Reroll] --- EV Calculations Summary (Rolls Left: 1) ---
+ - Vibranium Claws (Tier 0): Util=12,0 | Fallback=0,0 | Missing=2 | EV=5,1 | P=42%
+ - Vibranium Claws (Tier 1): Util=15,0 | Fallback=0,0 | Missing=3 | EV=4,1 | P=27%
+ - Vibranium Claws (Tier 2): Util=18,0 | Fallback=0,0 | Missing=4 | EV=3,2 | P=18%
+ - Stealth Strike (Tier 0): Util=9,0 | Fallback=0,0 | Missing=1 | EV=5,9 | P=65%
+ - Meteoric Punch (Tier 0): Util=43,0 | Fallback=43,0 | Missing=0 | EV=43,0 | P=100%
+ - Meteoric Punch (Tier 1): Util=49,0 | Fallback=43,0 | Missing=1 | EV=46,9 | P=65%
+ - Ancestral Power (Tier 0): Util=62,0 | Fallback=0,0 | Missing=2 | EV=26,2 | P=42%
+ - Heart Shaped Herb (Tier 0): Util=50,0 | Fallback=0,0 | Missing=1 | EV=32,5 | P=65%
+ - Triple Threat (Tier 0): Util=49,5 | Fallback=43,0 | Missing=1 | EV=47,2 | P=65%
+ - Wakanda Forever (Tier 0): Util=83,0 | Fallback=0,0 | Missing=3 | EV=22,8 | P=27%
+ => WINNER: Triple Threat (Tier 0) [EV: 47,2]
+[12:15:16] [AIManager] Smart Reroll: Targeting Triple Threat (Tier 0). EV: 47,2. Missing: 1 dice.
+[12:15:18] [AIManager] AI is rerolling the remaining 1 dice.
+[12:15:22] [AIManager] AI activates Heart Shaped Herb at Tier 0.
+[12:15:27] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[12:15:27] [ML Brain] Predicted Intent: PhaseReroll
+[12:15:27] [Hybrid Fallback] Evaluating heuristics...
+[12:15:27] [Utility AI] Evaluated Buh, Bye! with score: -10
+[12:15:27] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[12:16:37] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[12:16:37] [ML Brain] Predicted Intent: PassPriority
+[12:16:37] [AIManager] Passing priority.
+[12:16:42] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[12:16:42] [ML Brain] Predicted Intent: PassPriority
+[12:16:42] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+
+
+========================================
+=== NEW GAME [17-06-2026 12:29:23] ===
+========================================
+[12:29:43] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[12:29:43] [ML Brain] Predicted Intent: PassPriority
+[12:29:43] [Hybrid Fallback] Evaluating heuristics...
+[12:29:43] [Utility AI] Evaluated Tip It! with score: -1005
+[12:29:43] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[12:29:54] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[12:29:54] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[12:29:57] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[12:29:57] [ML Brain] Predicted Intent: PassPriority
+[12:29:57] [Hybrid Fallback] Evaluating heuristics...
+[12:29:57] [Utility AI] Evaluated Tip It! with score: -1005
+[12:29:57] [Utility AI] Evaluated Not This Time! with score: 25
+[12:29:57] [AIManager] AI decided to play: Not This Time! (Score: 25)
+[12:29:59] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[12:29:59] [ML Brain] Predicted Intent: PassPriority
+[12:29:59] [Hybrid Fallback] Evaluating heuristics...
+[12:29:59] [Utility AI] Evaluated Tip It! with score: -1005
+[12:29:59] [AIManager] Passing priority.
+[12:30:10] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[12:30:10] [ML Brain] Predicted Intent: PassPriority
+[12:30:10] [Hybrid Fallback] Evaluating heuristics...
+[12:30:10] [Utility AI] Evaluated Tip It! with score: -1005
+[12:30:10] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+[12:30:20] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[12:30:20] [ML Brain] Predicted Intent: PassPriority
+[12:30:20] [Hybrid Fallback] Evaluating heuristics...
+[12:30:20] [Utility AI] Evaluated Energize! with score: -28,75
+[12:30:20] [Utility AI] Evaluated Tip It! with score: -1005
+[12:30:20] [Utility AI] Evaluated Ancestral Power II with score: -30
+[12:30:20] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+
+
+========================================
+=== NEW GAME [17-06-2026 13:16:14] ===
+========================================
+[13:16:43] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[13:16:43] [ML Brain] Predicted Intent: PassPriority
+[13:16:43] [Hybrid Fallback] Evaluating heuristics...
+[13:16:43] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[13:16:59] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[13:16:59] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[13:17:03] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[13:17:03] [ML Brain] Predicted Intent: PassPriority
+[13:17:03] [Hybrid Fallback] Evaluating heuristics...
+[13:17:03] [Utility AI] Evaluated Try, Try Again! with score: -1005
+[13:17:03] [AIManager] Performing mandatory defensive roll for the phase.
+[13:17:07] [AIManager] AI activates defense: Bashenga Honor
+[13:17:19] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[13:17:19] [ML Brain] Predicted Intent: PassPriority
+[13:17:19] [Hybrid Fallback] Evaluating heuristics...
+[13:17:19] [Utility AI] Evaluated Try, Try Again! with score: -1005
+[13:17:19] [AIManager] Passing priority.
+[13:17:29] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[13:17:29] [ML Brain] Predicted Intent: PassPriority
+[13:17:29] [Hybrid Fallback] Evaluating heuristics...
+[13:17:29] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+[13:17:39] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[13:17:39] [ML Brain] Predicted Intent: PassPriority
+[13:17:39] [Hybrid Fallback] Evaluating heuristics...
+[13:17:39] [Utility AI] Evaluated Ancestral Power II with score: 25
+[13:17:39] [Utility AI] Evaluated Heart Shaped Herb II with score: 25
+[13:17:39] [Utility AI] Evaluated Transference! with score: -10
+[13:17:39] [Utility AI] Evaluated Triple Threat II with score: 25
+[13:17:39] [AIManager] AI decided to play: Ancestral Power II (Score: 25)
+[13:17:41] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[13:17:41] [ML Brain] Predicted Intent: PassPriority
+[13:17:41] [Hybrid Fallback] Evaluating heuristics...
+[13:17:41] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[13:17:48] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[13:17:48] [AIManager] Performing mandatory initial roll for the phase.
+[13:17:50] [ML Brain] Predicted Intent: LockDie
+[13:17:50] [Hybrid Fallback] Evaluating heuristics...
+[13:17:50] [Utility AI] Evaluated Try, Try Again! with score: 35
+[13:17:50] [AIManager] AI decided to play: Try, Try Again! (Score: 35)
+[13:17:55] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[13:17:55] [ML Brain] Predicted Intent: LockDie
+[13:17:55] [Hybrid Fallback] Evaluating heuristics...
+[13:17:55] [Smart Reroll] --- EV Calculations Summary (Rolls Left: 2) ---
+ - Vibranium Claws (Tier 0): Util=12,0 | Fallback=12,0 | Missing=0 | EV=12,0 | P=100%
+ - Vibranium Claws (Tier 1): Util=15,0 | Fallback=12,0 | Missing=1 | EV=14,6 | P=88%
+ - Vibranium Claws (Tier 2): Util=18,0 | Fallback=12,0 | Missing=2 | EV=16,0 | P=67%
+ - Stealth Strike (Tier 0): Util=9,0 | Fallback=9,0 | Missing=0 | EV=9,0 | P=100%
+ - Meteoric Punch (Tier 0): Util=43,0 | Fallback=0,0 | Missing=2 | EV=28,7 | P=67%
+ - Meteoric Punch (Tier 1): Util=49,0 | Fallback=0,0 | Missing=3 | EV=23,2 | P=47%
+ - Ancestral Power II (Tier 0): Util=68,0 | Fallback=0,0 | Missing=2 | EV=45,3 | P=67%
+ - Heart Shaped Herb (Tier 0): Util=50,0 | Fallback=0,0 | Missing=3 | EV=23,7 | P=47%
+ - Triple Threat (Tier 0): Util=49,5 | Fallback=0,0 | Missing=2 | EV=33,0 | P=67%
+ - Wakanda Forever (Tier 0): Util=83,0 | Fallback=0,0 | Missing=3 | EV=39,3 | P=47%
+ => WINNER: Ancestral Power II (Tier 0) [EV: 45,3]
+[13:17:55] [AIManager] Smart Reroll: Targeting Ancestral Power II (Tier 0). EV: 45,3. Missing: 2 dice.
+[13:17:57] [AIManager] AI is rerolling the remaining 3 dice.
+[13:17:59] [Smart Reroll] --- EV Calculations Summary (Rolls Left: 1) ---
+ - Vibranium Claws (Tier 0): Util=12,0 | Fallback=0,0 | Missing=1 | EV=7,8 | P=65%
+ - Vibranium Claws (Tier 1): Util=15,0 | Fallback=0,0 | Missing=2 | EV=6,3 | P=42%
+ - Vibranium Claws (Tier 2): Util=18,0 | Fallback=0,0 | Missing=3 | EV=4,9 | P=27%
+ - Stealth Strike (Tier 0): Util=9,0 | Fallback=9,0 | Missing=0 | EV=9,0 | P=100%
+ - Meteoric Punch (Tier 0): Util=43,0 | Fallback=0,0 | Missing=2 | EV=18,2 | P=42%
+ - Meteoric Punch (Tier 1): Util=49,0 | Fallback=0,0 | Missing=3 | EV=13,5 | P=27%
+ - Ancestral Power II (Tier 0): Util=68,0 | Fallback=0,0 | Missing=2 | EV=28,7 | P=42%
+ - Heart Shaped Herb (Tier 0): Util=50,0 | Fallback=0,0 | Missing=2 | EV=21,1 | P=42%
+ - Triple Threat (Tier 0): Util=49,5 | Fallback=0,0 | Missing=1 | EV=32,2 | P=65%
+ - Wakanda Forever (Tier 0): Util=83,0 | Fallback=0,0 | Missing=3 | EV=22,8 | P=27%
+ => WINNER: Triple Threat (Tier 0) [EV: 32,2]
+[13:17:59] [AIManager] Smart Reroll: Targeting Triple Threat (Tier 0). EV: 32,2. Missing: 1 dice.
+[13:18:01] [AIManager] AI is rerolling the remaining 1 dice.
+[13:18:05] [AIManager] AI activates Stealth Strike at Tier 0.
+[13:18:45] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[13:18:45] [ML Brain] Predicted Intent: PhaseReroll
+[13:18:45] [Hybrid Fallback] Evaluating heuristics...
+[13:18:45] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[13:18:51] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[13:18:51] [ML Brain] Predicted Intent: PassPriority
+[13:18:51] [Hybrid Fallback] Evaluating heuristics...
+[13:18:51] [AIManager] Passing priority.
+[13:18:56] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[13:18:56] [ML Brain] Predicted Intent: PassPriority
+[13:18:56] [Hybrid Fallback] Evaluating heuristics...
+[13:18:56] [AIManager] AI sells 'Transference!' (KeepVal: 35) to save CP for 'Heart Shaped Herb II' (PlayUtil: 30)
+[13:18:59] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[13:18:59] [ML Brain] Predicted Intent: PassPriority
+[13:18:59] [Hybrid Fallback] Evaluating heuristics...
+[13:18:59] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+[13:19:30] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[13:19:30] [ML Brain] Predicted Intent: PassPriority
+[13:19:30] [Hybrid Fallback] Evaluating heuristics...
+[13:19:30] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[13:19:46] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[13:19:46] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+
+
+========================================
+=== NEW GAME [18-06-2026 20:15:21] ===
+========================================
+
+
+========================================
+=== NEW GAME [18-06-2026 22:09:42] ===
+========================================
+
+
+========================================
+=== NEW GAME [18-06-2026 22:13:13] ===
+========================================
+
+
+========================================
+=== NEW GAME [18-06-2026 22:52:17] ===
+========================================
+
+
+========================================
+=== NEW GAME [18-06-2026 22:54:27] ===
+========================================
+
+
+========================================
+=== NEW GAME [18-06-2026 22:55:45] ===
+========================================
+
+
+========================================
+=== NEW GAME [18-06-2026 22:56:05] ===
+========================================

@@ -15,6 +15,8 @@ public class CardResolver : MonoBehaviour
 
     public void PlayCard(CardData card, PlayerController owner)
     {
+        AIDataLogger.Instance?.LogPlayerAction(owner, "PlayCard", card.cardName);
+
         owner.ChangeCP(-card.cpCost);
         
         // "banish" the upgrades so they don't ever return in hand
@@ -28,7 +30,6 @@ public class CardResolver : MonoBehaviour
             owner.BanishCard(card);
         }
         
-
         if (ActionStackManager.Instance != null)
         {
             ActionStackManager.Instance.ResetPriorityPasses();
@@ -39,6 +40,8 @@ public class CardResolver : MonoBehaviour
 
     public void SellCard(CardData card, PlayerController owner)
     {
+        AIDataLogger.Instance?.LogPlayerAction(owner, "SellCard", card.cardName);
+
         owner.ChangeCP(1);
         owner.DiscardCard(card);
         Debug.Log($"{owner.characterData.heroName} sold {card.cardName} for 1 CP.");
@@ -436,6 +439,8 @@ public class CardResolver : MonoBehaviour
                     yield return new WaitUntil(() => selectionDone);
                 }
 
+                if (chosenDie == -1) break;
+
                 DiceManager.Instance.SetDieValue(chosenDie, 6);
                 break;
             }
@@ -458,6 +463,8 @@ public class CardResolver : MonoBehaviour
                     yield return new WaitUntil(() => destSelected);
                 }
 
+                if (destDie == -1) { BattleManager.Instance?.NotifyPhase(""); break; }
+
                 if (owner.isAI)
                 {
                     sourceDie = AIManager.Instance.ChooseDieTarget(target, effect.actionType);
@@ -470,6 +477,8 @@ public class CardResolver : MonoBehaviour
                     DiceManager.Instance.RequestDieSelection(target, (idx, p) => { sourceDie = idx; sourceSelected = true; });
                     yield return new WaitUntil(() => sourceSelected);
                 }
+
+                if (sourceDie == -1) { BattleManager.Instance?.NotifyPhase(""); break; }
 
                 int copiedValue = DiceManager.Instance.dice[sourceDie].currentValue;
                 DiceManager.Instance.SetDieValue(destDie, copiedValue);
@@ -498,6 +507,8 @@ public class CardResolver : MonoBehaviour
                         DiceManager.Instance.RequestDieSelection(target, (idx, p) => { pickedDie = idx; selected = true; });
                         yield return new WaitUntil(() => selected);
                     }
+                    
+                    if (pickedDie == -1) { BattleManager.Instance?.NotifyPhase(""); break; }
                     
                     if (owner.isAI)
                     {
@@ -551,6 +562,8 @@ public class CardResolver : MonoBehaviour
                         yield return new WaitUntil(() => selected);
                     }
 
+                    if (pickedDie == -1) { BattleManager.Instance?.NotifyPhase(""); break; }
+
                     int originalVal = DiceManager.Instance.dice[pickedDie].currentValue;
                     List<int> validFaces = new List<int>();
                     if (originalVal > 1) validFaces.Add(originalVal - 1);
@@ -603,6 +616,8 @@ public class CardResolver : MonoBehaviour
                         DiceManager.Instance.RequestDieSelection(target, (idx, p) => { pickedDie = idx; selected = true; });
                         yield return new WaitUntil(() => selected);
                     }
+
+                    if (pickedDie == -1) break;
                     
                     DiceManager.Instance.ForceRerollDie(pickedDie);
                     yield return new WaitForSeconds(0.5f);
@@ -627,6 +642,8 @@ public class CardResolver : MonoBehaviour
                     yield return new WaitUntil(() => oppSelected);
                 }
                 
+                if (oppPickedDie == -1) break;
+
                 DiceManager.Instance.ForceRerollDie(oppPickedDie);
                 yield return new WaitForSeconds(0.5f);
                 break;

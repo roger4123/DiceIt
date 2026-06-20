@@ -84,6 +84,23 @@ public class DiceManager : MonoBehaviour
             return;
         }
 
+        bool wasInitialRoll = !hasRolledThisPhase;
+
+        var rollingPlayer = (BattleManager.Instance.currentPhase == TurnPhase.DefensiveRollPhase) ? BattleManager.Instance.opponentPlayer : BattleManager.Instance.activePlayer;
+        if (rollingPlayer != null && !rollingPlayer.isAI)
+        {
+            string rollActionName = "PhaseReroll";
+            if (BattleManager.Instance != null && BattleManager.Instance.isPerformingSpecialRoll)
+            {
+                rollActionName = "AutomaticSecondaryRoll";
+            }
+            else if (wasInitialRoll)
+            {
+                rollActionName = "InitialPhaseRoll";
+            }
+            AIDataLogger.Instance?.LogPlayerAction(rollingPlayer, rollActionName, $"RollsLeft:{rollsLeft}");
+        }
+
         hasRolledThisPhase = true;
 
         foreach (var die in dice)
@@ -92,9 +109,9 @@ public class DiceManager : MonoBehaviour
         }
 
         rollsLeft--;
+
         BattleManager.Instance?.ShowNotification($"Rolled successfully! {rollsLeft} left.", 2.0f);
         
-        var rollingPlayer = (BattleManager.Instance.currentPhase == TurnPhase.DefensiveRollPhase) ? BattleManager.Instance.opponentPlayer : BattleManager.Instance.activePlayer;
         string rolledValuesStr = string.Join(", ", GetCurrentDiceValues().FindAll(v => v > 0));
         UI_CombatLog.Instance?.LogMessage($"{rollingPlayer.characterData.heroName} rolled: {rolledValuesStr}", Color.black);
 
@@ -143,6 +160,7 @@ public class DiceManager : MonoBehaviour
                 var callback = pendingDieSelectionCallback;
                 pendingDieSelectionCallback = null;
                 validTargetPlayerForSelection = null;
+                SetInteractionState(DiceInteractionState.Disabled);
                 
                 callback?.Invoke(index, clickedOwner);
             }
@@ -153,10 +171,30 @@ public class DiceManager : MonoBehaviour
         }
     }
 
+    public void CancelDieSelection()
+    {
+        if (CurrentInteractionState == DiceInteractionState.SelectingDice)
+        {
+            var callback = pendingDieSelectionCallback;
+            pendingDieSelectionCallback = null;
+            validTargetPlayerForSelection = null;
+            SetInteractionState(DiceInteractionState.Disabled);
+            
+            callback?.Invoke(-1, null);
+        }
+    }
+
     private void PerformToggleLock(int index)
     {
         if (index >= 0 && index < dice.Count && dice[index].isActive)
         {
+            var rollingPlayer = (BattleManager.Instance.currentPhase == TurnPhase.DefensiveRollPhase) ? BattleManager.Instance.opponentPlayer : BattleManager.Instance.activePlayer;
+            if (rollingPlayer != null && !rollingPlayer.isAI)
+            {
+                string actionName = dice[index].isLocked ? "UnlockDie" : "LockDie";
+                AIDataLogger.Instance?.LogPlayerAction(rollingPlayer, actionName, $"DieIndex:{index}_Value:{dice[index].currentValue}");
+            }
+
             dice[index].isLocked = !dice[index].isLocked;
             BroadcastState();
         }

@@ -94,7 +94,7 @@ public class UI_CardModal : MonoBehaviour
                 isCorrectPhaseForCard = (phase == TurnPhase.OffensiveRollPhase || phase == TurnPhase.DefensiveRollPhase);
                 break;
             case CardPlayPhase.Instant:
-                isCorrectPhaseForCard = true;
+                isCorrectPhaseForCard = (phase == TurnPhase.MainPhase1 || phase == TurnPhase.MainPhase2 || phase == TurnPhase.OffensiveRollPhase || phase == TurnPhase.DefensiveRollPhase);
                 break;
         }
 

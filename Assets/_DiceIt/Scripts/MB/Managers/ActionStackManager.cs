@@ -58,10 +58,20 @@ public class ActionStackManager : MonoBehaviour
 
     public void PassPriority(bool isIntentionalPass = true)
     {
+        // treat the pass button as a "cancel" button for when selecting dice and you've changed your mind 
+        if (isIntentionalPass && DiceManager.Instance != null && DiceManager.Instance.CurrentInteractionState == DiceInteractionState.SelectingDice)
+        {
+            Debug.Log("[Stack] Intercepted PassPriority to cancel die selection.");
+            DiceManager.Instance.CancelDieSelection();
+            return;
+        }
+
         if (isIntentionalPass)
         {
             consecutivePasses++;
             Debug.Log($"[Stack] {playerWithPriority.characterData.heroName} passed priority.");
+            
+            AIDataLogger.Instance?.LogPlayerAction(playerWithPriority, "PassPriority", "None");
         }
 
         if (consecutivePasses >= 2)

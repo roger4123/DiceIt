@@ -6693,6 +6693,7 @@ GameObject:
   - component: {fileID: 748478785}
   - component: {fileID: 748478787}
   - component: {fileID: 748478789}
+  - component: {fileID: 748478790}
   m_Layer: 0
   m_Name: ---MANAGERS---
   m_TagString: Untagged
@@ -6734,6 +6735,7 @@ MonoBehaviour:
   currentPhase: 0
   currentTurnNumber: 1
   hasBonusOffensivePhase: 0
+  hasUsedComboThisTurn: 0
   hasActivatedAbilityThisPhase: 0
   needsDefenseSelection: 0
   canActivateDefensiveAbility: 1
@@ -6849,7 +6851,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fed1ca8b62af26479b27b9a826bfe35, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AIManager
-  delayBetweenActions: 1.5
+  delayBetweenActions: 2
+  riskFactor: 0.65
+  useMachineLearning: 1
+  logFileName: AILog.txt
+--- !u!114 &748478790
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 748478779}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df2f390d110473941a6eafb191430117, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AIDataLogger
+  isLoggingEnabled: 0
+  csvFileName: DemonstrationData.csv
 --- !u!1001 &752971179
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15623,7 +15642,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 0}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -16616,7 +16635,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 130, y: 90}
+  m_SizeDelta: {x: 135, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2104218781
 MonoBehaviour:

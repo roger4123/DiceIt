@@ -34,6 +34,16 @@ public class UI_VictoryScreen : MonoBehaviour
         if (victoryPanel != null) 
         {
             victoryPanel.SetActive(true);
+            
+            Canvas canvas = victoryPanel.GetComponent<Canvas>();
+            if (canvas == null)
+            {
+                canvas = victoryPanel.AddComponent<Canvas>();
+                victoryPanel.AddComponent<GraphicRaycaster>();
+            }
+            canvas.overrideSorting = true;
+            canvas.sortingOrder = 999;
+            
             transform.SetAsLastSibling();
         }
         

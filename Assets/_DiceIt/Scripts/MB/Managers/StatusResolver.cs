@@ -72,7 +72,8 @@ public class StatusResolver : MonoBehaviour
     private void ApplyOutcome(StatusOutcome outcome, PlayerController source, StatusEffectsData tokenData)
     {
         var bm = BattleManager.Instance;
-        PlayerController target = (outcome.target == StatusTarget.Opponent) ? bm.opponentPlayer : source;
+        PlayerController actualOpponent = (source == bm.player1) ? bm.player2 : bm.player1;
+        PlayerController target = (outcome.target == StatusTarget.Opponent) ? actualOpponent : source;
 
         switch (outcome.type)
         {
@@ -80,6 +81,7 @@ public class StatusResolver : MonoBehaviour
                 Debug.Log($"[StatusResolver] {tokenData.effectName} grants a Bonus Offensive Roll Phase to {target.characterData.heroName}.");
                 UI_CombatLog.Instance?.LogMessage($"{target.characterData.heroName} gains a Bonus Offensive Roll Phase from {tokenData.effectName}!", Color.black);
                 bm.hasBonusOffensivePhase = true;
+                bm.hasUsedComboThisTurn = true;
                 break;
 
             case StatusOutcomeType.ChangeAttackType:

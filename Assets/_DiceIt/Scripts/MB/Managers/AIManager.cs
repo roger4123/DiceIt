@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
 public class AIManager : MonoBehaviour
 {
     #region Nested Classes & Variables
@@ -24,7 +23,8 @@ public class AIManager : MonoBehaviour
     [Header("Configuration")]
     public float delayBetweenActions = 2.0f;
     [Range(0f, 1f)] public float riskFactor = 0.65f;
-    
+    private Coroutine activeAiCoroutine;
+
     [Header("Logging & Stats")]
     public string logFileName = "AILog.txt";
     private string fullLogPath;
@@ -32,6 +32,8 @@ public class AIManager : MonoBehaviour
     private int statAbilitiesActivated = 0;
     private int statTokensSpent = 0;
     private int statPasses = 0;
+
+
 
     #endregion
 
@@ -58,7 +60,7 @@ public class AIManager : MonoBehaviour
         }
         
         File.AppendAllText(fullLogPath, $"\n\n========================================\n");
-        File.AppendAllText(fullLogPath, $"=== NEW GAME [{DateTime.Now:yyyy-MM-dd HH:mm:ss}] ===\n");
+        File.AppendAllText(fullLogPath, $"=== NEW GAME [{DateTime.Now:dd-MM-yyyy HH:mm:ss}] ===\n");
         File.AppendAllText(fullLogPath, $"========================================\n");
     }
 
@@ -77,6 +79,9 @@ public class AIManager : MonoBehaviour
 
     private void HandlePhaseChanged(TurnPhase phase)
     {
+        lastPickedDieIndex = -1;
+        isSelectingSourceDie = false;
+
         if (phase == TurnPhase.Cleanup && BattleManager.Instance.activePlayer.isAI)
         {
             StartCoroutine(AICleanupRoutine(BattleManager.Instance.activePlayer));
@@ -87,7 +92,11 @@ public class AIManager : MonoBehaviour
     {
         if (playerWithPriority != null && playerWithPriority.isAI)
         {
-            StartCoroutine(ProcessAiTurnRoutine(playerWithPriority));
+            lastPickedDieIndex = -1;
+            isSelectingSourceDie = false;
+
+            if (activeAiCoroutine != null) StopCoroutine(activeAiCoroutine);
+            activeAiCoroutine = StartCoroutine(ProcessAiTurnRoutine(playerWithPriority));
         }
     }
 
@@ -125,6 +134,44 @@ public class AIManager : MonoBehaviour
 
     #region Main Loop (Turn Phase Handling)
 
+    private double[] BuildStrategyState(PlayerController aiPlayer)
+    {
+        double[] state = new double[15];
+        var bm = BattleManager.Instance;
+        PlayerController opponent = (bm.player1 == aiPlayer) ? bm.player2 : bm.player1;
+
+        state[0] = (bm.activePlayer == aiPlayer) ? 1.0 : 0.0; // IsMyTurn
+        
+        // Normalized HP and CP (ratios between 0 and 1)
+        float myMaxHP = aiPlayer.characterData != null ? aiPlayer.characterData.maxHealth : 50f;
+        float oppMaxHP = opponent.characterData != null ? opponent.characterData.maxHealth : 50f;
+        float myMaxCP = aiPlayer.characterData != null ? aiPlayer.characterData.maxCombatPoints : 15f;
+        float oppMaxCP = opponent.characterData != null ? opponent.characterData.maxCombatPoints : 15f;
+
+        state[1] = myMaxHP > 0 ? (float)aiPlayer.currentHealth / myMaxHP : 0f;
+        state[2] = myMaxCP > 0 ? (float)aiPlayer.currentCombatPoints / myMaxCP : 0f;
+        state[3] = oppMaxHP > 0 ? (float)opponent.currentHealth / oppMaxHP : 0f;
+        state[4] = oppMaxCP > 0 ? (float)opponent.currentCombatPoints / oppMaxCP : 0f;
+
+        // Token counts (sums of stacks)
+        state[5] = aiPlayer.activeStatuses.Where(s => s.data.type == StatusType.Positive).Sum(s => s.currentStacks);
+        state[6] = aiPlayer.activeStatuses.Where(s => s.data.type == StatusType.Negative).Sum(s => s.currentStacks);
+        state[7] = opponent.activeStatuses.Where(s => s.data.type == StatusType.Positive).Sum(s => s.currentStacks);
+        state[8] = opponent.activeStatuses.Where(s => s.data.type == StatusType.Negative).Sum(s => s.currentStacks);
+
+        // Context
+        state[9] = DiceManager.Instance != null ? DiceManager.Instance.rollsLeft : 0;
+        state[10] = aiPlayer.hand.Count;
+        state[11] = opponent.hand.Count;
+        state[12] = (int)bm.currentPhase; // Raw enum index
+
+        // Differences
+        state[13] = state[1] - state[3]; // PlayerHP Ratio - OpponentHP Ratio
+        state[14] = state[2] - state[4]; // PlayerCP Ratio - OpponentCP Ratio
+
+        return state;
+    }
+
     private IEnumerator ProcessAiTurnRoutine(PlayerController aiPlayer)
     {
         yield return new WaitForSeconds(delayBetweenActions);
@@ -143,9 +190,7 @@ public class AIManager : MonoBehaviour
             case TurnPhase.MainPhase2:
                 LogAI($"[AIManager] AI has priority in {currentPhase}. Deciding what to do...");
                 
-                // if DiceBot plays a card, it stops here and CardResolver will regain priority when card finishes
                 if (TryPlayCard(aiPlayer)) yield break; 
-                
                 if (TrySellCard(aiPlayer)) 
                 {
                     yield return new WaitForSeconds(delayBetweenActions / 2f);
@@ -160,22 +205,21 @@ public class AIManager : MonoBehaviour
 
             case TurnPhase.OffensiveRollPhase:
                 LogAI($"[AIManager] AI has priority in {currentPhase}. Deciding what to do...");
-                
-                if (TryPlayCard(aiPlayer)) yield break;
-                
-                if (TrySpendToken(aiPlayer)) yield break;
 
                 if (BattleManager.Instance.activePlayer == aiPlayer)
                 {
+                    // perform the mandatory initial roll (mandatory)
                     if (DiceManager.Instance != null && !DiceManager.Instance.hasRolledThisPhase)
                     {
-                        LogAI("[AIManager] AI is rolling the dice.");
+                        LogAI("[AIManager] Performing mandatory initial roll for the phase.");
                         DiceManager.Instance.RollDice();
-                        
                         yield return new WaitForSeconds(delayBetweenActions);
-                        
                         if (ActionStackManager.Instance.playerWithPriority != aiPlayer) yield break;
                     }
+
+                    // decide the next move (Card, Token, Reroll, Activate, or Pass).
+                    if (TryPlayCard(aiPlayer)) yield break;
+                    if (TrySpendToken(aiPlayer)) yield break;
 
                     // SMART REROLL LOOP
                     while (DiceManager.Instance != null && !BattleManager.Instance.hasActivatedAbilityThisPhase && DiceManager.Instance.rollsLeft > 0)
@@ -246,9 +290,10 @@ public class AIManager : MonoBehaviour
                         yield return new WaitForSeconds(delayBetweenActions);
                     }
 
+                    // perform the initial roll (mandatory))
                     if (DiceManager.Instance != null && !DiceManager.Instance.hasRolledThisPhase && BattleManager.Instance.pendingDefenseSelection != null)
                     {
-                        LogAI("[AIManager] AI is rolling defensive dice.");
+                        LogAI("[AIManager] Performing mandatory defensive roll for the phase.");
                         DiceManager.Instance.RollDice();
                         yield return new WaitForSeconds(delayBetweenActions);
                         if (ActionStackManager.Instance.playerWithPriority != aiPlayer) yield break;
@@ -369,7 +414,7 @@ public class AIManager : MonoBehaviour
     private bool TrySpendToken(PlayerController aiPlayer)
     {
         StatusEffectsData bestToken = null;
-        float bestScore = 15f;
+        float bestScore = (aiPlayer.currentHealth <= 15) ? 5f : 15f;
 
         foreach (var status in aiPlayer.activeStatuses)
         {
@@ -557,14 +602,17 @@ public class AIManager : MonoBehaviour
         // CP BUDGETING (keeping CP for Roll Phase)
         if (card.playPhase == CardPlayPhase.MainPhase && card.cpCost > 0)
         {
-            float maxRollPhaseCostInHand = aiPlayer.hand
-                .Where(c => c.playPhase == CardPlayPhase.RollPhase || c.playPhase == CardPlayPhase.Instant)
-                .Max(c => (float?)c.cpCost) ?? 0f;
-
-            // tradeoff for an important Roll Phase card
-            if (aiPlayer.currentCombatPoints - card.cpCost < maxRollPhaseCostInHand)
+            // Bugetăm agresiv doar în MainPhase1. În MainPhase2 putem cheltui CP-ul rămas!
+            if (bm.currentPhase == TurnPhase.MainPhase1)
             {
-                score -= 50f; 
+                float maxRollPhaseCostInHand = aiPlayer.hand
+                    .Where(c => c.playPhase == CardPlayPhase.RollPhase || c.playPhase == CardPlayPhase.Instant)
+                    .Max(c => (float?)c.cpCost) ?? 0f;
+
+                if (aiPlayer.currentCombatPoints - card.cpCost < maxRollPhaseCostInHand)
+                {
+                    score -= 50f; 
+                }
             }
         }
 

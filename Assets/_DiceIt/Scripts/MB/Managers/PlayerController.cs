@@ -381,6 +381,9 @@ public class PlayerController : MonoBehaviour
             // condition 2: you commited an attack to the stack
             if (bm.committedOffense == null || bm.committedOffense.SourcePlayer != this) return false;
             
+            // condition 3: only once per turn to prevent chained combo loops
+            if (bm.hasUsedComboThisTurn) return false;
+
             return true;
         }
         
@@ -426,6 +429,8 @@ public class PlayerController : MonoBehaviour
         var existing = activeStatuses.FirstOrDefault(s => s.data == status);
         if (existing != null && existing.currentStacks > 0)
         {
+            AIDataLogger.Instance?.LogPlayerAction(this, "SpendToken", status.effectName);
+
             RemoveStatus(status, 1);
             Debug.Log($"{characterData.heroName} spent 1 token of {status.effectName}.");
             UI_CombatLog.Instance?.LogMessage($"{characterData.heroName} spent 1 {status.effectName}.", Color.black);

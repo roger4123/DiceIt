@@ -76,6 +76,7 @@ public class BattleManager : MonoBehaviour
     public TurnPhase currentPhase;
     public int currentTurnNumber = 1;
     public bool hasBonusOffensivePhase = false;
+    public bool hasUsedComboThisTurn = false;
     private bool isFirstTurnOfGame = true;
 
     private void Awake()
@@ -100,6 +101,7 @@ public class BattleManager : MonoBehaviour
     private IEnumerator StartNewTurnRoutine()
     {
         Debug.Log($"=> Starting turn {currentTurnNumber}: {activePlayer.characterData.heroName}'s turn");
+        hasUsedComboThisTurn = false;
         UI_CombatLog.Instance?.LogMessage($"Turn {currentTurnNumber}: {activePlayer.characterData.heroName.ToUpper()}", Color.black);
         yield return ShowNotification($"Starting turn {currentTurnNumber}: {activePlayer.characterData.heroName}'s turn.", 2.5f);
         
@@ -276,6 +278,10 @@ public class BattleManager : MonoBehaviour
     {
         PlayerController winner = (loser == player1) ? player2 : player1;
         Debug.Log($"[Game Over] {winner.characterData.heroName} won the match!");
+        
+        AIDataLogger.Instance?.LogPlayerAction(winner, "GameOver", "Victory");
+        AIDataLogger.Instance?.LogPlayerAction(loser, "GameOver", "Defeat");
+
         OnGameOver?.Invoke(winner);
     }
     #endregion
@@ -472,6 +478,8 @@ public class BattleManager : MonoBehaviour
         UI_CombatLog.Instance?.LogMessage($"{opponentPlayer.characterData.heroName} selected {defAbility.abilityName} as defense. Rolling {defAbility.diceToRoll} dice.", Color.black);
         ShowNotification($"Defense selected: {defAbility.abilityName}. Rolling {defAbility.diceToRoll} dice.", 1.5f);
         Debug.Log($"[BattleManager] Defense selected: {defAbility.abilityName}. Rolling {defAbility.diceToRoll} dice.");
+        
+        AIDataLogger.Instance?.LogPlayerAction(opponentPlayer, "ActivateDefense", defAbility.abilityName);
     }
 
     public void SetPendingOffensiveAbility(OffensiveAbilityData ability, int tierIndex)
@@ -482,6 +490,8 @@ public class BattleManager : MonoBehaviour
         UI_CombatLog.Instance?.LogMessage($"{activePlayer.characterData.heroName} selected {ability.abilityName} as pending attack.", Color.black);
         ShowNotification($"Attack Ability selected: {ability.abilityName}.", 1.5f);
         Debug.Log($"[BattleManager] {activePlayer.characterData.heroName} selected {ability.abilityName} as pending attack.");
+        
+        AIDataLogger.Instance?.LogPlayerAction(activePlayer, "ActivateOffense", ability.abilityName);
 
         var activation = ability.activations[tierIndex];
         if (activation.secondaryRolls != null && activation.secondaryRolls.Count > 0)
