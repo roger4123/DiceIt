@@ -836,7 +836,7 @@ public class AIManager : MonoBehaviour
         }
 
         // expensive card must REALLY be valuable
-        score -= card.cpCost * 5f;
+        score -= card.cpCost * 20f;
 
         return score;
     }

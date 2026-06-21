@@ -1936,3 +1936,135 @@
 ========================================
 === NEW GAME [18-06-2026 22:56:05] ===
 ========================================
+
+
+========================================
+=== NEW GAME [21-06-2026 13:44:59] ===
+========================================
+[13:45:54] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[13:45:54] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+
+
+========================================
+=== NEW GAME [21-06-2026 13:46:42] ===
+========================================
+
+
+========================================
+=== NEW GAME [21-06-2026 14:04:10] ===
+========================================
+[14:33:47] 
+=== GAME OVER ===
+[14:33:47] Winner: Black Panther
+[14:33:47] --- AI STATISTICS ---
+[14:33:47] Total Cards Played: 0
+[14:33:47] Total Abilities Activated: 0
+[14:33:47] Total Tokens Spent: 0
+[14:33:47] Total Priority Passes: 0
+[14:33:47] =====================
+
+
+
+========================================
+=== NEW GAME [21-06-2026 14:41:14] ===
+========================================
+[15:07:22] 
+=== GAME OVER ===
+[15:07:22] Winner: Spider Man
+[15:07:22] --- AI STATISTICS ---
+[15:07:22] Total Cards Played: 0
+[15:07:22] Total Abilities Activated: 0
+[15:07:22] Total Tokens Spent: 0
+[15:07:22] Total Priority Passes: 0
+[15:07:22] =====================
+
+
+
+========================================
+=== NEW GAME [21-06-2026 15:09:22] ===
+========================================
+[15:31:57] 
+=== GAME OVER ===
+[15:31:57] Winner: Spider Man
+[15:31:57] --- AI STATISTICS ---
+[15:31:57] Total Cards Played: 0
+[15:31:57] Total Abilities Activated: 0
+[15:31:57] Total Tokens Spent: 0
+[15:31:57] Total Priority Passes: 0
+[15:31:57] =====================
+
+
+
+========================================
+=== NEW GAME [21-06-2026 15:38:58] ===
+========================================
+[15:54:55] 
+=== GAME OVER ===
+[15:54:55] Winner: Black Panther
+[15:54:55] --- AI STATISTICS ---
+[15:54:55] Total Cards Played: 0
+[15:54:55] Total Abilities Activated: 0
+[15:54:55] Total Tokens Spent: 0
+[15:54:55] Total Priority Passes: 0
+[15:54:55] =====================
+
+
+
+========================================
+=== NEW GAME [21-06-2026 15:55:17] ===
+========================================
+[16:09:33] 
+=== GAME OVER ===
+[16:09:33] Winner: Black Panther
+[16:09:33] --- AI STATISTICS ---
+[16:09:33] Total Cards Played: 0
+[16:09:33] Total Abilities Activated: 0
+[16:09:33] Total Tokens Spent: 0
+[16:09:33] Total Priority Passes: 0
+[16:09:33] =====================
+
+
+
+========================================
+=== NEW GAME [21-06-2026 16:17:28] ===
+========================================
+[16:28:38] 
+=== GAME OVER ===
+[16:28:38] Winner: Spider Man
+[16:28:38] --- AI STATISTICS ---
+[16:28:38] Total Cards Played: 0
+[16:28:38] Total Abilities Activated: 0
+[16:28:38] Total Tokens Spent: 0
+[16:28:38] Total Priority Passes: 0
+[16:28:38] =====================
+
+
+
+========================================
+=== NEW GAME [21-06-2026 16:57:45] ===
+========================================
+[17:14:16] 
+=== GAME OVER ===
+[17:14:16] Winner: Black Panther
+[17:14:16] --- AI STATISTICS ---
+[17:14:16] Total Cards Played: 0
+[17:14:16] Total Abilities Activated: 0
+[17:14:16] Total Tokens Spent: 0
+[17:14:16] Total Priority Passes: 0
+[17:14:16] =====================
+
+
+
+========================================
+=== NEW GAME [21-06-2026 17:14:59] ===
+========================================
+[17:29:37] 
+=== GAME OVER ===
+[17:29:37] Winner: Black Panther
+[17:29:37] --- AI STATISTICS ---
+[17:29:37] Total Cards Played: 0
+[17:29:37] Total Abilities Activated: 0
+[17:29:37] Total Tokens Spent: 0
+[17:29:37] Total Priority Passes: 0
+[17:29:37] =====================
+

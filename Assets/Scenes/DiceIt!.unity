@@ -775,7 +775,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   characterData: {fileID: 11400000, guid: d834d9472b08c72459158b0815fa7ffe, type: 2}
-  isAI: 1
+  isAI: 0
   currentHealth: 0
   currentCombatPoints: 0
   activeOffensiveAbilities: []
@@ -6853,7 +6853,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AIManager
   delayBetweenActions: 2
   riskFactor: 0.65
-  useMachineLearning: 1
   logFileName: AILog.txt
 --- !u!114 &748478790
 MonoBehaviour:
@@ -6867,7 +6866,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df2f390d110473941a6eafb191430117, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AIDataLogger
-  isLoggingEnabled: 0
+  isLoggingEnabled: 1
   csvFileName: DemonstrationData.csv
 --- !u!1001 &752971179
 PrefabInstance:
