@@ -6100,7 +6100,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   characterData: {fileID: 11400000, guid: 2f1ae33207abb564d973d3b3fcd6c42e, type: 2}
-  isAI: 0
+  isAI: 1
   currentHealth: 0
   currentCombatPoints: 0
   activeOffensiveAbilities: []

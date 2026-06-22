@@ -33,7 +33,7 @@ public class AIManager : MonoBehaviour
     private int statTokensSpent = 0;
     private int statPasses = 0;
 
-
+    private int currentStance = 0; // 0 = Standard, 1 = Aggressive, 2 = Defensive
 
     #endregion
 
@@ -172,6 +172,49 @@ public class AIManager : MonoBehaviour
         return state;
     }
 
+    private void UpdateActiveStance(PlayerController aiPlayer)
+    {
+        try
+        {
+            double[] state = BuildStrategyState(aiPlayer);
+            double[] scores = ML.RFBrain.Score(state);
+
+            int bestStance = 0;
+            double maxScore = scores[0];
+            if (scores[1] > maxScore)
+            {
+                maxScore = scores[1];
+                bestStance = 1;
+            }
+            if (scores[2] > maxScore)
+            {
+                maxScore = scores[2];
+                bestStance = 2;
+            }
+
+            if (currentStance != bestStance)
+            {
+                LogAI($"[AIManager] Strategic stance changed from {GetStanceName(currentStance)} to {GetStanceName(bestStance)} (Scores - Std: {scores[0]:F3}, Agg: {scores[1]:F3}, Def: {scores[2]:F3})");
+                currentStance = bestStance;
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[AIManager] Error evaluating strategic stance: {e.Message}");
+            currentStance = 0; // fallback to Standard on error
+        }
+    }
+
+    private string GetStanceName(int stance)
+    {
+        switch (stance)
+        {
+            case 1: return "Aggressive";
+            case 2: return "Defensive";
+            default: return "Standard";
+        }
+    }
+
     private IEnumerator ProcessAiTurnRoutine(PlayerController aiPlayer)
     {
         yield return new WaitForSeconds(delayBetweenActions);
@@ -181,6 +224,8 @@ public class AIManager : MonoBehaviour
         {
             yield break;
         }
+
+        UpdateActiveStance(aiPlayer);
 
         var currentPhase = BattleManager.Instance.currentPhase;
 
@@ -648,10 +693,14 @@ public class AIManager : MonoBehaviour
                     // SURVIVAL
                     case CardActionType.Heal:
                         float missingHP = aiPlayer.characterData.maxHealth - aiPlayer.currentHealth;
-                        if (missingHP <= 0) score -= 1000f;
-                        else score += Mathf.Min(effectValue, missingHP) * 3f;
+                        float healVal = 0f;
+                        if (missingHP <= 0) healVal -= 1000f;
+                        else healVal += Mathf.Min(effectValue, missingHP) * 3f;
                         
-                        if (aiPlayer.currentHealth < 10) score += 50f;
+                        if (aiPlayer.currentHealth < 10) healVal += 50f;
+                        
+                        if (currentStance == 2) healVal *= 2.0f; // defensive stance scaling
+                        score += healVal;
                         break;
                         
                     case CardActionType.PreventDamage:
@@ -666,14 +715,22 @@ public class AIManager : MonoBehaviour
                         float currentPrevention = (bm.player1 == aiPlayer) ? bm.p1DamagePrevention : bm.p2DamagePrevention;
                         float unpreventedDmg = incomingDmg - currentPrevention;
                         
-                        if (unpreventedDmg <= 0) score -= 100f;
-                        else score += Mathf.Min(effectValue, unpreventedDmg) * 5f;
+                        float preventVal = 0f;
+                        if (unpreventedDmg <= 0) preventVal -= 100f;
+                        else preventVal += Mathf.Min(effectValue, unpreventedDmg) * 5f;
+                        
+                        if (currentStance == 2) preventVal *= 2.0f; // defensive stance scaling
+                        score += preventVal;
                         break;
 
                     // OFFENSE
                     case CardActionType.Damage:
-                        if (opponent.currentHealth <= effectValue) score += 1000f;
-                        else score += effectValue * 2f;
+                        float dmgVal = 0f;
+                        if (opponent.currentHealth <= effectValue) dmgVal += 1000f;
+                        else dmgVal += effectValue * 2f;
+                        
+                        if (currentStance == 1) dmgVal *= 1.5f; // aggressive stance scaling
+                        score += dmgVal;
                         break;
 
                     case CardActionType.MakeAttackUndefendable:
@@ -713,8 +770,18 @@ public class AIManager : MonoBehaviour
                                 else
                                 {
                                     float expectedAmount = effect.isScaling ? effectValue * 1.5f : statusApp.amount;
-                                    if (statusToGain.type == StatusType.Positive && targetPlayer == aiPlayer) score += expectedAmount * 30f;
-                                    if (statusToGain.type == StatusType.Negative && targetPlayer == opponent) score += expectedAmount * 30f;
+                                    if (statusToGain.type == StatusType.Positive && targetPlayer == aiPlayer)
+                                    {
+                                        float val = expectedAmount * 30f;
+                                        if (currentStance == 1) val *= 1.5f; // aggressive stance self buff scaling
+                                        score += val;
+                                    }
+                                    if (statusToGain.type == StatusType.Negative && targetPlayer == opponent)
+                                    {
+                                        float val = expectedAmount * 30f;
+                                        if (currentStance == 1) val *= 1.5f; // aggressive stance opponent debuff scaling
+                                        score += val;
+                                    }
                                     if (statusToGain.type == StatusType.Negative && targetPlayer == aiPlayer) score -= 1000f;
                                     if (statusToGain.type == StatusType.Positive && targetPlayer == opponent) score -= 1000f;
                                 }
@@ -942,6 +1009,15 @@ public class AIManager : MonoBehaviour
             score -= maxCardUtilityRequiringToken * 0.8f; 
         }
 
+        if (currentStance == 2 && (tokenData.effectName == "Invisibility" || tokenData.effectName == "Vibranium Suit"))
+        {
+            score *= 2.0f;
+        }
+        else if (currentStance == 1 && (tokenData.effectName == "Combo" || tokenData.effectName == "Kinetic Energy" || tokenData.effectName == "Webbed"))
+        {
+            score *= 1.5f;
+        }
+
         return score;
     }
 
@@ -1023,6 +1099,11 @@ public class AIManager : MonoBehaviour
                     }
                 }
             }
+        }
+
+        if (currentStance == 1)
+        {
+            score *= 1.5f;
         }
 
         return score;

@@ -2068,3 +2068,778 @@
 [17:29:37] Total Priority Passes: 0
 [17:29:37] =====================
 
+
+
+========================================
+=== NEW GAME [21-06-2026 20:52:19] ===
+========================================
+[20:52:34] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[20:52:34] [Utility AI] Evaluated Getting Paid! with score: 40
+[20:52:34] [AIManager] AI decided to play: Getting Paid! (Score: 40)
+[20:52:36] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[20:52:36] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[20:54:40] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[20:54:40] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[20:54:48] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[20:54:48] [Utility AI] Evaluated Six It! with score: -1020
+[20:54:48] [AIManager] Performing mandatory defensive roll for the phase.
+[20:54:52] [AIManager] AI activates defense: Bashenga Honor
+[20:55:19] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[20:55:19] [Utility AI] Evaluated Six It! with score: -1020
+[20:55:19] [AIManager] Passing priority.
+[20:55:55] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[20:55:55] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+[20:56:05] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[20:56:05] [Utility AI] Evaluated Energize! with score: 6,25
+[20:56:05] [Utility AI] Evaluated Stealth Strike II with score: 25
+[20:56:05] [AIManager] AI decided to play: Stealth Strike II (Score: 25)
+[20:56:07] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[20:56:07] [Utility AI] Evaluated Energize! with score: 6,25
+[20:56:07] [AIManager] AI decided to play: Energize! (Score: 6,25)
+[20:56:12] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[20:56:12] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[20:56:16] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[20:56:16] [AIManager] Performing mandatory initial roll for the phase.
+[20:56:18] [Utility AI] Evaluated Six It! with score: 20
+[20:56:18] [AIManager] AI decided to play: Six It! (Score: 20)
+[20:56:21] [AIManager] Strategic stance changed from Standard to Aggressive (Scores - Std: 0,472, Agg: 0,505, Def: 0,023)
+[20:56:21] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[20:56:21] [Smart Reroll] --- EV Calculations Summary (Rolls Left: 2) ---
+ - Vibranium Claws (Tier 0): Util=18,0 | Fallback=0,0 | Missing=1 | EV=15,8 | P=88%
+ - Vibranium Claws (Tier 1): Util=22,5 | Fallback=0,0 | Missing=2 | EV=15,0 | P=67%
+ - Vibranium Claws (Tier 2): Util=27,0 | Fallback=0,0 | Missing=3 | EV=12,8 | P=47%
+ - Stealth Strike II (Tier 0): Util=18,0 | Fallback=0,0 | Missing=1 | EV=15,8 | P=88%
+ - Meteoric Punch (Tier 0): Util=64,5 | Fallback=0,0 | Missing=3 | EV=30,6 | P=47%
+ - Meteoric Punch (Tier 1): Util=73,5 | Fallback=0,0 | Missing=4 | EV=23,9 | P=33%
+ - Ancestral Power (Tier 0): Util=93,0 | Fallback=0,0 | Missing=3 | EV=44,1 | P=47%
+ - Heart Shaped Herb (Tier 0): Util=75,0 | Fallback=0,0 | Missing=1 | EV=65,8 | P=88%
+ - Triple Threat (Tier 0): Util=74,3 | Fallback=74,3 | Missing=0 | EV=74,3 | P=100%
+ - Wakanda Forever (Tier 0): Util=124,5 | Fallback=0,0 | Missing=4 | EV=40,5 | P=33%
+ => WINNER: Triple Threat (Tier 0) [EV: 74,3]
+[20:56:21] [AIManager] Reached a solid target: Triple Threat. Stopping rerolls.
+[20:56:23] [AIManager] AI activates Triple Threat at Tier 0.
+[20:56:37] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[20:56:37] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[20:56:51] [AIManager] Strategic stance changed from Aggressive to Standard (Scores - Std: 0,631, Agg: 0,331, Def: 0,038)
+[20:56:51] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[20:56:51] [Utility AI] Evaluated Better D! with score: -1020
+[20:56:51] [AIManager] Passing priority.
+[20:57:02] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[20:57:02] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+[20:58:33] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[20:58:33] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[20:58:47] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[20:58:47] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[20:58:55] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[20:58:55] [Utility AI] Evaluated Better D! with score: -1020
+[20:58:55] [AIManager] Passing priority.
+[20:59:06] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[20:59:06] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+[20:59:16] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[20:59:16] [Utility AI] Evaluated Buh, Bye! with score: 40
+[20:59:16] [AIManager] AI decided to play: Buh, Bye! (Score: 40)
+[20:59:19] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[20:59:19] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[20:59:31] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[20:59:31] [AIManager] Performing mandatory initial roll for the phase.
+[20:59:33] [Smart Reroll] --- EV Calculations Summary (Rolls Left: 2) ---
+ - Vibranium Claws (Tier 0): Util=12,0 | Fallback=0,0 | Missing=2 | EV=8,0 | P=67%
+ - Vibranium Claws (Tier 1): Util=15,0 | Fallback=0,0 | Missing=3 | EV=7,1 | P=47%
+ - Vibranium Claws (Tier 2): Util=18,0 | Fallback=0,0 | Missing=4 | EV=5,9 | P=33%
+ - Stealth Strike II (Tier 0): Util=12,0 | Fallback=0,0 | Missing=1 | EV=10,5 | P=88%
+ - Meteoric Punch (Tier 0): Util=43,0 | Fallback=0,0 | Missing=2 | EV=28,7 | P=67%
+ - Meteoric Punch (Tier 1): Util=49,0 | Fallback=0,0 | Missing=3 | EV=23,2 | P=47%
+ - Ancestral Power (Tier 0): Util=62,0 | Fallback=0,0 | Missing=2 | EV=41,3 | P=67%
+ - Heart Shaped Herb (Tier 0): Util=50,0 | Fallback=0,0 | Missing=1 | EV=43,9 | P=88%
+ - Triple Threat (Tier 0): Util=49,5 | Fallback=0,0 | Missing=1 | EV=43,4 | P=88%
+ - Wakanda Forever (Tier 0): Util=83,0 | Fallback=0,0 | Missing=3 | EV=39,3 | P=47%
+ => WINNER: Heart Shaped Herb (Tier 0) [EV: 43,9]
+[20:59:33] [AIManager] Smart Reroll: Targeting Heart Shaped Herb (Tier 0). EV: 43,9. Missing: 1 dice.
+[20:59:34] [AIManager] AI is rerolling the remaining 3 dice.
+[20:59:36] [Smart Reroll] --- EV Calculations Summary (Rolls Left: 1) ---
+ - Vibranium Claws (Tier 0): Util=12,0 | Fallback=0,0 | Missing=2 | EV=5,1 | P=42%
+ - Vibranium Claws (Tier 1): Util=15,0 | Fallback=0,0 | Missing=3 | EV=4,1 | P=27%
+ - Vibranium Claws (Tier 2): Util=18,0 | Fallback=0,0 | Missing=4 | EV=3,2 | P=18%
+ - Stealth Strike II (Tier 0): Util=12,0 | Fallback=0,0 | Missing=2 | EV=5,1 | P=42%
+ - Meteoric Punch (Tier 0): Util=43,0 | Fallback=0,0 | Missing=2 | EV=18,2 | P=42%
+ - Meteoric Punch (Tier 1): Util=49,0 | Fallback=0,0 | Missing=3 | EV=13,5 | P=27%
+ - Ancestral Power (Tier 0): Util=62,0 | Fallback=0,0 | Missing=3 | EV=17,0 | P=27%
+ - Heart Shaped Herb (Tier 0): Util=50,0 | Fallback=50,0 | Missing=0 | EV=50,0 | P=100%
+ - Triple Threat (Tier 0): Util=49,5 | Fallback=0,0 | Missing=1 | EV=32,2 | P=65%
+ - Wakanda Forever (Tier 0): Util=83,0 | Fallback=0,0 | Missing=4 | EV=14,8 | P=18%
+ => WINNER: Heart Shaped Herb (Tier 0) [EV: 50,0]
+[20:59:36] [AIManager] Reached a solid target: Heart Shaped Herb. Stopping rerolls.
+[20:59:38] [AIManager] AI activates Heart Shaped Herb at Tier 0.
+[20:59:45] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[20:59:45] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[20:59:57] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[20:59:57] [Utility AI] Evaluated Better D! with score: -1020
+[20:59:57] [Utility AI] Evaluated Twice as Wild! with score: -1060
+[20:59:57] [Utility AI] Evaluated Double Up! with score: 25
+[20:59:57] [AIManager] AI decided to play: Double Up! (Score: 25)
+[20:59:59] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[20:59:59] [Utility AI] Evaluated Better D! with score: -1020
+[20:59:59] [AIManager] Passing priority.
+[21:00:07] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[21:00:07] [Utility AI] Evaluated Heart Shaped Herb II with score: -10
+[21:00:07] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+[21:01:17] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[21:01:17] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[21:02:12] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:02:12] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[21:02:22] [AIManager] Strategic stance changed from Standard to Defensive (Scores - Std: 0,356, Agg: 0,037, Def: 0,607)
+[21:02:22] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:02:22] [Utility AI] Evaluated Better D! with score: -1020
+[21:02:22] [Utility AI] Evaluated Not This Time! with score: 40
+[21:02:22] [AIManager] AI decided to play: Not This Time! (Score: 40)
+[21:02:24] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:02:24] [Utility AI] Evaluated Better D! with score: -1020
+[21:02:24] [Utility AI] Evaluated Spending Token 'Vibranium Suit' with score: 24
+[21:02:24] [AIManager] AI decided to spend token: Vibranium Suit (Score: 24)
+[21:02:31] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:02:31] [Utility AI] Evaluated Better D! with score: -1020
+[21:02:31] [AIManager] Passing priority.
+[21:02:44] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:02:44] [Utility AI] Evaluated Better D! with score: -1020
+[21:02:44] [AIManager] Passing priority.
+[21:03:02] [AIManager] Strategic stance changed from Defensive to Standard (Scores - Std: 0,906, Agg: 0,077, Def: 0,016)
+[21:03:02] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[21:03:02] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+[21:03:12] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[21:03:12] [Utility AI] Evaluated Heart Shaped Herb II with score: -60
+[21:03:12] [Utility AI] Evaluated Triple Threat II with score: -60
+[21:03:12] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[21:03:17] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:03:17] [AIManager] Performing mandatory initial roll for the phase.
+[21:03:19] [Smart Reroll] --- EV Calculations Summary (Rolls Left: 2) ---
+ - Vibranium Claws (Tier 0): Util=12,0 | Fallback=0,0 | Missing=3 | EV=5,7 | P=47%
+ - Vibranium Claws (Tier 1): Util=15,0 | Fallback=0,0 | Missing=4 | EV=4,9 | P=33%
+ - Vibranium Claws (Tier 2): Util=18,0 | Fallback=0,0 | Missing=5 | EV=3,9 | P=22%
+ - Stealth Strike II (Tier 0): Util=12,0 | Fallback=0,0 | Missing=3 | EV=5,7 | P=47%
+ - Meteoric Punch (Tier 0): Util=43,0 | Fallback=0,0 | Missing=1 | EV=37,7 | P=88%
+ - Meteoric Punch (Tier 1): Util=49,0 | Fallback=0,0 | Missing=2 | EV=32,7 | P=67%
+ - Ancestral Power (Tier 0): Util=62,0 | Fallback=0,0 | Missing=3 | EV=29,4 | P=47%
+ - Heart Shaped Herb (Tier 0): Util=50,0 | Fallback=50,0 | Missing=0 | EV=50,0 | P=100%
+ - Triple Threat (Tier 0): Util=49,5 | Fallback=0,0 | Missing=2 | EV=33,0 | P=67%
+ - Wakanda Forever (Tier 0): Util=83,0 | Fallback=0,0 | Missing=4 | EV=27,0 | P=33%
+ => WINNER: Heart Shaped Herb (Tier 0) [EV: 50,0]
+[21:03:19] [AIManager] Reached a solid target: Heart Shaped Herb. Stopping rerolls.
+[21:03:21] [AIManager] AI activates Heart Shaped Herb at Tier 0.
+[21:03:33] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:03:33] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[21:03:45] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:03:45] [Utility AI] Evaluated Better D! with score: -1020
+[21:03:45] [AIManager] Passing priority.
+[21:03:50] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[21:03:50] [Utility AI] Evaluated Heart Shaped Herb II with score: -10
+[21:03:50] [Utility AI] Evaluated Triple Threat II with score: -10
+[21:03:50] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+[21:04:18] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[21:04:18] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[21:04:32] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:04:32] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[21:04:40] [AIManager] Strategic stance changed from Standard to Defensive (Scores - Std: 0,327, Agg: 0,019, Def: 0,653)
+[21:04:40] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:04:40] [Utility AI] Evaluated Better D! with score: -1020
+[21:04:40] [Utility AI] Evaluated Spending Token 'Vibranium Suit' with score: 24
+[21:04:40] [AIManager] AI decided to spend token: Vibranium Suit (Score: 24)
+[21:04:47] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:04:47] [Utility AI] Evaluated Better D! with score: -1020
+[21:04:47] [AIManager] Passing priority.
+[21:04:51] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:04:51] [Utility AI] Evaluated Better D! with score: -1020
+[21:04:51] [AIManager] Passing priority.
+[21:04:55] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:04:55] [Utility AI] Evaluated Better D! with score: -1020
+[21:04:55] [AIManager] Passing priority.
+[21:06:08] [AIManager] Strategic stance changed from Defensive to Standard (Scores - Std: 0,911, Agg: 0,089, Def: 0,000)
+[21:06:08] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:06:08] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[21:06:12] [AIManager] Strategic stance changed from Standard to Defensive (Scores - Std: 0,338, Agg: 0,019, Def: 0,643)
+[21:06:12] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:06:12] [Utility AI] Evaluated Better D! with score: -1020
+[21:06:12] [AIManager] Passing priority.
+[21:07:42] [AIManager] Strategic stance changed from Defensive to Standard (Scores - Std: 0,831, Agg: 0,103, Def: 0,066)
+[21:07:42] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[21:07:42] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+[21:07:52] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[21:07:52] [Utility AI] Evaluated Heart Shaped Herb II with score: -55
+[21:07:52] [Utility AI] Evaluated Triple Threat II with score: -55
+[21:07:52] [Utility AI] Evaluated Kinetic Therapy! with score: -85,5
+[21:07:52] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[21:07:59] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:07:59] [AIManager] Performing mandatory initial roll for the phase.
+[21:08:01] [Utility AI] Evaluated Twice as Wild! with score: -15
+[21:08:01] [Smart Reroll] --- EV Calculations Summary (Rolls Left: 2) ---
+ - Vibranium Claws (Tier 0): Util=12,0 | Fallback=12,0 | Missing=0 | EV=12,0 | P=100%
+ - Vibranium Claws (Tier 1): Util=15,0 | Fallback=12,0 | Missing=1 | EV=14,6 | P=88%
+ - Vibranium Claws (Tier 2): Util=18,0 | Fallback=12,0 | Missing=2 | EV=16,0 | P=67%
+ - Stealth Strike II (Tier 0): Util=12,0 | Fallback=0,0 | Missing=2 | EV=8,0 | P=67%
+ - Meteoric Punch (Tier 0): Util=43,0 | Fallback=43,0 | Missing=0 | EV=43,0 | P=100%
+ - Meteoric Punch (Tier 1): Util=49,0 | Fallback=43,0 | Missing=1 | EV=48,3 | P=88%
+ - Ancestral Power (Tier 0): Util=62,0 | Fallback=0,0 | Missing=4 | EV=20,2 | P=33%
+ - Heart Shaped Herb (Tier 0): Util=50,0 | Fallback=0,0 | Missing=1 | EV=43,9 | P=88%
+ - Triple Threat (Tier 0): Util=49,5 | Fallback=43,0 | Missing=1 | EV=48,7 | P=88%
+ - Wakanda Forever (Tier 0): Util=83,0 | Fallback=0,0 | Missing=5 | EV=18,1 | P=22%
+ => WINNER: Triple Threat (Tier 0) [EV: 48,7]
+[21:08:01] [AIManager] Smart Reroll: Targeting Triple Threat (Tier 0). EV: 48,7. Missing: 1 dice.
+[21:08:03] [AIManager] AI is rerolling the remaining 1 dice.
+[21:08:05] [Smart Reroll] --- EV Calculations Summary (Rolls Left: 1) ---
+ - Vibranium Claws (Tier 0): Util=12,0 | Fallback=12,0 | Missing=0 | EV=12,0 | P=100%
+ - Vibranium Claws (Tier 1): Util=15,0 | Fallback=12,0 | Missing=1 | EV=14,0 | P=65%
+ - Vibranium Claws (Tier 2): Util=18,0 | Fallback=12,0 | Missing=2 | EV=14,5 | P=42%
+ - Stealth Strike II (Tier 0): Util=12,0 | Fallback=0,0 | Missing=2 | EV=5,1 | P=42%
+ - Meteoric Punch (Tier 0): Util=43,0 | Fallback=43,0 | Missing=0 | EV=43,0 | P=100%
+ - Meteoric Punch (Tier 1): Util=49,0 | Fallback=43,0 | Missing=1 | EV=46,9 | P=65%
+ - Ancestral Power (Tier 0): Util=62,0 | Fallback=0,0 | Missing=4 | EV=11,1 | P=18%
+ - Heart Shaped Herb (Tier 0): Util=50,0 | Fallback=0,0 | Missing=1 | EV=32,5 | P=65%
+ - Triple Threat (Tier 0): Util=49,5 | Fallback=43,0 | Missing=1 | EV=47,2 | P=65%
+ - Wakanda Forever (Tier 0): Util=83,0 | Fallback=0,0 | Missing=5 | EV=9,6 | P=12%
+ => WINNER: Triple Threat (Tier 0) [EV: 47,2]
+[21:08:05] [AIManager] Smart Reroll: Targeting Triple Threat (Tier 0). EV: 47,2. Missing: 1 dice.
+[21:08:06] [AIManager] AI is rerolling the remaining 1 dice.
+[21:08:10] [AIManager] AI activates Heart Shaped Herb at Tier 0.
+[21:08:37] [AIManager] Strategic stance changed from Standard to Aggressive (Scores - Std: 0,404, Agg: 0,590, Def: 0,006)
+[21:08:37] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:08:37] [Utility AI] Evaluated Twice as Wild! with score: -15
+[21:08:39] [AIManager] AI activates Vibranium Claws at Tier 0.
+[21:08:45] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:08:45] [Utility AI] Evaluated Twice as Wild! with score: -15
+[21:08:45] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[21:08:57] [AIManager] Strategic stance changed from Aggressive to Standard (Scores - Std: 0,523, Agg: 0,470, Def: 0,008)
+[21:08:57] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:08:57] [Utility AI] Evaluated Better D! with score: -1020
+[21:08:57] [Utility AI] Evaluated Twice as Wild! with score: -15
+[21:08:57] [AIManager] Passing priority.
+[21:09:06] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[21:09:06] [Utility AI] Evaluated Heart Shaped Herb II with score: -5
+[21:09:06] [Utility AI] Evaluated Triple Threat II with score: -5
+[21:09:06] [Utility AI] Evaluated Kinetic Therapy! with score: -35,5
+[21:09:06] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+[21:09:21] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[21:09:21] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[21:09:37] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:09:37] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[21:09:43] [AIManager] Strategic stance changed from Standard to Defensive (Scores - Std: 0,424, Agg: 0,020, Def: 0,556)
+[21:09:43] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:09:43] [Utility AI] Evaluated Better D! with score: -5
+[21:09:43] [Utility AI] Evaluated Twice as Wild! with score: -1060
+[21:09:43] [AIManager] Performing mandatory defensive roll for the phase.
+[21:09:47] [AIManager] AI activates defense: Bashenga Honor
+[21:09:52] [AIManager] Strategic stance changed from Defensive to Standard (Scores - Std: 0,800, Agg: 0,043, Def: 0,157)
+[21:09:52] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:09:52] [Utility AI] Evaluated Better D! with score: -5
+[21:09:52] [Utility AI] Evaluated Twice as Wild! with score: -15
+[21:09:52] [AIManager] Passing priority.
+[21:09:59] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:09:59] [Utility AI] Evaluated Better D! with score: -5
+[21:09:59] [Utility AI] Evaluated Twice as Wild! with score: -15
+[21:09:59] [AIManager] Passing priority.
+[21:10:17] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:10:17] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[21:10:27] [AIManager] Strategic stance changed from Standard to Defensive (Scores - Std: 0,391, Agg: 0,030, Def: 0,579)
+[21:10:27] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:10:27] [Utility AI] Evaluated Better D! with score: -1020
+[21:10:27] [Utility AI] Evaluated Twice as Wild! with score: -1060
+[21:10:27] [AIManager] Passing priority.
+[21:10:44] [AIManager] Strategic stance changed from Defensive to Standard (Scores - Std: 0,884, Agg: 0,031, Def: 0,085)
+[21:10:44] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[21:10:44] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+[21:10:54] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[21:10:54] [Utility AI] Evaluated Heart Shaped Herb II with score: -50
+[21:10:54] [Utility AI] Evaluated Triple Threat II with score: -50
+[21:10:54] [Utility AI] Evaluated Kinetic Therapy! with score: -85,5
+[21:10:54] [Utility AI] Evaluated Yibambe! with score: 30
+[21:10:54] [AIManager] AI decided to play: Yibambe! (Score: 30)
+[21:10:56] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[21:10:56] [Utility AI] Evaluated Heart Shaped Herb II with score: -50
+[21:10:56] [Utility AI] Evaluated Triple Threat II with score: -50
+[21:10:56] [Utility AI] Evaluated Kinetic Therapy! with score: -85,5
+[21:10:56] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[21:11:00] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:11:00] [AIManager] Performing mandatory initial roll for the phase.
+[21:11:02] [Utility AI] Evaluated Twice as Wild! with score: -15
+[21:11:02] [Smart Reroll] --- EV Calculations Summary (Rolls Left: 2) ---
+ - Vibranium Claws (Tier 0): Util=12,0 | Fallback=12,0 | Missing=0 | EV=12,0 | P=100%
+ - Vibranium Claws (Tier 1): Util=15,0 | Fallback=15,0 | Missing=0 | EV=15,0 | P=100%
+ - Vibranium Claws (Tier 2): Util=18,0 | Fallback=15,0 | Missing=1 | EV=17,6 | P=88%
+ - Stealth Strike II (Tier 0): Util=12,0 | Fallback=0,0 | Missing=2 | EV=8,0 | P=67%
+ - Meteoric Punch (Tier 0): Util=43,0 | Fallback=0,0 | Missing=2 | EV=28,7 | P=67%
+ - Meteoric Punch (Tier 1): Util=49,0 | Fallback=0,0 | Missing=3 | EV=23,2 | P=47%
+ - Ancestral Power (Tier 0): Util=62,0 | Fallback=0,0 | Missing=4 | EV=20,2 | P=33%
+ - Heart Shaped Herb (Tier 0): Util=50,0 | Fallback=0,0 | Missing=2 | EV=33,3 | P=67%
+ - Triple Threat (Tier 0): Util=49,5 | Fallback=0,0 | Missing=2 | EV=33,0 | P=67%
+ - Wakanda Forever (Tier 0): Util=83,0 | Fallback=0,0 | Missing=5 | EV=18,1 | P=22%
+ => WINNER: Heart Shaped Herb (Tier 0) [EV: 33,3]
+[21:11:02] [AIManager] Smart Reroll: Targeting Heart Shaped Herb (Tier 0). EV: 33,3. Missing: 2 dice.
+[21:11:03] [AIManager] AI is rerolling the remaining 4 dice.
+[21:11:05] [Smart Reroll] --- EV Calculations Summary (Rolls Left: 1) ---
+ - Vibranium Claws (Tier 0): Util=12,0 | Fallback=0,0 | Missing=2 | EV=5,1 | P=42%
+ - Vibranium Claws (Tier 1): Util=15,0 | Fallback=0,0 | Missing=3 | EV=4,1 | P=27%
+ - Vibranium Claws (Tier 2): Util=18,0 | Fallback=0,0 | Missing=4 | EV=3,2 | P=18%
+ - Stealth Strike II (Tier 0): Util=12,0 | Fallback=0,0 | Missing=1 | EV=7,8 | P=65%
+ - Meteoric Punch (Tier 0): Util=43,0 | Fallback=0,0 | Missing=2 | EV=18,2 | P=42%
+ - Meteoric Punch (Tier 1): Util=49,0 | Fallback=0,0 | Missing=3 | EV=13,5 | P=27%
+ - Ancestral Power (Tier 0): Util=62,0 | Fallback=0,0 | Missing=2 | EV=26,2 | P=42%
+ - Heart Shaped Herb (Tier 0): Util=50,0 | Fallback=0,0 | Missing=1 | EV=32,5 | P=65%
+ - Triple Threat (Tier 0): Util=49,5 | Fallback=0,0 | Missing=1 | EV=32,2 | P=65%
+ - Wakanda Forever (Tier 0): Util=83,0 | Fallback=0,0 | Missing=3 | EV=22,8 | P=27%
+ => WINNER: Heart Shaped Herb (Tier 0) [EV: 32,5]
+[21:11:05] [AIManager] Smart Reroll: Targeting Heart Shaped Herb (Tier 0). EV: 32,5. Missing: 1 dice.
+[21:11:06] [AIManager] AI is rerolling the remaining 3 dice.
+[21:11:10] [AIManager] AI activates Heart Shaped Herb at Tier 0.
+[21:11:22] [AIManager] Strategic stance changed from Standard to Aggressive (Scores - Std: 0,433, Agg: 0,524, Def: 0,043)
+[21:11:22] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:11:22] [Utility AI] Evaluated Twice as Wild! with score: -15
+[21:11:22] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[21:11:30] [AIManager] Strategic stance changed from Aggressive to Standard (Scores - Std: 0,647, Agg: 0,335, Def: 0,018)
+[21:11:30] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:11:30] [Utility AI] Evaluated Better D! with score: -1020
+[21:11:30] [Utility AI] Evaluated Twice as Wild! with score: -1060
+[21:11:30] [AIManager] Passing priority.
+[21:11:35] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[21:11:35] [Utility AI] Evaluated Heart Shaped Herb II with score: 0
+[21:11:35] [Utility AI] Evaluated Triple Threat II with score: 0
+[21:11:35] [Utility AI] Evaluated Kinetic Therapy! with score: -35,5
+[21:11:35] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+[21:12:02] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[21:12:02] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[21:12:12] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:12:12] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[21:12:20] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:12:20] [Utility AI] Evaluated Better D! with score: -1020
+[21:12:20] [Utility AI] Evaluated Twice as Wild! with score: -1060
+[21:12:20] [Utility AI] Evaluated Spending Token 'Vibranium Suit' with score: 24
+[21:12:20] [AIManager] AI decided to spend token: Vibranium Suit (Score: 24)
+[21:12:27] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:12:27] [Utility AI] Evaluated Better D! with score: -1020
+[21:12:27] [Utility AI] Evaluated Twice as Wild! with score: -1060
+[21:12:27] [AIManager] Passing priority.
+[21:12:34] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:12:34] [Utility AI] Evaluated Better D! with score: -1020
+[21:12:34] [Utility AI] Evaluated Twice as Wild! with score: -1060
+[21:12:34] [AIManager] Passing priority.
+[21:12:38] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:12:38] [Utility AI] Evaluated Better D! with score: -1020
+[21:12:38] [Utility AI] Evaluated Twice as Wild! with score: -1060
+[21:12:38] [AIManager] Passing priority.
+[21:13:01] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:13:01] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[21:13:05] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:13:05] [Utility AI] Evaluated Better D! with score: -1020
+[21:13:05] [Utility AI] Evaluated Twice as Wild! with score: -1060
+[21:13:05] [AIManager] Passing priority.
+[21:13:17] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[21:13:17] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+[21:13:27] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[21:13:27] [Utility AI] Evaluated Heart Shaped Herb II with score: 5
+[21:13:27] [Utility AI] Evaluated Triple Threat II with score: 5
+[21:13:27] [Utility AI] Evaluated Kinetic Therapy! with score: -35,5
+[21:13:27] [Utility AI] Evaluated Ancestral Power II with score: 5
+[21:13:27] [AIManager] AI decided to play: Heart Shaped Herb II (Score: 5)
+[21:13:29] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[21:13:29] [Utility AI] Evaluated Triple Threat II with score: -55
+[21:13:29] [Utility AI] Evaluated Kinetic Therapy! with score: -85,5
+[21:13:29] [Utility AI] Evaluated Ancestral Power II with score: -55
+[21:13:29] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[21:13:33] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:13:33] [AIManager] Performing mandatory initial roll for the phase.
+[21:13:35] [Utility AI] Evaluated Twice as Wild! with score: -15
+[21:13:35] [Smart Reroll] --- EV Calculations Summary (Rolls Left: 2) ---
+ - Vibranium Claws (Tier 0): Util=12,0 | Fallback=12,0 | Missing=0 | EV=12,0 | P=100%
+ - Vibranium Claws (Tier 1): Util=15,0 | Fallback=15,0 | Missing=0 | EV=15,0 | P=100%
+ - Vibranium Claws (Tier 2): Util=18,0 | Fallback=15,0 | Missing=1 | EV=17,6 | P=88%
+ - Stealth Strike II (Tier 0): Util=12,0 | Fallback=0,0 | Missing=1 | EV=10,5 | P=88%
+ - Meteoric Punch (Tier 0): Util=43,0 | Fallback=12,0 | Missing=1 | EV=39,2 | P=88%
+ - Meteoric Punch (Tier 1): Util=49,0 | Fallback=12,0 | Missing=2 | EV=36,7 | P=67%
+ - Ancestral Power (Tier 0): Util=62,0 | Fallback=0,0 | Missing=3 | EV=29,4 | P=47%
+ - Heart Shaped Herb II (Tier 0): Util=50,0 | Fallback=0,0 | Missing=3 | EV=23,7 | P=47%
+ - Triple Threat (Tier 0): Util=49,5 | Fallback=0,0 | Missing=2 | EV=33,0 | P=67%
+ - Wakanda Forever (Tier 0): Util=83,0 | Fallback=0,0 | Missing=4 | EV=27,0 | P=33%
+ => WINNER: Meteoric Punch (Tier 0) [EV: 39,2]
+[21:13:35] [AIManager] Smart Reroll: Targeting Meteoric Punch (Tier 0). EV: 39,2. Missing: 1 dice.
+[21:13:37] [AIManager] AI is rerolling the remaining 2 dice.
+[21:13:39] [Smart Reroll] --- EV Calculations Summary (Rolls Left: 1) ---
+ - Vibranium Claws (Tier 0): Util=12,0 | Fallback=12,0 | Missing=0 | EV=12,0 | P=100%
+ - Vibranium Claws (Tier 1): Util=15,0 | Fallback=15,0 | Missing=0 | EV=15,0 | P=100%
+ - Vibranium Claws (Tier 2): Util=18,0 | Fallback=15,0 | Missing=1 | EV=17,0 | P=65%
+ - Stealth Strike II (Tier 0): Util=12,0 | Fallback=0,0 | Missing=2 | EV=5,1 | P=42%
+ - Meteoric Punch (Tier 0): Util=43,0 | Fallback=43,0 | Missing=0 | EV=43,0 | P=100%
+ - Meteoric Punch (Tier 1): Util=49,0 | Fallback=43,0 | Missing=1 | EV=46,9 | P=65%
+ - Ancestral Power (Tier 0): Util=62,0 | Fallback=0,0 | Missing=4 | EV=11,1 | P=18%
+ - Heart Shaped Herb II (Tier 0): Util=50,0 | Fallback=0,0 | Missing=2 | EV=21,1 | P=42%
+ - Triple Threat (Tier 0): Util=49,5 | Fallback=0,0 | Missing=2 | EV=20,9 | P=42%
+ - Wakanda Forever (Tier 0): Util=83,0 | Fallback=0,0 | Missing=5 | EV=9,6 | P=12%
+ => WINNER: Meteoric Punch (Tier 1) [EV: 46,9]
+[21:13:39] [AIManager] Smart Reroll: Targeting Meteoric Punch (Tier 1). EV: 46,9. Missing: 1 dice.
+[21:13:41] [AIManager] AI is rerolling the remaining 1 dice.
+[21:13:45] [AIManager] AI activates Meteoric Punch at Tier 1.
+[21:13:53] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:13:53] [Utility AI] Evaluated Twice as Wild! with score: -15
+[21:13:53] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[21:14:00] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:14:00] [Utility AI] Evaluated Better D! with score: -1020
+[21:14:00] [Utility AI] Evaluated Twice as Wild! with score: -15
+[21:14:00] [AIManager] Passing priority.
+[21:14:07] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[21:14:07] [Utility AI] Evaluated Triple Threat II with score: -5
+[21:14:07] [Utility AI] Evaluated Kinetic Therapy! with score: -35,5
+[21:14:07] [Utility AI] Evaluated Ancestral Power II with score: -5
+[21:14:07] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+[21:15:03] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[21:15:03] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[21:15:11] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:15:11] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[21:15:26] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:15:26] [Utility AI] Evaluated Better D! with score: -1020
+[21:15:26] [Utility AI] Evaluated Twice as Wild! with score: -1060
+[21:15:26] [AIManager] Passing priority.
+[21:15:45] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[21:15:45] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+[21:15:55] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[21:15:55] [Utility AI] Evaluated Triple Threat II with score: -50
+[21:15:55] [Utility AI] Evaluated Kinetic Therapy! with score: -35,5
+[21:15:55] [Utility AI] Evaluated Ancestral Power II with score: -50
+[21:15:55] [Utility AI] Evaluated Bashenga's Honor II with score: -50
+[21:15:55] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[21:15:59] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:15:59] [AIManager] Performing mandatory initial roll for the phase.
+[21:16:01] [Utility AI] Evaluated Twice as Wild! with score: -15
+[21:16:01] [Smart Reroll] --- EV Calculations Summary (Rolls Left: 2) ---
+ - Vibranium Claws (Tier 0): Util=12,0 | Fallback=0,0 | Missing=1 | EV=10,5 | P=88%
+ - Vibranium Claws (Tier 1): Util=15,0 | Fallback=0,0 | Missing=2 | EV=10,0 | P=67%
+ - Vibranium Claws (Tier 2): Util=18,0 | Fallback=0,0 | Missing=3 | EV=8,5 | P=47%
+ - Stealth Strike II (Tier 0): Util=12,0 | Fallback=0,0 | Missing=1 | EV=10,5 | P=88%
+ - Meteoric Punch (Tier 0): Util=43,0 | Fallback=0,0 | Missing=1 | EV=37,7 | P=88%
+ - Meteoric Punch (Tier 1): Util=49,0 | Fallback=0,0 | Missing=2 | EV=32,7 | P=67%
+ - Ancestral Power (Tier 0): Util=62,0 | Fallback=0,0 | Missing=3 | EV=29,4 | P=47%
+ - Heart Shaped Herb II (Tier 0): Util=50,0 | Fallback=0,0 | Missing=1 | EV=43,9 | P=88%
+ - Triple Threat (Tier 0): Util=49,5 | Fallback=49,5 | Missing=0 | EV=49,5 | P=100%
+ - Wakanda Forever (Tier 0): Util=83,0 | Fallback=0,0 | Missing=4 | EV=27,0 | P=33%
+ => WINNER: Triple Threat (Tier 0) [EV: 49,5]
+[21:16:01] [AIManager] Reached a solid target: Triple Threat. Stopping rerolls.
+[21:16:03] [AIManager] AI activates Triple Threat at Tier 0.
+[21:16:12] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:16:12] [Utility AI] Evaluated Twice as Wild! with score: -15
+[21:16:12] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[21:16:23] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:16:23] [Utility AI] Evaluated Better D! with score: -1020
+[21:16:23] [Utility AI] Evaluated Twice as Wild! with score: -15
+[21:16:23] [AIManager] Passing priority.
+[21:16:31] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:16:31] [Utility AI] Evaluated Better D! with score: -1020
+[21:16:31] [Utility AI] Evaluated Twice as Wild! with score: -15
+[21:16:31] [AIManager] Passing priority.
+[21:16:36] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[21:16:36] [Utility AI] Evaluated Triple Threat II with score: 0
+[21:16:36] [Utility AI] Evaluated Kinetic Therapy! with score: 14,5
+[21:16:36] [Utility AI] Evaluated Ancestral Power II with score: 0
+[21:16:36] [Utility AI] Evaluated Bashenga's Honor II with score: 0
+[21:16:36] [AIManager] AI decided to play: Kinetic Therapy! (Score: 14,5)
+[21:16:38] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[21:16:38] [Utility AI] Evaluated Triple Threat II with score: -10
+[21:16:38] [Utility AI] Evaluated Ancestral Power II with score: -10
+[21:16:38] [Utility AI] Evaluated Bashenga's Honor II with score: -10
+[21:16:38] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+[21:20:25] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[21:20:25] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[21:20:48] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:20:49] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[21:20:53] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:20:53] [Utility AI] Evaluated Better D! with score: -1020
+[21:20:53] [AIManager] Passing priority.
+[21:20:57] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:20:57] [Utility AI] Evaluated Better D! with score: -1020
+[21:20:57] [AIManager] Passing priority.
+[21:21:01] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:21:01] [Utility AI] Evaluated Better D! with score: -1020
+[21:21:01] [AIManager] Passing priority.
+[21:21:15] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:21:15] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[21:21:20] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:21:20] [Utility AI] Evaluated Better D! with score: -5
+[21:21:20] [AIManager] Performing mandatory defensive roll for the phase.
+[21:21:24] [AIManager] AI activates defense: Bashenga Honor
+[21:21:30] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:21:30] [Utility AI] Evaluated Better D! with score: -5
+[21:21:30] [AIManager] Passing priority.
+[21:21:32] 
+=== GAME OVER ===
+[21:21:32] Winner: Spider Man
+[21:21:32] --- AI STATISTICS ---
+[21:21:32] Total Cards Played: 10
+[21:21:32] Total Abilities Activated: 8
+[21:21:32] Total Tokens Spent: 3
+[21:21:32] Total Priority Passes: 76
+[21:21:32] =====================
+
+
+
+========================================
+=== NEW GAME [21-06-2026 21:23:28] ===
+========================================
+[21:23:38] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[21:23:38] [Utility AI] Evaluated Ensnare II with score: -40
+[21:23:38] [Utility AI] Evaluated Yikes! with score: 10
+[21:23:38] [AIManager] AI decided to play: Yikes! (Score: 10)
+[21:23:40] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[21:23:40] [Utility AI] Evaluated Ensnare II with score: -25
+[21:23:40] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[21:23:47] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:23:47] [AIManager] Performing mandatory initial roll for the phase.
+[21:23:49] [Utility AI] Evaluated Six It! with score: 20
+[21:23:49] [AIManager] AI decided to play: Six It! (Score: 20)
+[21:23:52] [AIManager] Strategic stance changed from Standard to Aggressive (Scores - Std: 0,413, Agg: 0,575, Def: 0,011)
+[21:23:52] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:23:52] [Smart Reroll] --- EV Calculations Summary (Rolls Left: 2) ---
+ - Punch (Tier 0): Util=18,0 | Fallback=18,0 | Missing=0 | EV=18,0 | P=100%
+ - Punch (Tier 1): Util=22,5 | Fallback=22,5 | Missing=0 | EV=22,5 | P=100%
+ - Punch (Tier 2): Util=27,0 | Fallback=22,5 | Missing=1 | EV=26,4 | P=88%
+ - C-C-C-Combo (Tier 0): Util=60,0 | Fallback=0,0 | Missing=1 | EV=52,7 | P=88%
+ - Ensnare (Tier 0): Util=60,0 | Fallback=18,0 | Missing=1 | EV=54,9 | P=88%
+ - Ensnare (Tier 1): Util=88,5 | Fallback=18,0 | Missing=2 | EV=65,0 | P=67%
+ - Venom Punch (Tier 0): Util=69,0 | Fallback=0,0 | Missing=3 | EV=32,7 | P=47%
+ - Wall Crawler (Tier 0): Util=69,0 | Fallback=0,0 | Missing=3 | EV=32,7 | P=47%
+ - Spider Reflexes (Tier 0): Util=21,0 | Fallback=0,0 | Missing=2 | EV=14,0 | P=67%
+ - Venom Shockwave (Tier 0): Util=133,5 | Fallback=0,0 | Missing=4 | EV=43,4 | P=33%
+ => WINNER: Ensnare (Tier 1) [EV: 65,0]
+[21:23:52] [AIManager] Smart Reroll: Targeting Ensnare (Tier 1). EV: 65,0. Missing: 2 dice.
+[21:23:54] [AIManager] AI is rerolling the remaining 2 dice.
+[21:23:56] [Smart Reroll] --- EV Calculations Summary (Rolls Left: 1) ---
+ - Punch (Tier 0): Util=18,0 | Fallback=18,0 | Missing=0 | EV=18,0 | P=100%
+ - Punch (Tier 1): Util=22,5 | Fallback=18,0 | Missing=1 | EV=20,9 | P=65%
+ - Punch (Tier 2): Util=27,0 | Fallback=18,0 | Missing=2 | EV=21,8 | P=42%
+ - C-C-C-Combo (Tier 0): Util=60,0 | Fallback=0,0 | Missing=1 | EV=39,0 | P=65%
+ - Ensnare (Tier 0): Util=60,0 | Fallback=60,0 | Missing=0 | EV=60,0 | P=100%
+ - Ensnare (Tier 1): Util=88,5 | Fallback=60,0 | Missing=1 | EV=78,5 | P=65%
+ - Venom Punch (Tier 0): Util=69,0 | Fallback=0,0 | Missing=3 | EV=18,9 | P=27%
+ - Wall Crawler (Tier 0): Util=69,0 | Fallback=0,0 | Missing=2 | EV=29,2 | P=42%
+ - Spider Reflexes (Tier 0): Util=21,0 | Fallback=0,0 | Missing=1 | EV=13,7 | P=65%
+ - Venom Shockwave (Tier 0): Util=133,5 | Fallback=0,0 | Missing=4 | EV=23,8 | P=18%
+ => WINNER: Ensnare (Tier 1) [EV: 78,5]
+[21:23:56] [AIManager] Smart Reroll: Targeting Ensnare (Tier 1). EV: 78,5. Missing: 1 dice.
+[21:23:57] [AIManager] AI is rerolling the remaining 1 dice.
+[21:24:01] [AIManager] AI activates Ensnare at Tier 0.
+[21:26:30] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:26:30] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[21:26:36] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:26:36] [AIManager] Passing priority.
+[21:26:43] [AIManager] Strategic stance changed from Aggressive to Standard (Scores - Std: 0,623, Agg: 0,376, Def: 0,001)
+[21:26:43] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[21:26:43] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+[21:27:44] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[21:27:44] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[21:28:02] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:28:02] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[21:28:08] [AIManager] Strategic stance changed from Standard to Defensive (Scores - Std: 0,443, Agg: 0,016, Def: 0,540)
+[21:28:08] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:28:10] [AIManager] Performing mandatory defensive roll for the phase.
+[21:28:14] [AIManager] AI activates defense: Counterpunch
+[21:28:31] [AIManager] Strategic stance changed from Defensive to Standard (Scores - Std: 0,829, Agg: 0,063, Def: 0,107)
+[21:28:31] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:28:31] [AIManager] Passing priority.
+[21:28:50] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[21:28:50] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+[21:29:00] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[21:29:00] [Utility AI] Evaluated Ensnare II with score: -25
+[21:29:00] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[21:29:20] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:29:20] [AIManager] Performing mandatory initial roll for the phase.
+[21:29:22] [Utility AI] Evaluated So Wild! with score: 5
+[21:29:22] [AIManager] AI decided to play: So Wild! (Score: 5)
+[21:29:26] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:29:26] [Smart Reroll] --- EV Calculations Summary (Rolls Left: 2) ---
+ - Punch (Tier 0): Util=12,0 | Fallback=0,0 | Missing=2 | EV=8,0 | P=67%
+ - Punch (Tier 1): Util=15,0 | Fallback=0,0 | Missing=3 | EV=7,1 | P=47%
+ - Punch (Tier 2): Util=18,0 | Fallback=0,0 | Missing=4 | EV=5,9 | P=33%
+ - C-C-C-Combo (Tier 0): Util=40,0 | Fallback=0,0 | Missing=1 | EV=35,1 | P=88%
+ - Ensnare (Tier 0): Util=40,0 | Fallback=0,0 | Missing=1 | EV=35,1 | P=88%
+ - Ensnare (Tier 1): Util=59,0 | Fallback=0,0 | Missing=2 | EV=39,3 | P=67%
+ - Venom Punch (Tier 0): Util=46,0 | Fallback=0,0 | Missing=2 | EV=30,7 | P=67%
+ - Wall Crawler (Tier 0): Util=46,0 | Fallback=0,0 | Missing=2 | EV=30,7 | P=67%
+ - Spider Reflexes (Tier 0): Util=14,0 | Fallback=14,0 | Missing=0 | EV=14,0 | P=100%
+ - Venom Shockwave (Tier 0): Util=89,0 | Fallback=0,0 | Missing=3 | EV=42,2 | P=47%
+ => WINNER: Venom Shockwave (Tier 0) [EV: 42,2]
+[21:29:26] [AIManager] Smart Reroll: Targeting Venom Shockwave (Tier 0). EV: 42,2. Missing: 3 dice.
+[21:29:27] [AIManager] AI is rerolling the remaining 3 dice.
+[21:29:29] [Smart Reroll] --- EV Calculations Summary (Rolls Left: 1) ---
+ - Punch (Tier 0): Util=12,0 | Fallback=12,0 | Missing=0 | EV=12,0 | P=100%
+ - Punch (Tier 1): Util=15,0 | Fallback=12,0 | Missing=1 | EV=14,0 | P=65%
+ - Punch (Tier 2): Util=18,0 | Fallback=12,0 | Missing=2 | EV=14,5 | P=42%
+ - C-C-C-Combo (Tier 0): Util=40,0 | Fallback=40,0 | Missing=0 | EV=40,0 | P=100%
+ - Ensnare (Tier 0): Util=40,0 | Fallback=0,0 | Missing=3 | EV=11,0 | P=27%
+ - Ensnare (Tier 1): Util=59,0 | Fallback=0,0 | Missing=4 | EV=10,5 | P=18%
+ - Venom Punch (Tier 0): Util=46,0 | Fallback=0,0 | Missing=2 | EV=19,4 | P=42%
+ - Wall Crawler (Tier 0): Util=46,0 | Fallback=0,0 | Missing=3 | EV=12,6 | P=27%
+ - Spider Reflexes (Tier 0): Util=14,0 | Fallback=0,0 | Missing=2 | EV=5,9 | P=42%
+ - Venom Shockwave (Tier 0): Util=89,0 | Fallback=0,0 | Missing=3 | EV=24,4 | P=27%
+ => WINNER: C-C-C-Combo (Tier 0) [EV: 40,0]
+[21:29:29] [AIManager] Reached a solid target: C-C-C-Combo. Stopping rerolls.
+[21:29:31] [AIManager] AI activates C-C-C-Combo at Tier 0.
+[21:29:57] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:29:57] [Smart Reroll] --- EV Calculations Summary (Rolls Left: 1) ---
+ - Punch (Tier 0): Util=12,0 | Fallback=12,0 | Missing=0 | EV=12,0 | P=100%
+ - Punch (Tier 1): Util=15,0 | Fallback=12,0 | Missing=1 | EV=14,0 | P=65%
+ - Punch (Tier 2): Util=18,0 | Fallback=12,0 | Missing=2 | EV=14,5 | P=42%
+ - C-C-C-Combo (Tier 0): Util=40,0 | Fallback=0,0 | Missing=1 | EV=26,0 | P=65%
+ - Ensnare (Tier 0): Util=40,0 | Fallback=0,0 | Missing=2 | EV=16,9 | P=42%
+ - Ensnare (Tier 1): Util=59,0 | Fallback=0,0 | Missing=3 | EV=16,2 | P=27%
+ - Venom Punch (Tier 0): Util=46,0 | Fallback=0,0 | Missing=3 | EV=12,6 | P=27%
+ - Wall Crawler (Tier 0): Util=46,0 | Fallback=0,0 | Missing=2 | EV=19,4 | P=42%
+ - Spider Reflexes (Tier 0): Util=14,0 | Fallback=0,0 | Missing=1 | EV=9,1 | P=65%
+ - Venom Shockwave (Tier 0): Util=89,0 | Fallback=0,0 | Missing=4 | EV=15,9 | P=18%
+ => WINNER: C-C-C-Combo (Tier 0) [EV: 26,0]
+[21:29:57] [AIManager] Smart Reroll: Targeting C-C-C-Combo (Tier 0). EV: 26,0. Missing: 1 dice.
+[21:29:59] [AIManager] AI is rerolling the remaining 2 dice.
+[21:30:03] [AIManager] AI activates Ensnare at Tier 0.
+[21:30:14] [AIManager] Strategic stance changed from Standard to Aggressive (Scores - Std: 0,381, Agg: 0,613, Def: 0,006)
+[21:30:14] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:30:14] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[21:30:19] [AIManager] Strategic stance changed from Aggressive to Standard (Scores - Std: 0,499, Agg: 0,374, Def: 0,127)
+[21:30:19] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:30:19] [AIManager] Passing priority.
+[21:30:24] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[21:30:24] [Utility AI] Evaluated Ensnare II with score: 30
+[21:30:24] [AIManager] AI decided to play: Ensnare II (Score: 30)
+[21:30:26] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[21:30:26] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+[21:30:51] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[21:30:51] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[21:31:18] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:31:18] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[21:31:29] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:31:29] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[21:31:31] [AIManager] Strategic stance changed from Standard to Defensive (Scores - Std: 0,468, Agg: 0,051, Def: 0,481)
+[21:31:31] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:31:33] [AIManager] Performing mandatory defensive roll for the phase.
+[21:31:37] [AIManager] AI activates defense: Counterpunch
+[21:31:53] [AIManager] Strategic stance changed from Defensive to Standard (Scores - Std: 0,777, Agg: 0,114, Def: 0,109)
+[21:31:53] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:31:53] [AIManager] Passing priority.
+[21:34:26] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[21:34:26] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+[21:34:36] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[21:34:36] [Utility AI] Evaluated Double Up! with score: 35
+[21:34:36] [AIManager] AI decided to play: Double Up! (Score: 35)
+[21:34:38] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[21:34:38] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[21:34:47] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:34:47] [AIManager] Performing mandatory initial roll for the phase.
+[21:34:49] [Utility AI] Evaluated Swing Escape! with score: -20
+[21:34:49] [Smart Reroll] --- EV Calculations Summary (Rolls Left: 2) ---
+ - Punch (Tier 0): Util=12,0 | Fallback=0,0 | Missing=1 | EV=10,5 | P=88%
+ - Punch (Tier 1): Util=15,0 | Fallback=0,0 | Missing=2 | EV=10,0 | P=67%
+ - Punch (Tier 2): Util=18,0 | Fallback=0,0 | Missing=3 | EV=8,5 | P=47%
+ - C-C-C-Combo (Tier 0): Util=40,0 | Fallback=0,0 | Missing=2 | EV=26,7 | P=67%
+ - Ensnare II (Tier 0): Util=43,0 | Fallback=43,0 | Missing=0 | EV=43,0 | P=100%
+ - Ensnare II (Tier 1): Util=62,0 | Fallback=43,0 | Missing=1 | EV=59,7 | P=88%
+ - Venom Punch (Tier 0): Util=46,0 | Fallback=0,0 | Missing=4 | EV=15,0 | P=33%
+ - Wall Crawler (Tier 0): Util=46,0 | Fallback=46,0 | Missing=0 | EV=46,0 | P=100%
+ - Spider Reflexes (Tier 0): Util=14,0 | Fallback=0,0 | Missing=1 | EV=12,3 | P=88%
+ - Venom Shockwave (Tier 0): Util=89,0 | Fallback=0,0 | Missing=5 | EV=19,5 | P=22%
+ => WINNER: Ensnare II (Tier 1) [EV: 59,7]
+[21:34:49] [AIManager] Smart Reroll: Targeting Ensnare II (Tier 1). EV: 59,7. Missing: 1 dice.
+[21:34:51] [AIManager] AI is rerolling the remaining 1 dice.
+[21:34:53] [Smart Reroll] --- EV Calculations Summary (Rolls Left: 1) ---
+ - Punch (Tier 0): Util=12,0 | Fallback=0,0 | Missing=1 | EV=7,8 | P=65%
+ - Punch (Tier 1): Util=15,0 | Fallback=0,0 | Missing=2 | EV=6,3 | P=42%
+ - Punch (Tier 2): Util=18,0 | Fallback=0,0 | Missing=3 | EV=4,9 | P=27%
+ - C-C-C-Combo (Tier 0): Util=40,0 | Fallback=0,0 | Missing=1 | EV=26,0 | P=65%
+ - Ensnare II (Tier 0): Util=43,0 | Fallback=62,0 | Missing=0 | EV=62,0 | P=100%
+ - Ensnare II (Tier 1): Util=62,0 | Fallback=62,0 | Missing=0 | EV=62,0 | P=100%
+ - Venom Punch (Tier 0): Util=46,0 | Fallback=0,0 | Missing=3 | EV=12,6 | P=27%
+ - Wall Crawler (Tier 0): Util=46,0 | Fallback=43,0 | Missing=1 | EV=45,0 | P=65%
+ - Spider Reflexes (Tier 0): Util=14,0 | Fallback=14,0 | Missing=0 | EV=14,0 | P=100%
+ - Venom Shockwave (Tier 0): Util=89,0 | Fallback=0,0 | Missing=4 | EV=15,9 | P=18%
+ => WINNER: Ensnare II (Tier 0) [EV: 62,0]
+[21:34:53] [AIManager] Reached a solid target: Ensnare II. Stopping rerolls.
+[21:34:55] [AIManager] AI activates Ensnare II at Tier 1.
+[21:35:47] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:35:47] [Utility AI] Evaluated Swing Escape! with score: -20
+[21:35:47] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[21:35:56] [AIManager] Strategic stance changed from Standard to Aggressive (Scores - Std: 0,428, Agg: 0,520, Def: 0,052)
+[21:35:56] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:35:56] [Utility AI] Evaluated Swing Escape! with score: -20
+[21:35:56] [Utility AI] Evaluated Helping Hand! with score: 25
+[21:35:56] [AIManager] AI decided to play: Helping Hand! (Score: 25)
+[21:35:59] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:35:59] [AIManager] Passing priority.
+[21:36:09] [AIManager] Strategic stance changed from Aggressive to Standard (Scores - Std: 0,541, Agg: 0,406, Def: 0,053)
+[21:36:09] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[21:36:09] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+[21:36:52] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[21:36:52] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[21:37:06] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:37:06] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[21:37:14] [AIManager] Strategic stance changed from Standard to Defensive (Scores - Std: 0,265, Agg: 0,059, Def: 0,676)
+[21:37:14] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:37:16] [AIManager] Performing mandatory defensive roll for the phase.
+[21:37:20] [AIManager] AI activates defense: Counterpunch
+[21:37:43] [AIManager] Strategic stance changed from Defensive to Standard (Scores - Std: 0,816, Agg: 0,054, Def: 0,130)
+[21:37:43] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:37:43] [AIManager] Passing priority.
+[21:37:53] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[21:37:53] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+[21:38:03] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[21:38:03] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[21:38:06] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:38:06] [AIManager] Performing mandatory initial roll for the phase.
+[21:38:08] [Utility AI] Evaluated Swing Escape! with score: -20
+[21:38:08] [Smart Reroll] --- EV Calculations Summary (Rolls Left: 2) ---
+ - Punch (Tier 0): Util=12,0 | Fallback=12,0 | Missing=0 | EV=12,0 | P=100%
+ - Punch (Tier 1): Util=15,0 | Fallback=15,0 | Missing=0 | EV=15,0 | P=100%
+ - Punch (Tier 2): Util=18,0 | Fallback=18,0 | Missing=0 | EV=18,0 | P=100%
+ - C-C-C-Combo (Tier 0): Util=40,0 | Fallback=0,0 | Missing=2 | EV=26,7 | P=67%
+ - Ensnare II (Tier 0): Util=43,0 | Fallback=0,0 | Missing=2 | EV=28,7 | P=67%
+ - Ensnare II (Tier 1): Util=62,0 | Fallback=0,0 | Missing=3 | EV=29,4 | P=47%
+ - Venom Punch (Tier 0): Util=46,0 | Fallback=0,0 | Missing=4 | EV=15,0 | P=33%
+ - Wall Crawler (Tier 0): Util=46,0 | Fallback=0,0 | Missing=3 | EV=21,8 | P=47%
+ - Spider Reflexes (Tier 0): Util=14,0 | Fallback=0,0 | Missing=3 | EV=6,6 | P=47%
+ - Venom Shockwave (Tier 0): Util=89,0 | Fallback=0,0 | Missing=5 | EV=19,5 | P=22%
+ => WINNER: Ensnare II (Tier 1) [EV: 29,4]
+[21:38:08] [AIManager] Smart Reroll: Targeting Ensnare II (Tier 1). EV: 29,4. Missing: 3 dice.
+[21:38:10] [AIManager] AI is rerolling the remaining 3 dice.
+[21:38:12] [Smart Reroll] --- EV Calculations Summary (Rolls Left: 1) ---
+ - Punch (Tier 0): Util=12,0 | Fallback=12,0 | Missing=0 | EV=12,0 | P=100%
+ - Punch (Tier 1): Util=15,0 | Fallback=15,0 | Missing=0 | EV=15,0 | P=100%
+ - Punch (Tier 2): Util=18,0 | Fallback=15,0 | Missing=1 | EV=17,0 | P=65%
+ - C-C-C-Combo (Tier 0): Util=40,0 | Fallback=0,0 | Missing=2 | EV=16,9 | P=42%
+ - Ensnare II (Tier 0): Util=43,0 | Fallback=12,0 | Missing=1 | EV=32,2 | P=65%
+ - Ensnare II (Tier 1): Util=62,0 | Fallback=12,0 | Missing=2 | EV=33,1 | P=42%
+ - Venom Punch (Tier 0): Util=46,0 | Fallback=0,0 | Missing=4 | EV=8,2 | P=18%
+ - Wall Crawler (Tier 0): Util=46,0 | Fallback=0,0 | Missing=2 | EV=19,4 | P=42%
+ - Spider Reflexes (Tier 0): Util=14,0 | Fallback=0,0 | Missing=2 | EV=5,9 | P=42%
+ - Venom Shockwave (Tier 0): Util=89,0 | Fallback=0,0 | Missing=5 | EV=10,3 | P=12%
+ => WINNER: Ensnare II (Tier 1) [EV: 33,1]
+[21:38:12] [AIManager] Smart Reroll: Targeting Ensnare II (Tier 1). EV: 33,1. Missing: 2 dice.
+[21:38:13] [AIManager] AI is rerolling the remaining 2 dice.
+[21:38:17] [AIManager] AI activates Punch at Tier 2.
+[21:38:29] [AIManager] Strategic stance changed from Standard to Aggressive (Scores - Std: 0,393, Agg: 0,581, Def: 0,026)
+[21:38:29] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:38:29] [Utility AI] Evaluated Swing Escape! with score: -20
+[21:38:29] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[21:38:35] [AIManager] Strategic stance changed from Aggressive to Standard (Scores - Std: 0,560, Agg: 0,390, Def: 0,050)
+[21:38:35] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:38:35] [Utility AI] Evaluated Swing Escape! with score: -20
+[21:38:35] [AIManager] Passing priority.
+[21:38:43] [AIManager] AI has priority in MainPhase2. Deciding what to do...
+[21:38:43] [AIManager] No valid cards to play in MainPhase2. Passing priority.
+[21:39:31] [AIManager] AI has priority in MainPhase1. Deciding what to do...
+[21:39:31] [AIManager] No valid cards to play in MainPhase1. Passing priority.
+[21:39:52] [AIManager] AI has priority in OffensiveRollPhase. Deciding what to do...
+[21:39:52] [AIManager] No more actions for AI in OffensiveRollPhase. Passing priority.
+[21:40:22] [AIManager] Strategic stance changed from Standard to Defensive (Scores - Std: 0,385, Agg: 0,046, Def: 0,568)
+[21:40:22] [AIManager] AI has priority in Defensive Roll Phase. Deciding what to do...
+[21:40:22] [Utility AI] Evaluated Swing Escape! with score: -20
+[21:40:22] [Utility AI] Evaluated Invisible Punch! with score: -20
+[21:40:22] [AIManager] Passing priority.
+[21:40:26] 
+=== GAME OVER ===
+[21:40:26] Winner: Black Panther
+[21:40:26] --- AI STATISTICS ---
+[21:40:26] Total Cards Played: 6
+[21:40:26] Total Abilities Activated: 5
+[21:40:26] Total Tokens Spent: 0
+[21:40:26] Total Priority Passes: 32
+[21:40:26] =====================
+

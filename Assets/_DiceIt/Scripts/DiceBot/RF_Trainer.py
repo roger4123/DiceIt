@@ -50,7 +50,7 @@ def map_action_to_stance(row):
                 return 0  # Standard (draw, CP, upgrades)
                     
         case 'SpendToken':
-            defensive_tokens = ["Invisibility", "Vibranium Shield"]
+            defensive_tokens = ["Invisibility", "Vibranium Suit"]
             aggressive_tokens = ["Combo", "Kinetic Energy", "Webbed"]
                 
             if any(dt in detail for dt in defensive_tokens):
