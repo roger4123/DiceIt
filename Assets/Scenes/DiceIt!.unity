@@ -774,8 +774,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e5942dd1a5c0414eb3aa9e2fcd82060, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  characterData: {fileID: 11400000, guid: d834d9472b08c72459158b0815fa7ffe, type: 2}
-  isAI: 0
+  characterData: {fileID: 11400000, guid: 2f1ae33207abb564d973d3b3fcd6c42e, type: 2}
+  isAI: 1
   currentHealth: 0
   currentCombatPoints: 0
   activeOffensiveAbilities: []
@@ -6099,8 +6099,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e5942dd1a5c0414eb3aa9e2fcd82060, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  characterData: {fileID: 11400000, guid: 2f1ae33207abb564d973d3b3fcd6c42e, type: 2}
-  isAI: 1
+  characterData: {fileID: 11400000, guid: d834d9472b08c72459158b0815fa7ffe, type: 2}
+  isAI: 0
   currentHealth: 0
   currentCombatPoints: 0
   activeOffensiveAbilities: []

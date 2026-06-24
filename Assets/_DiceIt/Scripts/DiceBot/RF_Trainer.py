@@ -128,9 +128,9 @@ print("Model training completed successfully.")
 
 # exporting
 print("Exporting  model to C#.")
-rf_model = m2c.export_to_c_sharp(model, class_name="AIBrain", method_name="Score")
+rf_model = m2c.export_to_c_sharp(model, class_name="RFBrain", method_name="Score")
 
-csharp_filename = 'AIBrain.cs'
+csharp_filename = 'RFBrain.cs'
 with open(csharp_filename, 'w') as f:
     f.write(rf_model)
 

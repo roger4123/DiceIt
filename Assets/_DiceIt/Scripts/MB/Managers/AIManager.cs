@@ -35,6 +35,9 @@ public class AIManager : MonoBehaviour
 
     private int currentStance = 0; // 0 = Standard, 1 = Aggressive, 2 = Defensive
 
+    private int lastPickedDieIndex = -1;
+    private bool isSelectingSourceDie = false;
+
     #endregion
 
     #region Unity Lifecycle & Events
@@ -329,9 +332,23 @@ public class AIManager : MonoBehaviour
                 {
                     if (BattleManager.Instance.needsDefenseSelection && aiPlayer.activeDefensiveAbilities.Count > 0)
                     {
-                        // pick first for now
-                        var defAbility = aiPlayer.activeDefensiveAbilities[0];
-                        BattleManager.Instance.SelectDefense(defAbility);
+                        var opponent = (BattleManager.Instance.player1 == aiPlayer) ? BattleManager.Instance.player2 : BattleManager.Instance.player1;
+                        DefensiveAbilityData bestDefAbility = null;
+                        float bestDefScore = -9999f;
+                        foreach (var defAbility in aiPlayer.activeDefensiveAbilities)
+                        {
+                            float score = EvaluateDefensiveAbility(defAbility, aiPlayer, opponent);
+                            LogAI($"[AIManager] Evaluated Defensive Ability {defAbility.abilityName} with score: {score}");
+                            if (score > bestDefScore)
+                            {
+                                bestDefScore = score;
+                                bestDefAbility = defAbility;
+                            }
+                        }
+                        if (bestDefAbility == null) bestDefAbility = aiPlayer.activeDefensiveAbilities[0];
+                        
+                        LogAI($"[AIManager] Selected Defensive Ability: {bestDefAbility.abilityName} (Score: {bestDefScore})");
+                        BattleManager.Instance.SelectDefense(bestDefAbility);
                         yield return new WaitForSeconds(delayBetweenActions);
                     }
 
@@ -344,8 +361,96 @@ public class AIManager : MonoBehaviour
                         if (ActionStackManager.Instance.playerWithPriority != aiPlayer) yield break;
                     }
 
+                    // SMART DEFENSIVE REROLL LOOP
+                    while (DiceManager.Instance != null 
+                           && !BattleManager.Instance.hasActivatedAbilityThisPhase 
+                           && DiceManager.Instance.rollsLeft > 0 
+                           && BattleManager.Instance.pendingDefenseSelection != null)
+                    {
+                        var currentDice = DiceManager.Instance.GetCurrentDiceValues();
+                        var defAbility = BattleManager.Instance.pendingDefenseSelection;
+                        
+                        List<int> bestDiceToLock = GetBestDefensiveDiceToLock(aiPlayer, currentDice, defAbility);
+                        float currentUtility = GetDefensiveUtility(aiPlayer, currentDice, defAbility);
+                        float ev = GetDefensiveExpectedUtility(aiPlayer, currentDice, bestDiceToLock, defAbility);
+                        
+                        bool conditionMet = false;
+                        if (AbilityResolver.Instance != null)
+                        {
+                            foreach (var outcome in defAbility.primaryDefensiveOutcomes)
+                            {
+                                if (AbilityResolver.Instance.IsConditionMet(outcome, currentDice, aiPlayer.characterData.diceKey, out _))
+                                {
+                                    conditionMet = true;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        bool shouldReroll = false;
+                        if (!conditionMet && ev > 0f)
+                        {
+                            shouldReroll = true;
+                        }
+                        else if (ev > currentUtility + 1f) // scaling improvement
+                        {
+                            shouldReroll = true;
+                        }
+                        
+                        if (shouldReroll && bestDiceToLock.Count < DiceManager.Instance.dice.Count)
+                        {
+                            int rollsLeft = DiceManager.Instance.rollsLeft;
+                            LogAI($"[AIManager] Smart Defensive Reroll: EV={ev:F1} | Current={currentUtility:F1}. Rolls left: {rollsLeft}. Locking {bestDiceToLock.Count} dice.");
+                            
+                            for (int i = 0; i < DiceManager.Instance.dice.Count; i++)
+                            {
+                                if (!DiceManager.Instance.dice[i].isActive) continue;
+
+                                bool shouldLock = bestDiceToLock.Contains(i);
+                                if (DiceManager.Instance.dice[i].isLocked != shouldLock)
+                                {
+                                    DiceManager.Instance.OnDieClicked(i, aiPlayer);
+                                    yield return new WaitForSeconds(0.5f);
+                                }
+                            }
+
+                            yield return new WaitForSeconds(0.5f);
+
+                            LogAI($"[AIManager] AI is rerolling defensive dice.");
+                            DiceManager.Instance.RollDice();
+                            yield return new WaitForSeconds(delayBetweenActions);
+                            if (ActionStackManager.Instance.playerWithPriority != aiPlayer) yield break;
+                        }
+                        else
+                        {
+                            LogAI("[AIManager] Stopping defensive rerolls.");
+                            break;
+                        }
+                    }
+
                     if (!BattleManager.Instance.hasActivatedAbilityThisPhase && BattleManager.Instance.pendingDefenseSelection != null)
                     {
+                        bool conditionMet = false;
+                        var currentDice = DiceManager.Instance.GetCurrentDiceValues();
+                        var defAbility = BattleManager.Instance.pendingDefenseSelection;
+                        if (AbilityResolver.Instance != null && defAbility != null)
+                        {
+                            foreach (var outcome in defAbility.primaryDefensiveOutcomes)
+                            {
+                                if (AbilityResolver.Instance.IsConditionMet(outcome, currentDice, aiPlayer.characterData.diceKey, out _))
+                                {
+                                    conditionMet = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (!conditionMet && DiceManager.Instance.rollsLeft == 0)
+                        {
+                            if (TryPlayCard(aiPlayer)) yield break;
+                            if (TrySpendToken(aiPlayer)) yield break;
+                        }
+
                         yield return new WaitForSeconds(delayBetweenActions);
                         
                         LogAI($"[AIManager] AI activates defense: {BattleManager.Instance.pendingDefenseSelection.abilityName}");
@@ -426,28 +531,59 @@ public class AIManager : MonoBehaviour
         var cardsWithKeepValue = aiPlayer.hand.Select(c => new { Card = c, KeepVal = EvaluateCardKeepValue(c, aiPlayer) })
                                               .OrderBy(x => x.KeepVal).ToList();
 
-        // instant sell for useless cards
-        var uselessCard = cardsWithKeepValue.FirstOrDefault(x => x.KeepVal < 0);
+        // instant sell  entirely useless/applied cards (KeepVal <= 25f or already applied upgrade)
+        var uselessCard = cardsWithKeepValue.FirstOrDefault(x => x.KeepVal <= 25f || IsUpgradeAlreadyApplied(x.Card, aiPlayer));
         if (uselessCard != null)
         {
-            LogAI($"[AIManager] AI sells entirely useless card for 1 CP: {uselessCard.Card.cardName}");
+            LogAI($"[AIManager] AI sells entirely useless card for 1 CP: {uselessCard.Card.cardName} (KeepVal: {uselessCard.KeepVal})");
             CardResolver.Instance.SellCard(uselessCard.Card, aiPlayer);
             return true;
         }
 
-        // tradeoff between a mid card and a very good one
-        var bestUnaffordableCard = aiPlayer.hand
-            .Where(c => c.cpCost > aiPlayer.currentCombatPoints && (c.playPhase == CardPlayPhase.MainPhase || c.playPhase == CardPlayPhase.Instant || c.playPhase == CardPlayPhase.RollPhase))
-            .Select(c => new { Card = c, PlayUtil = EvaluateCardUtility(c, aiPlayer) })
+        // tradeoff for desired cards (ignore temporary budget constraints)
+        var desiredCards = aiPlayer.hand
+            .Select(c => new { Card = c, PlayUtil = EvaluateCardUtility(c, aiPlayer, ignoreCPBudget: true) })
+            .Where(x => x.PlayUtil > 15f && !IsUpgradeAlreadyApplied(x.Card, aiPlayer))
             .OrderByDescending(x => x.PlayUtil)
+            .ToList();
+
+        if (desiredCards.Count > 0)
+        {
+            int totalDesiredCPCost = desiredCards.Sum(x => x.Card.cpCost);
+            int currentCP = aiPlayer.currentCombatPoints;
+
+            if (currentCP < totalDesiredCPCost)
+            {
+                var desiredCardObjects = desiredCards.Select(x => x.Card).ToList();
+                var sellCandidates = cardsWithKeepValue
+                    .Where(x => !desiredCardObjects.Contains(x.Card))
+                    .OrderBy(x => x.KeepVal)
+                    .ToList();
+
+                if (sellCandidates.Count > 0)
+                {
+                    var worstCard = sellCandidates.First();
+                    if (worstCard.KeepVal < 60f) // don't sell highly valuable cards unless they are very low priority
+                    {
+                        LogAI($"[AIManager] AI sells '{worstCard.Card.cardName}' (KeepVal: {worstCard.KeepVal}) to gain CP for desired card combination (Total CP cost needed: {totalDesiredCPCost}, Current CP: {currentCP})");
+                        CardResolver.Instance.SellCard(worstCard.Card, aiPlayer);
+                        return true;
+                    }
+                }
+            }
+        }
+
+        // single high-utility card
+        var bestUnaffordableCard = desiredCards
+            .Where(x => x.Card.cpCost > aiPlayer.currentCombatPoints && (x.Card.playPhase == CardPlayPhase.MainPhase || x.Card.playPhase == CardPlayPhase.Instant || x.Card.playPhase == CardPlayPhase.RollPhase))
             .FirstOrDefault();
 
         if (bestUnaffordableCard != null && bestUnaffordableCard.PlayUtil > 25f)
         {
             var worstCard = cardsWithKeepValue.First();
-            if (worstCard.Card != bestUnaffordableCard.Card && worstCard.KeepVal < 40f) // dont sell a very valuable card
+            if (worstCard.Card != bestUnaffordableCard.Card && worstCard.KeepVal < 45f)
             {
-                LogAI($"[AIManager] AI sells '{worstCard.Card.cardName}' (KeepVal: {worstCard.KeepVal}) to save CP for '{bestUnaffordableCard.Card.cardName}' (PlayUtil: {bestUnaffordableCard.PlayUtil})");
+                LogAI($"[AIManager] AI sells '{worstCard.Card.cardName}' (KeepVal: {worstCard.KeepVal}) to save CP for single high-utility card '{bestUnaffordableCard.Card.cardName}' (PlayUtil: {bestUnaffordableCard.PlayUtil})");
                 CardResolver.Instance.SellCard(worstCard.Card, aiPlayer);
                 return true;
             }
@@ -491,6 +627,8 @@ public class AIManager : MonoBehaviour
     {
         var currentDice = DiceManager.Instance.GetCurrentDiceValues();
         
+        DetermineBestRollTarget(aiPlayer, currentDice, suppressLog: false);
+        
         OffensiveAbilityData bestAbility = null;
         int bestTierIndex = -1;
         float bestScore = -999f;
@@ -506,7 +644,7 @@ public class AIManager : MonoBehaviour
             var validTiers = AbilityMatcher.GetValidActivations(ability, currentDice, aiPlayer.characterData.diceKey);
             foreach (int tierIndex in validTiers)
             {
-                float score = EvaluateActivationUtility(ability.activations[tierIndex], aiPlayer);
+                float score = EvaluateActivationUtility(ability.activations[tierIndex], aiPlayer, ability.abilityName);
                 if (score > bestScore)
                 {
                     bestScore = score;
@@ -531,7 +669,7 @@ public class AIManager : MonoBehaviour
 
     #endregion
 
-    #region Evaluators & Utility (The "Brain")
+    #region Heuristics & Value Helpers
 
     private List<CardData> GetPlayableCards(PlayerController aiPlayer)
     {
@@ -599,8 +737,375 @@ public class AIManager : MonoBehaviour
         return validCards;
     }
 
+    private List<int> GetValidValuesForAction(CardActionType actionType, int currentValue, List<int> currentDice, List<DiceManager.DieState> dice, int index)
+    {
+        List<int> validValues = new List<int>();
+        if (actionType == CardActionType.ChangeDiceValueToSix)
+        {
+            validValues.Add(6);
+        }
+        else if (actionType == CardActionType.IncrementOrDecrement)
+        {
+            if (currentValue + 1 <= 6) validValues.Add(currentValue + 1);
+            if (currentValue - 1 >= 1) validValues.Add(currentValue - 1);
+        }
+        else if (actionType == CardActionType.ChangeDiceValue)
+        {
+            for (int v = 1; v <= 6; v++) validValues.Add(v);
+        }
+        else if (actionType == CardActionType.ChangeDiceValueIdenticalToAnother)
+        {
+            for (int j = 0; j < currentDice.Count; j++)
+            {
+                if (j != index && dice[j].isActive && dice[j].currentValue > 0)
+                {
+                    if (!validValues.Contains(currentDice[j])) validValues.Add(currentDice[j]);
+                }
+            }
+        }
+        return validValues;
+    }
+
+    private float GetBestDiceChangeUtilityIncrease(PlayerController aiPlayer, List<int> currentDice, CardActionType actionType, float effectValue)
+    {
+        if (DiceManager.Instance == null) return -1000f;
+
+        bool isDefensive = (BattleManager.Instance != null && BattleManager.Instance.currentPhase == TurnPhase.DefensiveRollPhase);
+
+        Func<List<int>, float> getEV = (diceVals) =>
+        {
+            if (isDefensive)
+            {
+                return GetGuaranteedUtility(aiPlayer, diceVals);
+            }
+            var targetInfo = DetermineBestRollTarget(aiPlayer, diceVals, true);
+            return targetInfo != null ? targetInfo.expectedValue : GetGuaranteedUtility(aiPlayer, diceVals);
+        };
+
+        float baselineEV = getEV(currentDice);
+        float maxEV = -999f;
+        var dice = DiceManager.Instance.dice;
+
+        // support for evaluating RerollDice cards (like Try, Try Again!)
+        if (actionType == CardActionType.RerollDice)
+        {
+            if (effectValue >= 2)
+            {
+                for (int i = 0; i < currentDice.Count; i++)
+                {
+                    if (!dice[i].isActive || dice[i].currentValue == 0) continue;
+                    for (int j = i + 1; j < currentDice.Count; j++)
+                    {
+                        if (!dice[j].isActive || dice[j].currentValue == 0) continue;
+
+                        float sumEV = 0f;
+                        int combinations = 0;
+                        for (int vi = 1; vi <= 6; vi++)
+                        {
+                            for (int vj = 1; vj <= 6; vj++)
+                            {
+                                List<int> testDice = new List<int>(currentDice);
+                                testDice[i] = vi;
+                                testDice[j] = vj;
+
+                                sumEV += getEV(testDice);
+                                combinations++;
+                            }
+                        }
+                        float avgEV = sumEV / combinations;
+                        if (avgEV > maxEV)
+                        {
+                            maxEV = avgEV;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < currentDice.Count; i++)
+                {
+                    if (!dice[i].isActive || dice[i].currentValue == 0) continue;
+
+                    float sumEV = 0f;
+                    for (int v = 1; v <= 6; v++)
+                    {
+                        List<int> testDice = new List<int>(currentDice);
+                        testDice[i] = v;
+
+                        sumEV += getEV(testDice);
+                    }
+                    float avgEV = sumEV / 6f;
+                    if (avgEV > maxEV)
+                    {
+                        maxEV = avgEV;
+                    }
+                }
+            }
+        }
+        // if effectValue >= 2, simulate changing two dice
+        else if (effectValue >= 2)
+        {
+            for (int i = 0; i < currentDice.Count; i++)
+            {
+                if (!dice[i].isActive || dice[i].currentValue == 0) continue;
+                for (int j = i + 1; j < currentDice.Count; j++)
+                {
+                    if (!dice[j].isActive || dice[j].currentValue == 0) continue;
+
+                    List<int> validValuesI = GetValidValuesForAction(actionType, currentDice[i], currentDice, dice, i);
+                    List<int> validValuesJ = GetValidValuesForAction(actionType, currentDice[j], currentDice, dice, j);
+
+                    foreach (int vi in validValuesI)
+                    {
+                        foreach (int vj in validValuesJ)
+                        {
+                            List<int> testDice = new List<int>(currentDice);
+                            testDice[i] = vi;
+                            testDice[j] = vj;
+
+                            float ev = getEV(testDice);
+                            if (ev > maxEV)
+                            {
+                                maxEV = ev;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < currentDice.Count; i++)
+            {
+                if (!dice[i].isActive || dice[i].currentValue == 0) continue;
+
+                List<int> validValues = GetValidValuesForAction(actionType, currentDice[i], currentDice, dice, i);
+
+                foreach (int v in validValues)
+                {
+                    List<int> testDice = new List<int>(currentDice);
+                    testDice[i] = v;
+
+                    float ev = getEV(testDice);
+                    if (ev > maxEV)
+                    {
+                        maxEV = ev;
+                    }
+                }
+            }
+        }
+
+        float increase = maxEV - baselineEV;
+        if (increase > 0.05f)
+        {
+            return increase * 3f; // scale factor
+        }
+        return -1000f; // not worth playing
+    }
+
+    private float GetGuaranteedUtility(PlayerController player, List<int> diceValues)
+    {
+        var bm = BattleManager.Instance;
+        if (bm != null && bm.currentPhase == TurnPhase.DefensiveRollPhase && bm.pendingDefenseSelection != null)
+        {
+            return GetDefensiveUtility(player, diceValues, bm.pendingDefenseSelection);
+        }
+
+        float maxUtil = 0f;
+        List<OffensiveAbilityData> allOffensiveAbilities = new List<OffensiveAbilityData>(player.activeOffensiveAbilities);
+        if (player.activeUltimate is OffensiveAbilityData ultimate && ultimate != null) allOffensiveAbilities.Add(ultimate);
+
+        foreach (var ability in allOffensiveAbilities)
+        {
+            var validTiers = AbilityMatcher.GetValidActivations(ability, diceValues, player.characterData.diceKey);
+            foreach (int t in validTiers)
+            {
+                float util = EvaluateActivationUtility(ability.activations[t], player, ability.abilityName);
+                if (util > maxUtil) maxUtil = util;
+            }
+        }
+        return maxUtil;
+    }
+
+    private StatusEffectsData GetOpponentOnDamagePositiveStatus(PlayerController opponent)
+    {
+        if (opponent.activePassive == null || opponent.activePassive.trigger != PassiveTrigger.OnDamageTaken)
+            return null;
+            
+        foreach (var outcome in opponent.activePassive.primaryPassiveOutcomes)
+        {
+            if (outcome.statuses != null)
+            {
+                foreach (var statusApp in outcome.statuses)
+                {
+                    if (statusApp.status != null && statusApp.status.type == StatusType.Positive)
+                    {
+                        return statusApp.status;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private bool IsOpponentRollStrong(PlayerController opponent, TurnPhase currentPhase, DefensiveAbilityData pendingDefense)
+    {
+        if (DiceManager.Instance == null) return false;
+        var opponentDice = DiceManager.Instance.GetCurrentDiceValues();
+        var opponentDiceKey = opponent.characterData.diceKey;
+        if (opponentDice == null || opponentDice.Count == 0 || opponentDiceKey == null) return false;
+
+        if (currentPhase == TurnPhase.OffensiveRollPhase)
+        {
+            foreach (var ability in opponent.activeOffensiveAbilities)
+            {
+                if (ability != null && AbilityMatcher.GetValidActivations(ability, opponentDice, opponentDiceKey).Count > 0)
+                {
+                    return true;
+                }
+            }
+            if (opponent.activeUltimate is OffensiveAbilityData ultimateOffensive)
+            {
+                if (AbilityMatcher.GetValidActivations(ultimateOffensive, opponentDice, opponentDiceKey).Count > 0)
+                {
+                    return true;
+                }
+            }
+        }
+        else if (currentPhase == TurnPhase.DefensiveRollPhase && pendingDefense != null)
+        {
+            foreach (var outcome in pendingDefense.primaryDefensiveOutcomes)
+            {
+                if (AbilityResolver.Instance != null && AbilityResolver.Instance.IsConditionMet(outcome, opponentDice, opponentDiceKey, out _))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private float GetDefensiveUtility(PlayerController player, List<int> diceValues, DefensiveAbilityData defAbility)
+    {
+        if (defAbility == null || AbilityResolver.Instance == null) return 0f;
+
+        float score = 0f;
+        var bm = BattleManager.Instance;
+        PlayerController opponent = bm.opponentPlayer == player ? bm.activePlayer : bm.opponentPlayer;
+
+        foreach (var outcome in defAbility.primaryDefensiveOutcomes)
+        {
+            if (AbilityResolver.Instance.IsConditionMet(outcome, diceValues, player.characterData.diceKey, out float scalingMult))
+            {
+                float baseValue = outcome.value * scalingMult;
+
+                switch (outcome.type)
+                {
+                    case AbilityOutcomeType.Damage:
+                        var onDmgStatus = GetOpponentOnDamagePositiveStatus(opponent);
+                        if (onDmgStatus != null)
+                        {
+                            var existingStatus = opponent.activeStatuses.FirstOrDefault(s => s.data == onDmgStatus);
+                            int currentStacks = existingStatus != null ? existingStatus.currentStacks : 0;
+                            int limit = onDmgStatus.stackLimit;
+                            
+                            float dmgScore = baseValue * 3f;
+                            if (baseValue < 3f) dmgScore -= 100f;
+                            if (currentStacks >= limit - 2) dmgScore -= 200f;
+                            score += dmgScore;
+                        }
+                        else
+                        {
+                            score += baseValue * 3f;
+                        }
+                        break;
+                        
+                    case AbilityOutcomeType.Prevent:
+                        score += baseValue * 5f;
+                        break;
+                        
+                    case AbilityOutcomeType.PreventHalfDamage:
+                        float incomingDmg = 6f;
+                        if (bm.committedOffense != null && bm.committedOffense.ability is OffensiveAbilityData offAb)
+                        {
+                            int index = bm.committedOffense.activationIndex;
+                            if (index >= 0 && index < offAb.activations.Count)
+                            {
+                                var act = offAb.activations[index];
+                                var dmgOutcome = act.primaryOffensiveOutcomes.FirstOrDefault(o => o.type == AbilityOutcomeType.Damage);
+                                if (dmgOutcome != null) incomingDmg = dmgOutcome.value;
+                            }
+                        }
+                        score += (incomingDmg / 2f) * 6f;
+                        break;
+                        
+                    case AbilityOutcomeType.Healing:
+                        score += baseValue * 4f;
+                        break;
+                        
+                    case AbilityOutcomeType.GainCP:
+                        score += baseValue * 10f;
+                        break;
+                }
+
+                if (outcome.statuses != null)
+                {
+                    foreach (var statusApp in outcome.statuses)
+                    {
+                        float amount = statusApp.amount * scalingMult;
+                        if (statusApp.status.type == StatusType.Positive && outcome.target == StatusTarget.Self)
+                        {
+                            score += amount * 20f;
+                        }
+                        else if (statusApp.status.type == StatusType.Negative && outcome.target == StatusTarget.Opponent)
+                        {
+                            score += amount * 20f;
+                        }
+                    }
+                }
+            }
+        }
+
+        return score;
+    }
+
+    #endregion
+
+    #region Utility Evaluators (The "Brain")
+
+    private bool IsUpgradeAlreadyApplied(CardData card, PlayerController aiPlayer)
+    {
+        if (card.cardType != CardType.Upgrade) return false;
+        if (card.upgradedAbilityVersion == null) return false;
+
+        if (card.upgradedAbilityVersion is OffensiveAbilityData offensive)
+        {
+            return aiPlayer.activeOffensiveAbilities.Contains(offensive);
+        }
+        else if (card.upgradedAbilityVersion is DefensiveAbilityData defensive)
+        {
+            return aiPlayer.activeDefensiveAbilities.Contains(defensive);
+        }
+        else if (aiPlayer.activeUltimate == card.upgradedAbilityVersion)
+        {
+            return true;
+        }
+        else if (aiPlayer.activePassive == card.upgradedAbilityVersion)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     private float EvaluateCardKeepValue(CardData card, PlayerController aiPlayer)
     {
+        if (IsUpgradeAlreadyApplied(card, aiPlayer))
+        {
+            return 0f;
+        }
+
         float score = 10f + (card.cpCost * 5f); // Base score: more expensive card are generally better
 
         if (card.cardType == CardType.Upgrade)
@@ -637,24 +1142,33 @@ public class AIManager : MonoBehaviour
         return score;
     }
 
-    private float EvaluateCardUtility(CardData card, PlayerController aiPlayer)
+    private float EvaluateCardUtility(CardData card, PlayerController aiPlayer, bool ignoreCPBudget = false)
     {
+        if (IsUpgradeAlreadyApplied(card, aiPlayer))
+        {
+            return -1000f;
+        }
+
         float score = 0f;
         var bm = BattleManager.Instance;
         PlayerController opponent = bm.opponentPlayer == aiPlayer ? bm.activePlayer : bm.opponentPlayer;
         PlayerController rollingPlayer = (bm.currentPhase == TurnPhase.DefensiveRollPhase) ? bm.opponentPlayer : bm.activePlayer;
 
         // CP BUDGETING (keeping CP for Roll Phase)
-        if (card.playPhase == CardPlayPhase.MainPhase && card.cpCost > 0)
+        if (!ignoreCPBudget && card.playPhase == CardPlayPhase.MainPhase && card.cpCost > 0)
         {
-            // Bugetăm agresiv doar în MainPhase1. În MainPhase2 putem cheltui CP-ul rămas!
             if (bm.currentPhase == TurnPhase.MainPhase1)
             {
-                float maxRollPhaseCostInHand = aiPlayer.hand
+                var rollPhaseCards = aiPlayer.hand
                     .Where(c => c.playPhase == CardPlayPhase.RollPhase || c.playPhase == CardPlayPhase.Instant)
-                    .Max(c => (float?)c.cpCost) ?? 0f;
+                    .ToList();
 
-                if (aiPlayer.currentCombatPoints - card.cpCost < maxRollPhaseCostInHand)
+                float maxRollPhaseCostInHand = rollPhaseCards.Any() ? rollPhaseCards.Max(c => c.cpCost) : 0f;
+                CardData maxRollPhaseCard = rollPhaseCards.Any() ? rollPhaseCards.OrderByDescending(c => c.cpCost).First() : null;
+
+                int sellableCount = aiPlayer.hand.Count(c => c != card && c != maxRollPhaseCard);
+
+                if (aiPlayer.currentCombatPoints - card.cpCost + sellableCount < maxRollPhaseCostInHand)
                 {
                     score -= 50f; 
                 }
@@ -793,8 +1307,27 @@ public class AIManager : MonoBehaviour
                         if (opponent.activeStatuses.Any(s => s.data.type == StatusType.Positive))
                         {
                             score += 80f;
+                            if (opponent.activeStatuses.Any(s => s.data != null && s.data.effectName != null && s.data.effectName.Contains("Combo")))
+                            {
+                                score += 150f; // highly prioritize stripping combo tokens
+                            }
                         }
                         if (aiPlayer.activeStatuses.Any(s => s.data.type == StatusType.Negative))
+                        {
+                            score += 80f;
+                        }
+                        break;
+
+                    case CardActionType.TransferStatus:
+                        if (opponent.activeStatuses.Any(s => s.data.type == StatusType.Positive && s.data.isTransferable))
+                        {
+                            score += 80f;
+                            if (opponent.activeStatuses.Any(s => s.data != null && s.data.effectName != null && s.data.effectName.Contains("Combo") && s.data.isTransferable))
+                            {
+                                score += 150f; // highly prioritize stealing/transferring combo tokens!
+                            }
+                        }
+                        if (aiPlayer.activeStatuses.Any(s => s.data.type == StatusType.Negative && s.data.isTransferable))
                         {
                             score += 80f;
                         }
@@ -808,7 +1341,25 @@ public class AIManager : MonoBehaviour
                                 score -= 1000f;
                                 break;
                             }
-                            if (rollingPlayer == aiPlayer) score += effectValue * 15f;
+                            
+                            float rollScore = effectValue * 15f;
+                            
+                            // scale utility based on rolls left to prevent premature card play
+                            int rollsLeft = DiceManager.Instance != null ? DiceManager.Instance.rollsLeft : 2;
+                            if (rollsLeft > 1) rollScore *= 0.1f;
+                            else if (rollsLeft == 1) rollScore *= 0.5f;
+
+                            // scaling based on active strategic stance and matching roll phase
+                            if (currentStance == 2 && bm.currentPhase == TurnPhase.DefensiveRollPhase)
+                            {
+                                rollScore *= 2.0f; // defensive stance scaling for defense rolls
+                            }
+                            else if (currentStance == 1 && bm.currentPhase == TurnPhase.OffensiveRollPhase)
+                            {
+                                rollScore *= 1.5f; // aggressive stance scaling for offense rolls
+                            }
+                            
+                            if (rollingPlayer == aiPlayer) score += rollScore;
                             else score -= 1000f;
                         }
                         break;
@@ -828,33 +1379,50 @@ public class AIManager : MonoBehaviour
 
                         if (DiceManager.Instance != null && DiceManager.Instance.hasRolledThisPhase)
                         {
-                            if (effect.targetMode == CardTargetMode.Self && rollingPlayer == aiPlayer) 
+                            var diceVals = DiceManager.Instance.GetCurrentDiceValues();
+                            int rollsLeft = DiceManager.Instance.rollsLeft;
+
+                            if (rollingPlayer == aiPlayer)
                             {
-                                if (bm.currentPhase == TurnPhase.DefensiveRollPhase && bm.pendingDefenseSelection != null)
+                                if (effect.targetMode == CardTargetMode.Self || effect.targetMode == CardTargetMode.ChosenPlayer)
                                 {
-                                    bool alreadyMet = false;
-                                    var diceVals = DiceManager.Instance.GetCurrentDiceValues();
-                                    if (AbilityResolver.Instance != null)
+                                    float inc = GetBestDiceChangeUtilityIncrease(aiPlayer, diceVals, effect.actionType, effectValue);
+                                    if (rollsLeft > 0)
                                     {
-                                        foreach (var outc in bm.pendingDefenseSelection.primaryDefensiveOutcomes)
-                                        {
-                                            if (AbilityResolver.Instance.IsConditionMet(outc, diceVals, aiPlayer.characterData.diceKey, out _))
-                                            {
-                                                alreadyMet = true;
-                                                break;
-                                            }
-                                        }
+                                        inc *= 0.05f; // strongly discourage playing self-alteration cards early when free rolls remain
                                     }
-                                    if (alreadyMet) score -= 1000f;
-                                    else score += (DiceManager.Instance.rollsLeft > 0) ? 10f : 40f;
+                                    score += inc;
                                 }
-                                else 
+                                else
                                 {
-                                    score += 40f;
+                                    score -= 1000f; // can't target self
                                 }
                             }
-                            else if (effect.targetMode == CardTargetMode.Opponent && rollingPlayer == opponent) score += 45f;
-                            else if (effect.targetMode == CardTargetMode.ChosenPlayer) score += 45f;
+                            else if (rollingPlayer == opponent)
+                            {
+                                if (effect.targetMode == CardTargetMode.Opponent || effect.targetMode == CardTargetMode.ChosenPlayer)
+                                {
+                                    if (IsOpponentRollStrong(opponent, bm.currentPhase, bm.pendingDefenseSelection))
+                                    {
+                                        if (rollsLeft > 0)
+                                        {
+                                            score -= 1000f; // wait until opponent has exhausted rolls so they can't simply reroll our disruption
+                                        }
+                                        else
+                                        {
+                                            score += 45f;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        score -= 1000f; // DO NOT play if the opponent's dice are currently useless to them
+                                    }
+                                }
+                                else
+                                {
+                                    score -= 1000f; // can't target opponent
+                                }
+                            }
                             else score -= 1000f;
                         }
                         else score -= 1000f;
@@ -1021,11 +1589,22 @@ public class AIManager : MonoBehaviour
         return score;
     }
 
-    private float EvaluateActivationUtility(OffensiveAbilityData.AttackActivation activation, PlayerController aiPlayer)
+    private float EvaluateActivationUtility(OffensiveAbilityData.AttackActivation activation, PlayerController aiPlayer, string abilityName)
     {
         float score = 0f;
         var bm = BattleManager.Instance;
         PlayerController opponent = bm.opponentPlayer == aiPlayer ? bm.activePlayer : bm.opponentPlayer;
+
+        int kineticStacks = 0;
+        if (aiPlayer.activeStatuses != null)
+        {
+            kineticStacks = aiPlayer.activeStatuses
+                .Where(s => s.data != null && s.data.effectName != null && s.data.effectName.Contains("Kinetic"))
+                .Sum(s => s.currentStacks);
+        }
+        bool isBlackPanther = aiPlayer.characterData != null && aiPlayer.characterData.heroName.Contains("Panther");
+        bool isSpiderMan = aiPlayer.characterData != null && aiPlayer.characterData.heroName.Contains("Spider");
+        bool hasCombo = aiPlayer.activeStatuses != null && aiPlayer.activeStatuses.Any(s => s.data != null && s.data.effectName != null && s.data.effectName.Contains("Combo"));
 
         foreach (var outcome in activation.primaryOffensiveOutcomes)
         {
@@ -1035,12 +1614,22 @@ public class AIManager : MonoBehaviour
             switch (outcome.type)
             {
                 case AbilityOutcomeType.Damage:
-                    if (opponent.currentHealth <= val) score += 1000f;
-                    else score += val * 3f;
+                    float dmgVal = 0f;
+                    if (opponent.currentHealth <= val) dmgVal += 1000f;
+                    else dmgVal += val * 3f;
+
+                    if (currentStance == 1) dmgVal *= 1.5f; // scale damage in aggressive stance
+                    if (isBlackPanther && kineticStacks >= 3) dmgVal *= 1.5f; // empower damage when BP has 3+ kinetic energy
+
+                    score += dmgVal;
                     break;
                 case AbilityOutcomeType.Healing:
                     float missingHP = aiPlayer.characterData.maxHealth - aiPlayer.currentHealth;
-                    score += Mathf.Min(val, missingHP) * 3f;
+                    float healVal = Mathf.Min(val, missingHP) * 3f;
+
+                    if (currentStance == 2) healVal *= 2.0f; // scale healing in defensive stance
+
+                    score += healVal;
                     break;
                 case AbilityOutcomeType.GainCP:
                     score += val * 10f;
@@ -1056,10 +1645,37 @@ public class AIManager : MonoBehaviour
 
             if (outcome.statuses != null)
             {
-                foreach (var status in outcome.statuses)
+                foreach (var statusApp in outcome.statuses)
                 {
-                    if (status.status.type == StatusType.Positive && outcome.target == StatusTarget.Self) score += 25f;
-                    if (status.status.type == StatusType.Negative && outcome.target == StatusTarget.Opponent) score += 25f;
+                    StatusEffectsData statusToGain = statusApp.status;
+                    PlayerController targetPlayer = outcome.target == StatusTarget.Opponent ? opponent : aiPlayer;
+
+                    bool limitReached = false;
+                    if (statusToGain.maxGlobalTokens > 0)
+                    {
+                        int p1Stacks = bm.player1.activeStatuses.FirstOrDefault(s => s.data == statusToGain)?.currentStacks ?? 0;
+                        int p2Stacks = bm.player2.activeStatuses.FirstOrDefault(s => s.data == statusToGain)?.currentStacks ?? 0;
+                        if (p1Stacks + p2Stacks >= statusToGain.maxGlobalTokens) limitReached = true;
+                    }
+                    var existing = targetPlayer.activeStatuses.FirstOrDefault(s => s.data == statusToGain);
+                    if (existing != null && existing.currentStacks >= statusToGain.stackLimit) limitReached = true;
+
+                    if (!limitReached)
+                    {
+                        float statusScore = 25f;
+                        if (statusToGain.type == StatusType.Positive && outcome.target == StatusTarget.Self)
+                        {
+                            if (currentStance == 2 && (statusToGain.effectName.Contains("Suit") || statusToGain.effectName.Contains("Invis")))
+                            {
+                                statusScore *= 2.0f; // scale positive defense statuses in defensive stance
+                            }
+                            score += statusScore;
+                        }
+                        else if (statusToGain.type == StatusType.Negative && outcome.target == StatusTarget.Opponent)
+                        {
+                            score += statusScore;
+                        }
+                    }
                 }
             }
         }
@@ -1075,11 +1691,21 @@ public class AIManager : MonoBehaviour
                     {
                         case AbilityOutcomeType.Damage:
                         case AbilityOutcomeType.AttackModifier:
-                            score += outcome.value * 1.5f;
+                            float expectedBase = outcome.value;
+                            if (outcome.condition == ConditionType.SumValue || outcome.isScaling)
+                            {
+                                expectedBase = secRoll.diceCount * 3.5f;
+                            }
+                            float secDmg = expectedBase * 1.5f;
+                            if (currentStance == 1) secDmg *= 1.5f;
+                            if (isBlackPanther && kineticStacks >= 3) secDmg *= 1.5f;
+                            score += secDmg;
                             break;
                         case AbilityOutcomeType.Healing:
                             float missingHP = aiPlayer.characterData.maxHealth - aiPlayer.currentHealth;
-                            score += Mathf.Min(outcome.value, missingHP) * 1.5f;
+                            float secHeal = Mathf.Min(outcome.value, missingHP) * 1.5f;
+                            if (currentStance == 2) secHeal *= 2.0f;
+                            score += secHeal;
                             break;
                         case AbilityOutcomeType.GainCP:
                             score += outcome.value * 5f;
@@ -1091,21 +1717,170 @@ public class AIManager : MonoBehaviour
 
                     if (outcome.statuses != null)
                     {
-                        foreach (var status in outcome.statuses)
+                        foreach (var statusApp in outcome.statuses)
                         {
-                            if (status.status.type == StatusType.Positive && outcome.target == StatusTarget.Self) score += 12.5f; // Baza era 25f
-                            if (status.status.type == StatusType.Negative && outcome.target == StatusTarget.Opponent) score += 12.5f;
+                            StatusEffectsData statusToGain = statusApp.status;
+                            PlayerController targetPlayer = outcome.target == StatusTarget.Opponent ? opponent : aiPlayer;
+
+                            bool limitReached = false;
+                            if (statusToGain.maxGlobalTokens > 0)
+                            {
+                                int p1Stacks = bm.player1.activeStatuses.FirstOrDefault(s => s.data == statusToGain)?.currentStacks ?? 0;
+                                int p2Stacks = bm.player2.activeStatuses.FirstOrDefault(s => s.data == statusToGain)?.currentStacks ?? 0;
+                                if (p1Stacks + p2Stacks >= statusToGain.maxGlobalTokens) limitReached = true;
+                            }
+                            var existing = targetPlayer.activeStatuses.FirstOrDefault(s => s.data == statusToGain);
+                            if (existing != null && existing.currentStacks >= statusToGain.stackLimit) limitReached = true;
+
+                            if (!limitReached)
+                            {
+                                float statusScore = 12.5f;
+                                if (statusToGain.type == StatusType.Positive && outcome.target == StatusTarget.Self)
+                                {
+                                    if (currentStance == 2 && (statusToGain.effectName.Contains("Suit") || statusToGain.effectName.Contains("Invis")))
+                                    {
+                                        statusScore *= 2.0f;
+                                    }
+                                    score += statusScore;
+                                }
+                                else if (statusToGain.type == StatusType.Negative && outcome.target == StatusTarget.Opponent)
+                                {
+                                    score += statusScore;
+                                }
+                            }
                         }
                     }
                 }
             }
         }
 
-        if (currentStance == 1)
+        // Spider-Man Combo Strategy scaling
+        if (isSpiderMan)
         {
-            score *= 1.5f;
+            bool grantsCombo = false;
+            if (activation.primaryOffensiveOutcomes != null)
+            {
+                foreach (var outcome in activation.primaryOffensiveOutcomes)
+                {
+                    if (outcome.statuses != null && outcome.statuses.Any(s => s.status != null && s.status.effectName != null && s.status.effectName.Contains("Combo")))
+                    {
+                        grantsCombo = true;
+                        break;
+                    }
+                }
+            }
+            if (!grantsCombo && activation.secondaryRolls != null)
+            {
+                foreach (var secRoll in activation.secondaryRolls)
+                {
+                    foreach (var outcome in secRoll.outcomes)
+                    {
+                        if (outcome.statuses != null && outcome.statuses.Any(s => s.status != null && s.status.effectName != null && s.status.effectName.Contains("Combo")))
+                        {
+                            grantsCombo = true;
+                            break;
+                        }
+                    }
+                    if (grantsCombo) break;
+                }
+            }
+
+            bool isComboAbility = grantsCombo || (abilityName != null && abilityName.Contains("Combo"));
+
+            if (isComboAbility)
+            {
+                if (!hasCombo) score *= 1.5f; // prioritize getting combo token
+                else score *= 0.5f; // deprioritize getting another combo if already have it
+            }
+            else if (hasCombo)
+            {
+                score *= 1.5f; // encourage non-combo high damage/status moves during extra roll phase
+            }
         }
 
+        return score;
+    }
+
+    private float EvaluateDefensiveAbility(DefensiveAbilityData defAbility, PlayerController aiPlayer, PlayerController opponent)
+    {
+        float score = 0f;
+        
+        foreach (var outcome in defAbility.primaryDefensiveOutcomes)
+        {
+            switch (outcome.type)
+            {
+                case AbilityOutcomeType.Damage:
+                    float dmg = outcome.value;
+                    var onDmgStatus = GetOpponentOnDamagePositiveStatus(opponent);
+                    if (onDmgStatus != null)
+                    {
+                        var existingStatus = opponent.activeStatuses.FirstOrDefault(s => s.data == onDmgStatus);
+                        int currentStacks = existingStatus != null ? existingStatus.currentStacks : 0;
+                        int limit = onDmgStatus.stackLimit;
+                        
+                        if (dmg < 3f)
+                        {
+                            score -= 100f; // avoid counterattacks if they deal less than 3 damage and opponent has this passive
+                        }
+                        if (currentStacks >= limit - 2)
+                        {
+                            score -= 200f; // heavily avoid triggering passive activation
+                        }
+                    }
+                    else
+                    {
+                        score += dmg * 3f;
+                    }
+                    break;
+                    
+                case AbilityOutcomeType.Prevent:
+                    score += outcome.value * 5f;
+                    break;
+                    
+                case AbilityOutcomeType.PreventHalfDamage:
+                    float incomingDmg = 6f;
+                    if (BattleManager.Instance.committedOffense != null && 
+                        BattleManager.Instance.committedOffense.ability is OffensiveAbilityData offAb)
+                    {
+                        int index = BattleManager.Instance.committedOffense.activationIndex;
+                        if (index >= 0 && index < offAb.activations.Count)
+                        {
+                            var act = offAb.activations[index];
+                            var dmgOutcome = act.primaryOffensiveOutcomes.FirstOrDefault(o => o.type == AbilityOutcomeType.Damage);
+                            if (dmgOutcome != null)
+                            {
+                                incomingDmg = dmgOutcome.value;
+                            }
+                        }
+                    }
+                    score += (incomingDmg / 2f) * 6f;
+                    break;
+                    
+                case AbilityOutcomeType.Healing:
+                    score += outcome.value * 4f;
+                    break;
+                    
+                case AbilityOutcomeType.GainCP:
+                    score += outcome.value * 10f;
+                    break;
+            }
+            
+            if (outcome.statuses != null)
+            {
+                foreach (var statusApp in outcome.statuses)
+                {
+                    if (statusApp.status.type == StatusType.Positive && outcome.target == StatusTarget.Self)
+                    {
+                        score += statusApp.amount * 20f;
+                    }
+                    else if (statusApp.status.type == StatusType.Negative && outcome.target == StatusTarget.Opponent)
+                    {
+                        score += statusApp.amount * 20f;
+                    }
+                }
+            }
+        }
+        
         return score;
     }
 
@@ -1134,7 +1909,7 @@ public class AIManager : MonoBehaviour
             for (int i = 0; i < ability.activations.Count; i++)
             {
                 var activation = ability.activations[i];
-                float utility = EvaluateActivationUtility(activation, aiPlayer);
+                float utility = EvaluateActivationUtility(activation, aiPlayer, ability.abilityName);
                 
                 List<int> diceToLock = new List<int>();
                 int diceRequired = 5; 
@@ -1159,12 +1934,45 @@ public class AIManager : MonoBehaviour
                 int missingDice = diceRequired - diceToLock.Count;
                 if (missingDice < 0) missingDice = 0;
 
+                // Symbol Synergy Bonus
+                float synergyBonus = 1.0f;
+                if (diceRequired > 0)
+                {
+                    float ratio = (float)diceToLock.Count / diceRequired;
+                    if (ratio >= 0.5f && ratio < 1.0f)
+                    {
+                        synergyBonus += ratio * 0.4f; // e.g. +0.24 for 3/5, +0.32 for 4/5
+                    }
+                    
+                    int sixesLocked = diceToLock.Where(idx => idx >= 0 && idx < currentDice.Count).Select(idx => currentDice[idx]).Count(v => v == 6);
+                    if (sixesLocked >= 3)
+                    {
+                        bool isUltimate = (ability == aiPlayer.activeUltimate);
+                        bool requiresSixes = false;
+                        if (activation.symbolsNeeded != null && aiPlayer.characterData != null && aiPlayer.characterData.diceKey != null)
+                        {
+                            var sixSymbol = aiPlayer.characterData.diceKey.GetSymbolForValue(6);
+                            requiresSixes = activation.symbolsNeeded.Any(sn => sn.symbol == sixSymbol);
+                        }
+                        
+                        if (isUltimate || requiresSixes)
+                        {
+                            synergyBonus += 0.5f * sixesLocked; // e.g. +1.5 for three 6s, +2.0 for four 6s
+                        }
+                    }
+                }
+                utility *= synergyBonus;
+
                 // one single roll probability
                 float pSingle = Mathf.Pow(riskFactor, missingDice);
                 
                 // cumulative probability, taking into account all rolls
                 float p = pSingle;
-                if (currentRollsLeft > 1 && missingDice > 0)
+                if (currentRollsLeft == 0 && missingDice > 0)
+                {
+                    p = 0f;
+                }
+                else if (currentRollsLeft > 1 && missingDice > 0)
                 {
                     p = 1f - Mathf.Pow(1f - pSingle, currentRollsLeft);
                 }
@@ -1179,7 +1987,7 @@ public class AIManager : MonoBehaviour
                     var validTiers = AbilityMatcher.GetValidActivations(fbAbility, lockedDiceValues, aiPlayer.characterData.diceKey);
                     foreach (int t in validTiers)
                     {
-                        float fbUtil = EvaluateActivationUtility(fbAbility.activations[t], aiPlayer);
+                        float fbUtil = EvaluateActivationUtility(fbAbility.activations[t], aiPlayer, fbAbility.abilityName);
                         if (fbUtil > fallbackUtility) fallbackUtility = fbUtil;
                     }
                 }
@@ -1278,6 +2086,122 @@ public class AIManager : MonoBehaviour
         }
         return bestLockIndices;
     }
+
+    private List<int> GetBestDefensiveDiceToLock(PlayerController player, List<int> currentDice, DefensiveAbilityData defAbility)
+    {
+        List<int> activeIndices = new List<int>();
+        for (int i = 0; i < currentDice.Count; i++)
+        {
+            if (DiceManager.Instance.dice[i].isActive && DiceManager.Instance.dice[i].currentValue > 0)
+            {
+                activeIndices.Add(i);
+            }
+        }
+
+        List<int> bestLock = new List<int>();
+        float bestEV = -9999f;
+
+        int subsetCount = 1 << activeIndices.Count;
+        for (int mask = 0; mask < subsetCount; mask++)
+        {
+            List<int> candidateLock = new List<int>();
+            for (int j = 0; j < activeIndices.Count; j++)
+            {
+                if ((mask & (1 << j)) != 0)
+                {
+                    candidateLock.Add(activeIndices[j]);
+                }
+            }
+
+            float ev = GetDefensiveExpectedUtility(player, currentDice, candidateLock, defAbility);
+            if (ev > bestEV)
+            {
+                bestEV = ev;
+                bestLock = candidateLock;
+            }
+        }
+
+        return bestLock;
+    }
+
+    private float GetDefensiveExpectedUtility(PlayerController player, List<int> currentDice, List<int> diceToLock, DefensiveAbilityData defAbility)
+    {
+        List<int> unlockedIndices = new List<int>();
+        for (int i = 0; i < currentDice.Count; i++)
+        {
+            if (DiceManager.Instance.dice[i].isActive && DiceManager.Instance.dice[i].currentValue > 0 && !diceToLock.Contains(i))
+            {
+                unlockedIndices.Add(i);
+            }
+        }
+
+        if (unlockedIndices.Count == 0)
+        {
+            return GetDefensiveUtility(player, currentDice, defAbility);
+        }
+
+        int k = unlockedIndices.Count;
+        float totalScore = 0f;
+        int combinations = 0;
+
+        if (k == 1)
+        {
+            for (int v1 = 1; v1 <= 6; v1++)
+            {
+                List<int> testDice = new List<int>(currentDice);
+                testDice[unlockedIndices[0]] = v1;
+                totalScore += GetDefensiveUtility(player, testDice, defAbility);
+                combinations++;
+            }
+        }
+        else if (k == 2)
+        {
+            for (int v1 = 1; v1 <= 6; v1++)
+            {
+                for (int v2 = 1; v2 <= 6; v2++)
+                {
+                    List<int> testDice = new List<int>(currentDice);
+                    testDice[unlockedIndices[0]] = v1;
+                    testDice[unlockedIndices[1]] = v2;
+                    totalScore += GetDefensiveUtility(player, testDice, defAbility);
+                    combinations++;
+                }
+            }
+        }
+        else if (k == 3)
+        {
+            for (int v1 = 1; v1 <= 6; v1++)
+            {
+                for (int v2 = 1; v2 <= 6; v2++)
+                {
+                    for (int v3 = 1; v3 <= 6; v3++)
+                    {
+                        List<int> testDice = new List<int>(currentDice);
+                        testDice[unlockedIndices[0]] = v1;
+                        testDice[unlockedIndices[1]] = v2;
+                        testDice[unlockedIndices[2]] = v3;
+                        totalScore += GetDefensiveUtility(player, testDice, defAbility);
+                        combinations++;
+                    }
+                }
+            }
+        }
+        else
+        {
+            for (int iter = 0; iter < 100; iter++)
+            {
+                List<int> testDice = new List<int>(currentDice);
+                foreach (int idx in unlockedIndices)
+                {
+                    testDice[idx] = UnityEngine.Random.Range(1, 7);
+                }
+                totalScore += GetDefensiveUtility(player, testDice, defAbility);
+                combinations++;
+            }
+        }
+
+        return totalScore / combinations;
+    }
     #endregion
 
     #region Target Selection Helpers (The "Eyes")
@@ -1287,22 +2211,70 @@ public class AIManager : MonoBehaviour
     {
         PlayerController opponent = (BattleManager.Instance.player1 == aiCaster) ? BattleManager.Instance.player2 : BattleManager.Instance.player1;
 
-        if (effect.actionType == CardActionType.RemoveStatus || effect.actionType == CardActionType.TransferStatus)
+        // 1. Status removal/transfer
+        if (effect.actionType == CardActionType.TransferStatus)
         {
-            // priority 1: remove a negative status from myself
+            if (aiCaster.activeStatuses.Any(s => s.data.type == StatusType.Negative && s.data.isTransferable))
+            {
+                return aiCaster;
+            }
+            if (opponent.activeStatuses.Any(s => s.data.type == StatusType.Positive && s.data.isTransferable))
+            {
+                return opponent;
+            }
+            if (aiCaster.activeStatuses.Any(s => s.data.isTransferable))
+            {
+                return aiCaster;
+            }
+            if (opponent.activeStatuses.Any(s => s.data.isTransferable))
+            {
+                return opponent;
+            }
+        }
+        else if (effect.actionType == CardActionType.RemoveStatus)
+        {
             if (aiCaster.activeStatuses.Any(s => s.data.type == StatusType.Negative))
             {
                 return aiCaster;
             }
-            // priority 2: remove a positive status from the opponent
             if (opponent.activeStatuses.Any(s => s.data.type == StatusType.Positive))
             {
                 return opponent;
             }
         }
         
+        // 2. Resource/Combat effects
         if (effect.actionType == CardActionType.Damage) return opponent;
         if (effect.actionType == CardActionType.Heal) return aiCaster;
+        
+        // 3. Dice modifications - target the player who is currently rolling
+        if (effect.actionType == CardActionType.ChangeDiceValue ||
+            effect.actionType == CardActionType.ChangeDiceValueIdenticalToAnother ||
+            effect.actionType == CardActionType.ChangeDiceValueToSix ||
+            effect.actionType == CardActionType.IncrementOrDecrement ||
+            effect.actionType == CardActionType.RerollDice ||
+            effect.actionType == CardActionType.AddRollAttempt ||
+            effect.actionType == CardActionType.ForceOpponentReroll)
+        {
+            if (BattleManager.Instance != null)
+            {
+                PlayerController rollingPlayer = (BattleManager.Instance.currentPhase == TurnPhase.DefensiveRollPhase) 
+                                                 ? BattleManager.Instance.opponentPlayer 
+                                                 : BattleManager.Instance.activePlayer;
+                if (rollingPlayer != null) return rollingPlayer;
+            }
+        }
+
+        // 4. Status application helper
+        if (effect.actionType == CardActionType.GainStatus && effect.statuses != null && effect.statuses.Count > 0)
+        {
+            var firstStatus = effect.statuses[0].status;
+            if (firstStatus != null)
+            {
+                if (firstStatus.type == StatusType.Positive) return aiCaster;
+                if (firstStatus.type == StatusType.Negative) return opponent;
+            }
+        }
 
         // fallback
         return opponent;
@@ -1310,37 +2282,30 @@ public class AIManager : MonoBehaviour
 
     public StatusEffectsData ChooseTokenTarget(PlayerController target, CardActionType actionType)
     {
-        if (actionType == CardActionType.RemoveStatus || actionType == CardActionType.TransferStatus)
+        if (actionType == CardActionType.TransferStatus)
+        {
+            StatusType targetType = (target.isAI) ? StatusType.Negative : StatusType.Positive;
+            var token = target.activeStatuses.FirstOrDefault(s => s.data.type == targetType && s.data.isTransferable);
+            if (token != null) return token.data;
+            
+            var fallbackToken = target.activeStatuses.FirstOrDefault(s => s.data.isTransferable);
+            if (fallbackToken != null) return fallbackToken.data;
+            
+            return null;
+        }
+        else if (actionType == CardActionType.RemoveStatus)
         {
             StatusType targetType = (target.isAI) ? StatusType.Negative : StatusType.Positive;
             var token = target.activeStatuses.FirstOrDefault(s => s.data.type == targetType);
             if (token != null) return token.data;
+            
+            if (target.activeStatuses.Any()) return target.activeStatuses[0].data;
+            return null;
         }
         
         // fallback: pick the first one
         if (target.activeStatuses.Any()) return target.activeStatuses[0].data;
         return null;
-    }
-
-    private int lastPickedDieIndex = -1;
-    private bool isSelectingSourceDie = false;
-
-    private float GetGuaranteedUtility(PlayerController player, List<int> diceValues)
-    {
-        float maxUtil = 0f;
-        List<OffensiveAbilityData> allOffensiveAbilities = new List<OffensiveAbilityData>(player.activeOffensiveAbilities);
-        if (player.activeUltimate is OffensiveAbilityData ultimate && ultimate != null) allOffensiveAbilities.Add(ultimate);
-
-        foreach (var ability in allOffensiveAbilities)
-        {
-            var validTiers = AbilityMatcher.GetValidActivations(ability, diceValues, player.characterData.diceKey);
-            foreach (int t in validTiers)
-            {
-                float util = EvaluateActivationUtility(ability.activations[t], player);
-                if (util > maxUtil) maxUtil = util;
-            }
-        }
-        return maxUtil;
     }
 
     public int ChooseDieTarget(PlayerController target, CardActionType actionType)
@@ -1353,6 +2318,8 @@ public class AIManager : MonoBehaviour
         int bestDieIndex = -1;
         float baseUtility = GetGuaranteedUtility(target, currentDice);
         float bestDiff = target.isAI ? 9999f : -9999f;
+
+        bool isDefensive = (BattleManager.Instance != null && BattleManager.Instance.currentPhase == TurnPhase.DefensiveRollPhase && BattleManager.Instance.opponentPlayer == target);
 
         // source die selection
         if (actionType == CardActionType.ChangeDiceValueIdenticalToAnother && isSelectingSourceDie)
@@ -1368,7 +2335,15 @@ public class AIManager : MonoBehaviour
                 List<int> testDice = new List<int>(currentDice);
                 testDice[lastPickedDieIndex] = testDice[i]; // simulate the copy
 
-                float score = target.isAI ? (DetermineBestRollTarget(target, testDice, true)?.expectedValue ?? GetGuaranteedUtility(target, testDice)) : GetGuaranteedUtility(target, testDice);
+                float score;
+                if (isDefensive)
+                {
+                    score = GetGuaranteedUtility(target, testDice);
+                }
+                else
+                {
+                    score = target.isAI ? (DetermineBestRollTarget(target, testDice, true)?.expectedValue ?? GetGuaranteedUtility(target, testDice)) : GetGuaranteedUtility(target, testDice);
+                }
                 
                 if (target.isAI && score > bestSourceScore) { bestSourceScore = score; bestSourceIndex = i; }
                 else if (!target.isAI && score < bestSourceScore) { bestSourceScore = score; bestSourceIndex = i; }
@@ -1376,24 +2351,87 @@ public class AIManager : MonoBehaviour
             if (bestSourceIndex != -1) return bestSourceIndex;
         }
 
-        // normal target selection
-        for (int i = 0; i < dice.Count; i++)
+        if (target.isAI)
         {
-            if (!dice[i].isActive || dice[i].currentValue == 0) continue;
-
-            List<int> testDice = new List<int>(currentDice);
-            testDice[i] = 0; // simulate losing this die
-            
-            float testUtility = GetGuaranteedUtility(target, testDice);
-            float drop = baseUtility - testUtility;
-
-            if (target.isAI)
+            if (actionType == CardActionType.RerollDice)
             {
-                // AI wants to change a USELESS die (minimum utility drop)
-                if (drop < bestDiff) { bestDiff = drop; bestDieIndex = i; }
+                float bestAverageEV = -9999f;
+                for (int i = 0; i < dice.Count; i++)
+                {
+                    if (!dice[i].isActive || dice[i].currentValue == 0) continue;
+
+                    float sumEV = 0f;
+                    for (int v = 1; v <= 6; v++)
+                    {
+                        List<int> testDice = new List<int>(currentDice);
+                        testDice[i] = v;
+
+                        float ev;
+                        if (isDefensive)
+                        {
+                            ev = GetGuaranteedUtility(target, testDice);
+                        }
+                        else
+                        {
+                            var targetInfo = DetermineBestRollTarget(target, testDice, true);
+                            ev = targetInfo != null ? targetInfo.expectedValue : GetGuaranteedUtility(target, testDice);
+                        }
+                        sumEV += ev;
+                    }
+                    float avgEV = sumEV / 6f;
+                    if (avgEV > bestAverageEV)
+                    {
+                        bestAverageEV = avgEV;
+                        bestDieIndex = i;
+                    }
+                }
             }
             else
             {
+                float bestAIValue = -9999f;
+                for (int i = 0; i < dice.Count; i++)
+                {
+                    if (!dice[i].isActive || dice[i].currentValue == 0) continue;
+
+                    List<int> validValues = GetValidValuesForAction(actionType, currentDice[i], currentDice, dice, i);
+
+                    foreach (int v in validValues)
+                    {
+                        List<int> testDice = new List<int>(currentDice);
+                        testDice[i] = v;
+
+                        float ev;
+                        if (isDefensive)
+                        {
+                            ev = GetGuaranteedUtility(target, testDice);
+                        }
+                        else
+                        {
+                            var targetInfo = DetermineBestRollTarget(target, testDice, true);
+                            ev = targetInfo != null ? targetInfo.expectedValue : GetGuaranteedUtility(target, testDice);
+                        }
+                        if (ev > bestAIValue)
+                        {
+                            bestAIValue = ev;
+                            bestDieIndex = i;
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            // normal target selection (disrupt opponent)
+            for (int i = 0; i < dice.Count; i++)
+            {
+                if (!dice[i].isActive || dice[i].currentValue == 0) continue;
+
+                List<int> testDice = new List<int>(currentDice);
+                testDice[i] = 0; // simulate losing this die
+                
+                float testUtility = GetGuaranteedUtility(target, testDice);
+                float drop = baseUtility - testUtility;
+
                 // AI wants to disrupt a CRUCIAL die (maximum utility drop)
                 if (drop > bestDiff) { bestDiff = drop; bestDieIndex = i; }
             }
@@ -1431,6 +2469,8 @@ public class AIManager : MonoBehaviour
         int bestFace = validFaces[0];
         float bestScore = target.isAI ? -9999f : 9999f;
 
+        bool isDefensiveChooseFace = (BattleManager.Instance != null && BattleManager.Instance.currentPhase == TurnPhase.DefensiveRollPhase && BattleManager.Instance.opponentPlayer == target);
+
         foreach (int face in validFaces)
         {
             List<int> testDice = new List<int>(currentDice);
@@ -1439,8 +2479,15 @@ public class AIManager : MonoBehaviour
             float score = 0f;
             if (target.isAI)
             {
-                var targetInfo = DetermineBestRollTarget(target, testDice, true);
-                score = targetInfo != null ? targetInfo.expectedValue : GetGuaranteedUtility(target, testDice);
+                if (isDefensiveChooseFace)
+                {
+                    score = GetGuaranteedUtility(target, testDice);
+                }
+                else
+                {
+                    var targetInfo = DetermineBestRollTarget(target, testDice, true);
+                    score = targetInfo != null ? targetInfo.expectedValue : GetGuaranteedUtility(target, testDice);
+                }
             }
             else
             {
