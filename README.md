@@ -10,8 +10,8 @@
 Unity. Beyond the gameplay, this project serves as a showcase for advanced **Software
 Systems Architecture** and a state-of-the-art **Hierarchical Hybrid AI** capable of
 mimicking human strategy while executing mathematically perfect probability mechanics.
-    
-    ---
+The game illustrates the digital adaptation of a real-world physical boardgame, called **DiceThrone**.
+
     
 ## 🎮 Gameplay Overview
 In *DiceIt!*, players duel using a combination of resource management, ability cards,
@@ -69,27 +69,27 @@ scripts.
 
     
 
-    ## 🚀 Getting Started
+## 🚀 Getting Started
 
-    ### Prerequisites
-    *   Unity Editor (Version 2022.3 or higher recommended)
-    *   Git
+### Prerequisites
+*   Unity Editor (Version 2022.3 or higher recommended)
+*   Git
 
-    ### Installation
-    1. Clone the repository:
-       ```bash
-       git clone https://github.com/YourUsername/DiceIt.git
+### Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/YourUsername/DiceIt.git
 
-  2. Open the project in Unity Hub.
-  3. Navigate to  Assets/_DiceIt/Scenes/  and open the  MainScene .
-  4. Press Play in the Unity Editor to start a match against the AI!
-  ──────
-  ## 🗺️ Future Roadmap
+2. Open the project in Unity Hub.
+3. Navigate to  Assets/_DiceIt/Scenes/  and open the  MainScene .
+4. Press Play in the Unity Editor to start a match against the AI!
+     
+## 🗺️ Future Roadmap
 
-  • Server-Authoritative Multiplayer: Migrating the rules engine and RNG to a dedicated
-  backend to support online matchmaking and eliminate client-side cheating.
-  • Self-Play RL AI Personas: Upgrading the ML pipeline to use Reinforcement Learning (PPO),
-  allowing the bot to discover optimal meta-strategies and generating distinct AI
-  difficulty personas.
-  • JSON Modding Support: Transitioning data from ScriptableObjects to JSON loading to
-  allow community-driven custom card and hero creation.
+• Server-Authoritative Multiplayer: Migrating the rules engine and RNG to a dedicated
+backend to support online matchmaking and eliminate client-side cheating.
+• Self-Play RL AI Personas: Upgrading the ML pipeline to use Reinforcement Learning (PPO),
+allowing the bot to discover optimal meta-strategies and generating distinct AI
+difficulty personas.
+• JSON Modding Support: Transitioning data from ScriptableObjects to JSON loading to
+allow community-driven custom card and hero creation.
