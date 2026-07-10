@@ -67,7 +67,6 @@ core rules engine from the UI and Audio systems.
 `ScriptableObjects`, making the game infinitely scalable without requiring new logic
 scripts.
 
-    
 
 ## 🚀 Getting Started
 
