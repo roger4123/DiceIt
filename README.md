@@ -19,7 +19,7 @@ and dice rolls. The game is highly interactive, allowing players to respond to o
 attacks with instant cards, stack status effects, and mitigate RNG (Random Number
 Generation) by strategically locking dice.
     
-![Main UI][https://media.githubusercontent.com/media/roger4123/DiceIt/main/Screenshots/Screenshot%202026-06-18%20225626.png]
+![Main UI](https://media.githubusercontent.com/media/roger4123/DiceIt/main/Screenshots/Screenshot%202026-06-18%20225626.png)
 
     
 ## 🧠 The AI Engine (DiceBot)
