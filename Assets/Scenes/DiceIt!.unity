@@ -6866,7 +6866,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df2f390d110473941a6eafb191430117, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AIDataLogger
-  isLoggingEnabled: 1
+  isLoggingEnabled: 0
   csvFileName: DemonstrationData.csv
 --- !u!1001 &752971179
 PrefabInstance:

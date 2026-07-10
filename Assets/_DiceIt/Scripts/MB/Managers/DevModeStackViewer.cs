@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 public class DevModeStackViewer : MonoBehaviour
 {
-    private bool showMenu = true;
+    private bool showMenu = false;
     private Rect windowRect = new Rect(330, 20, 300, 380); 
 
     void Update()

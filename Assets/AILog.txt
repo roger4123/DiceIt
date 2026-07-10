@@ -6993,3 +6993,8 @@
  - Venom Shockwave (Tier 0): Util=89,0 | Fallback=0,0 | Missing=5 | EV=0,0 | P=0%
  => WINNER: Punch II (Tier 0) [EV: 15,0]
 [13:45:47] [AIManager] AI activates Punch II at Tier 0.
+
+
+========================================
+=== NEW GAME [02-07-2026 16:00:03] ===
+========================================
