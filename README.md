@@ -85,10 +85,10 @@ scripts.
      
 ## 🗺️ Future Roadmap
 
-• Server-Authoritative Multiplayer: Migrating the rules engine and RNG to a dedicated
+* Server-Authoritative Multiplayer: Migrating the rules engine and RNG to a dedicated
 backend to support online matchmaking and eliminate client-side cheating.
-• Self-Play RL AI Personas: Upgrading the ML pipeline to use Reinforcement Learning (PPO),
+* Self-Play RL AI Personas: Upgrading the ML pipeline to use Reinforcement Learning (PPO),
 allowing the bot to discover optimal meta-strategies and generating distinct AI
 difficulty personas.
-• JSON Modding Support: Transitioning data from ScriptableObjects to JSON loading to
+* JSON Modding Support: Transitioning data from ScriptableObjects to JSON loading to
 allow community-driven custom card and hero creation.
